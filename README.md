@@ -1,0 +1,1 @@
+# kuma_san_kanji
