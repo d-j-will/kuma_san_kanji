@@ -1,0 +1,16 @@
+#!/bin/sh
+set -eu
+
+cd -P -- "$(dirname -- "$0")"
+
+echo "Starting database migration and seeding..."
+
+# Run migrations
+echo "Running migrations..."
+./kuma_san_kanji eval "KumaSanKanji.Release.migrate()"
+
+# Run seeding
+echo "Running seeding..."
+./kuma_san_kanji eval "KumaSanKanji.Release.seed()"
+
+echo "Migration and seeding completed!"

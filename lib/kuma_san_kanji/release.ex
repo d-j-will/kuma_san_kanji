@@ -36,20 +36,26 @@ defmodule KumaSanKanji.Release do
 
     IO.puts("Starting database reset...")
 
-    # Manually drop all tables to avoid migration rollback issues
+    # For PostgreSQL, we need to handle table dropping differently
     for repo <- repos() do
       {:ok, _, _} = Ecto.Migrator.with_repo(repo, fn repo ->
-        # For SQLite, get all table names and drop them
-        tables = repo.query!("SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%'", []).rows
-        |> Enum.map(&List.first/1)
-        |> Enum.reject(&(&1 == "schema_migrations"))
+        # Get all table names (excluding system tables)
+        result = repo.query!("""
+          SELECT tablename 
+          FROM pg_tables 
+          WHERE schemaname = 'public' 
+          AND tablename != 'schema_migrations'
+        """, [])
+        
+        tables = result.rows |> Enum.map(&List.first/1)
 
+        # Drop all tables with CASCADE to handle foreign key constraints
         Enum.each(tables, fn table ->
-          repo.query!("DROP TABLE IF EXISTS #{table}", [])
+          repo.query!("DROP TABLE IF EXISTS #{table} CASCADE", [])
           IO.puts("Dropped table: #{table}")
         end)
 
-        # Also clean up the schema_migrations table
+        # Clean up the schema_migrations table
         repo.query!("DELETE FROM schema_migrations", [])
         IO.puts("Cleaned schema_migrations table")
       end)

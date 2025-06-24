@@ -9,11 +9,14 @@ kill_signal = 'SIGTERM'
 
 [build]
 
+# Deploy configuration
+[deploy]
+  release_command = '/app/bin/migrate_and_seed'
+
 [env]
   PHX_HOST = 'kuma-san-kanji.fly.dev'
   PORT = '8080'
   PHX_SERVER = 'true'
-  DATABASE_PATH = '/app/db/kuma_san_kanji_prod.sqlite3'
 
 [http_service]
   internal_port = 8080
@@ -31,7 +34,3 @@ kill_signal = 'SIGTERM'
 [[vm]]
   size = 'shared-cpu-1x'
   memory = '1GB'
-
-[mounts]
-  source = 'kuma_san_kanji_data'
-  destination = '/app/db'
