@@ -8,7 +8,7 @@ defmodule KumaSanKanji.Content.KanjiLearningMeta do
 
   use Ash.Resource,
     domain: KumaSanKanji.Content.Domain,
-    data_layer: AshSqlite.DataLayer
+    data_layer: AshPostgres.DataLayer
 
   require Ash.Query
 
@@ -56,7 +56,7 @@ defmodule KumaSanKanji.Content.KanjiLearningMeta do
     end
   end
 
-  sqlite do
+  postgres do
     table("kanji_learning_meta")
     repo(KumaSanKanji.Repo)
   end

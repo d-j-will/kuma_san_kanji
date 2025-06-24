@@ -8,7 +8,7 @@ defmodule KumaSanKanji.SRS.UserKanjiProgress do
 
   use Ash.Resource,
     domain: KumaSanKanji.Domain,
-    data_layer: AshSqlite.DataLayer
+    data_layer: AshPostgres.DataLayer
 
   attributes do
     uuid_primary_key(:id)
@@ -91,6 +91,7 @@ defmodule KumaSanKanji.SRS.UserKanjiProgress do
     # Action to record a review result and update SRS state
     update :record_review do
       accept([:last_result])
+      require_atomic? false
 
       change(fn changeset, _context ->
         KumaSanKanji.SRS.UserKanjiProgress.update_srs_state(changeset)
@@ -164,7 +165,7 @@ defmodule KumaSanKanji.SRS.UserKanjiProgress do
     identity(:unique_user_kanji, [:user_id, :kanji_id])
   end
 
-  sqlite do
+  postgres do
     table("user_kanji_progress")
     repo(KumaSanKanji.Repo)
   end

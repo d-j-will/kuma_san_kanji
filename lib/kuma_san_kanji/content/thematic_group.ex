@@ -8,7 +8,7 @@ defmodule KumaSanKanji.Content.ThematicGroup do
   """
   use Ash.Resource,
     domain: KumaSanKanji.Content.Domain,
-    data_layer: AshSqlite.DataLayer
+    data_layer: AshPostgres.DataLayer
 
   # Ensure Ash.Query is required
   require Ash.Query
@@ -60,7 +60,7 @@ defmodule KumaSanKanji.Content.ThematicGroup do
     end
   end
 
-  sqlite do
+  postgres do
     table("thematic_groups")
     repo(KumaSanKanji.Repo)
   end

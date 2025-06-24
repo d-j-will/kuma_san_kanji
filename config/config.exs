@@ -65,8 +65,7 @@ config :phoenix, :json_library, Jason
 # Configure Ash
 config :kuma_san_kanji, KumaSanKanji.Repo,
   otp_app: :kuma_san_kanji,
-  adapter: AshSqlite.Adapter,
-  database: "kuma_san_kanji_dev.sqlite3"
+  adapter: AshPostgres.Adapter
 
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.

@@ -3,7 +3,7 @@
 # Script to test the full reset and review process in the SRS system
 # This script creates a temporary implementation of reset_user_progress to bypass the broken code
 
-Mix.install([:ash, :ash_sqlite])
+Mix.install([:ash, :ash_postgres])
 Application.ensure_all_started(:kuma_san_kanji)
 
 defmodule KumaSanKanji.TestSRS do

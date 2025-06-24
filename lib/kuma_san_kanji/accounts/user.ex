@@ -1,7 +1,7 @@
 defmodule KumaSanKanji.Accounts.User do
   use Ash.Resource,
     domain: KumaSanKanji.Domain,
-    data_layer: AshSqlite.DataLayer
+    data_layer: AshPostgres.DataLayer
 
   attributes do
     uuid_primary_key(:id)
@@ -118,7 +118,7 @@ defmodule KumaSanKanji.Accounts.User do
     identity(:unique_email, [:email])
   end
 
-  sqlite do
+  postgres do
     table("users")
     repo(KumaSanKanji.Repo)
   end

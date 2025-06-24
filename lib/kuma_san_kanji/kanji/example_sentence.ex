@@ -1,7 +1,7 @@
 defmodule KumaSanKanji.Kanji.ExampleSentence do
   use Ash.Resource,
     domain: KumaSanKanji.Domain,
-    data_layer: AshSqlite.DataLayer
+    data_layer: AshPostgres.DataLayer
 
   attributes do
     uuid_primary_key(:id)
@@ -45,7 +45,7 @@ defmodule KumaSanKanji.Kanji.ExampleSentence do
     define(:create, action: :create)
   end
 
-  sqlite do
+  postgres do
     table("kanji_example_sentences")
     repo(KumaSanKanji.Repo)
   end

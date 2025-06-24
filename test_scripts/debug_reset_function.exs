@@ -6,7 +6,7 @@
 # the reset progress functionality in the web UI
 
 # Start the application
-Mix.install([:ash, :ash_sqlite])
+Mix.install([:ash, :ash_postgres])
 Application.ensure_all_started(:kuma_san_kanji)
 
 alias KumaSanKanji.SRS.Logic

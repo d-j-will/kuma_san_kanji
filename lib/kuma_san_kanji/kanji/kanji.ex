@@ -1,7 +1,7 @@
 defmodule KumaSanKanji.Kanji.Kanji do
   use Ash.Resource,
     domain: KumaSanKanji.Domain,
-    data_layer: AshSqlite.DataLayer
+    data_layer: AshPostgres.DataLayer
 
   require Ash.Query
 
@@ -90,7 +90,7 @@ defmodule KumaSanKanji.Kanji.Kanji do
     end
   end
 
-  sqlite do
+  postgres do
     table("kanjis")
     repo(KumaSanKanji.Repo)
   end

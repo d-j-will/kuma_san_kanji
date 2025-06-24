@@ -73,3 +73,13 @@ config :phoenix_live_view,
 
 # Disable swoosh api client as it is only required for production adapters.
 config :swoosh, :api_client, false
+
+# Configure the database for development
+config :kuma_san_kanji, KumaSanKanji.Repo,
+  username: "postgres",
+  password: "postgres",
+  hostname: "localhost",
+  database: "kuma_san_kanji_dev",
+  stacktrace: true,
+  show_sensitive_data_on_connection_error: true,
+  pool_size: 10

@@ -1,5 +1,52 @@
 # Changelog
 
+## [2025-06-24] - Database Migration to PostgreSQL
+
+### ✅ MAJOR: Successfully Migrated from SQLite to PostgreSQL
+
+#### Migration Changes Completed:
+
+**Dependencies Updated:**
+- ✅ Replaced `ash_sqlite` with `ash_postgres` in mix.exs
+- ✅ Added PostgreSQL driver and related dependencies
+
+**Configuration Updated:**
+- ✅ Updated all environment configurations (dev, test, prod, runtime)
+- ✅ Configured PostgreSQL connection settings for all environments
+- ✅ Updated database URLs and connection parameters
+
+**Ash Resources Updated:**
+- ✅ Changed all resources from `AshSqlite.DataLayer` to `AshPostgres.DataLayer`
+- ✅ Updated all `sqlite` blocks to `postgres` blocks in resource definitions
+- ✅ Updated 11 Ash resources with proper PostgreSQL configuration
+
+**Database Schema:**
+- ✅ Generated new PostgreSQL-compatible migrations
+- ✅ Successfully migrated all existing data structure to PostgreSQL
+- ✅ All foreign key constraints and indexes working correctly
+
+**Testing:**
+- ✅ All 81 tests passing on PostgreSQL backend
+- ✅ Database seeding working correctly (81 kanji + related data)
+- ✅ Updated test configuration for PostgreSQL test database
+
+**Application Updates:**
+- ✅ Updated repository module with PostgreSQL extensions
+- ✅ Fixed application startup to skip migrations in test environment
+- ✅ Updated test scripts to use PostgreSQL commands
+
+**Data Verification:**
+- ✅ Seeded data: 81 kanji, 167 meanings, 211 pronunciations, 162 examples
+- ✅ All relationships and constraints working properly
+- ✅ Phoenix server running successfully on PostgreSQL
+
+**Benefits of Migration:**
+- 🚀 Better performance for complex queries and joins
+- 🔧 Support for advanced PostgreSQL features (JSONB, full-text search, etc.)
+- 📈 Better scalability for production environments
+- 🛡️ More robust transaction handling and concurrency
+- 🔒 Enhanced data integrity with proper foreign key constraints
+
 ## [Latest] - 2025-06-08
 
 ### ✅ DEPLOYMENT SUCCESS - Production Deployment to Fly.io

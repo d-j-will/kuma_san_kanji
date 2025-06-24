@@ -1,7 +1,7 @@
 #!/usr/bin/env elixir
 
 # Test script to verify the fixed reset_user_progress function
-Mix.install([:ash, :ash_sqlite])
+Mix.install([:ash, :ash_postgres])
 Application.ensure_all_started(:kuma_san_kanji)
 
 alias KumaSanKanji.SRS.Logic

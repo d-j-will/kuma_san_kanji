@@ -2,10 +2,10 @@ defmodule ResetAndSeed do
   def run do
     # Reset the database
     IO.puts("Starting database reset...")
-    Mix.Task.run("ash_sqlite.drop")
-    Mix.Task.run("ash_sqlite.generate")
-    Mix.Task.run("ash_sqlite.create")
-    Mix.Task.run("ash_sqlite.migrate")
+    Mix.Task.run("ash_postgres.drop")
+    Mix.Task.run("ash_postgres.generate")
+    Mix.Task.run("ash_postgres.create")
+    Mix.Task.run("ash_postgres.migrate")
     IO.puts("Database reset complete!")
 
     # Insert seed data

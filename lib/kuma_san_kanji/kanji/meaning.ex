@@ -1,7 +1,7 @@
 defmodule KumaSanKanji.Kanji.Meaning do
   use Ash.Resource,
     domain: KumaSanKanji.Domain,
-    data_layer: AshSqlite.DataLayer
+    data_layer: AshPostgres.DataLayer
 
   attributes do
     uuid_primary_key(:id)
@@ -43,7 +43,7 @@ defmodule KumaSanKanji.Kanji.Meaning do
     define(:create, action: :create)
   end
 
-  sqlite do
+  postgres do
     table("kanji_meanings")
     repo(KumaSanKanji.Repo)
   end

@@ -8,7 +8,7 @@ defmodule KumaSanKanji.Content.KanjiUsageExample do
 
   use Ash.Resource,
     domain: KumaSanKanji.Content.Domain,
-    data_layer: AshSqlite.DataLayer
+    data_layer: AshPostgres.DataLayer
 
   # Ensure Ash.Query is required
   require Ash.Query
@@ -44,7 +44,7 @@ defmodule KumaSanKanji.Content.KanjiUsageExample do
     end
   end
 
-  sqlite do
+  postgres do
     table("kanji_usage_examples")
     repo(KumaSanKanji.Repo)
   end
