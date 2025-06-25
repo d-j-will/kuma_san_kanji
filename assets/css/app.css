@@ -83,13 +83,22 @@
       0 2px 8px oklch(0% 0 0 / 0.08),
       inset 0 0 0 1px oklch(100% 0 0 / 0.3);
   }
-  
-  .btn-wabi:hover {
+    .btn-wabi:hover:not(:disabled) {
     transform: scale(1) rotate(0.3deg);
     background-color: oklch(88% 0.018 75);
     box-shadow: 
       0 4px 16px oklch(0% 0 0 / 0.12),
       inset 0 0 0 1px oklch(100% 0 0 / 0.4);
+  }
+  
+  .btn-wabi:focus {
+    @apply ring-2 ring-wabi-hok_blue ring-offset-2;
+  }
+  
+  .btn-wabi:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: scale(0.98) rotate(0.3deg); /* Keep same transform when disabled */
   }
   
   .btn-wabi-accent {
@@ -98,11 +107,38 @@
     color: white;
     transform: scale(0.98) rotate(-0.2deg);
   }
-  
-  .btn-wabi-accent:hover {
+    .btn-wabi-accent:hover:not(:disabled) {
     transform: scale(1) rotate(-0.2deg);
     background: linear-gradient(135deg, oklch(45% 0.06 118) 0%, oklch(42% 0.07 115) 100%);
-  }  /* Custom form styles with natural appearance and improved contrast */
+  }
+  
+  .btn-wabi-accent:focus {
+    @apply ring-2 ring-wabi-rust ring-offset-2;
+  }
+  
+  .btn-wabi-accent:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: scale(0.98) rotate(-0.2deg); /* Keep same transform when disabled */
+  }
+  
+  /* Additional button variants for better UX */
+  .btn-wabi-danger {
+    @apply btn-wabi;
+    background: linear-gradient(135deg, oklch(55% 0.15 15) 0%, oklch(52% 0.18 12) 100%);
+    color: white;
+    transform: scale(0.98) rotate(0.1deg);
+  }
+    .btn-wabi-danger:hover:not(:disabled) {
+    transform: scale(1) rotate(0.1deg);
+    background: linear-gradient(135deg, oklch(52% 0.18 12) 0%, oklch(48% 0.20 10) 100%);
+  }
+  
+  .btn-wabi-danger:focus {
+    @apply ring-2 ring-red-500 ring-offset-2;
+  }
+
+  /* Custom form styles with natural appearance and improved contrast */
   .form-input-wabi {
     @apply bg-wabi-paper border-wabi-border rounded-lg px-4 py-3 font-wabi text-base;
     @apply focus:ring-2 focus:ring-wabi-hok_blue focus:border-wabi-hok_blue;

@@ -6,16 +6,15 @@
 
     <p class="mt-3 text-lg wabi-text">
       Learn and discover Japanese kanji characters with Kuma-san! Click the button below to see a new kanji.
-    </p>
-
-    <div class="mt-6 mb-8">
-      <button
+    </p>    <div class="mt-6 mb-8">
+      <.button
         phx-click="new_kanji"
-        class="nav-wabi rounded-md px-3.5 py-2.5 text-sm font-wabi font-medium"
+        variant="secondary"
+        size="md"
       >
         Show New Kanji
-      </button>
-    </div>    <div
+      </.button>
+    </div><div
       :if={@kanji}
       class="wabi-paper wabi-texture overflow-hidden border border-wabi-border"
     >

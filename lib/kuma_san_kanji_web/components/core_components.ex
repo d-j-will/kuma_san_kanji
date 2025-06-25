@@ -215,14 +215,18 @@ defmodule KumaSanKanjiWeb.CoreComponents do
   end
 
   @doc """
-  Renders a button.
+  Renders a wabi-sabi styled button.
 
   ## Examples
 
       <.button>Send!</.button>
-      <.button phx-click="go" class="ml-2">Send!</.button>
+      <.button variant="primary" phx-click="go">Send!</.button>
+      <.button variant="secondary" size="sm">Cancel</.button>
+      <.button variant="accent" size="lg">Important Action</.button>
   """
   attr :type, :string, default: nil
+  attr :variant, :string, default: "primary", values: ~w(primary secondary accent danger)
+  attr :size, :string, default: "md", values: ~w(sm md lg)
   attr :class, :string, default: nil
   attr :rest, :global, include: ~w(disabled form name value)
 
@@ -233,8 +237,7 @@ defmodule KumaSanKanjiWeb.CoreComponents do
     <button
       type={@type}
       class={[
-        "phx-submit-loading:opacity-75 rounded-lg bg-zinc-900 hover:bg-zinc-700 py-2 px-3",
-        "text-sm font-semibold leading-6 text-white active:text-white/80",
+        button_classes(@variant, @size),
         @class
       ]}
       {@rest}
@@ -242,6 +245,26 @@ defmodule KumaSanKanjiWeb.CoreComponents do
       {render_slot(@inner_block)}
     </button>
     """
+  end
+
+  # Private function to generate button classes based on variant and size
+  defp button_classes(variant, size) do
+    base_classes = "phx-submit-loading:opacity-75 transition-all duration-300 font-wabi font-medium rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
+
+    size_classes = case size do
+      "sm" -> "px-4 py-2 text-sm"
+      "md" -> "px-6 py-3 text-base"
+      "lg" -> "px-8 py-4 text-lg"
+    end
+
+    variant_classes = case variant do
+      "primary" -> "btn-wabi-accent bg-wabi-hok_blue text-wabi-cream hover:bg-wabi-hok_blue_dark focus:ring-wabi-hok_blue border border-wabi-border"
+      "secondary" -> "btn-wabi bg-wabi-stone text-wabi-charcoal hover:bg-wabi-stone/80 focus:ring-wabi-stone border border-wabi-border"
+      "accent" -> "btn-wabi-accent bg-wabi-rust text-wabi-cream hover:bg-wabi-rust/80 focus:ring-wabi-rust border border-wabi-border"
+      "danger" -> "btn-wabi bg-red-500 text-white hover:bg-red-600 focus:ring-red-500 border border-red-400"
+    end
+
+    [base_classes, size_classes, variant_classes]
   end
 
   @doc """

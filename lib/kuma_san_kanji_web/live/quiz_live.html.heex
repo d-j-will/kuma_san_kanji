@@ -45,7 +45,7 @@
           <button
             type="button"
             phx-click="toggle_keyboard_shortcuts"
-            class="p-2 text-wabi-charcoal/60 hover:text-wabi-rust hover:bg-wabi-cream/20 rounded-lg transition-colors font-wabi"
+            class="btn-wabi p-2 text-wabi-charcoal/60 hover:text-wabi-rust hover:bg-wabi-cream/20 rounded-lg transition-colors font-wabi"
             aria-label="Toggle keyboard shortcuts help"
             aria-expanded={@keyboard_shortcuts_visible}
           >
@@ -140,14 +140,15 @@
             </p>
             
             <div class="flex justify-center">
-              <button
+              <.button
                 type="button"
                 phx-click="restart_quiz"
-                class="px-6 py-3 bg-wabi-hok_blue text-wabi-cream font-wabi rounded-lg hover:bg-wabi-hok_blue_dark transition-colors focus:outline-none focus:ring-2 focus:ring-wabi-hok_blue focus:ring-offset-2"
+                variant="primary"
+                size="md"
                 aria-label="Check for more reviews"
               >
                 Check Again
-              </button>
+              </.button>
             </div>
           </div>
         </div>
@@ -278,16 +279,17 @@
                   {@feedback_message}
                 </p>
                 
-                <button
+                <.button
                   type="button"
                   phx-click="next_kanji"
-                  class="px-8 py-3 bg-wabi-hok_blue text-wabi-cream font-wabi rounded-lg hover:bg-wabi-hok_blue_dark transition-colors focus:outline-none focus:ring-2 focus:ring-wabi-hok_blue focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                  variant="primary"
+                  size="lg"
                   aria-label="Continue to next kanji"
                   disabled={not @show_feedback}
                   autofocus
                 >
                   Next
-                </button>
+                </.button>
               </div>
             <% else %>
               <!-- Answer input form -->
@@ -328,23 +330,25 @@
                 </div>
                 
                 <div class="flex justify-center space-x-4">
-                  <button
+                  <.button
                     type="submit"
-                    class="px-8 py-3 bg-wabi-hok_blue text-wabi-cream font-wabi rounded-lg hover:bg-wabi-hok_blue_dark border border-wabi-border focus:outline-none focus:ring-2 focus:ring-wabi-hok_blue focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                    variant="primary"
+                    size="lg"
                     disabled={String.trim(@user_answer) == ""}
                     aria-label="Submit your answer"
                   >
                     Submit Answer
-                  </button>
+                  </.button>
                   
-                  <button
+                  <.button
                     type="button"
                     phx-click="skip_kanji"
-                    class="px-6 py-3 bg-wabi-stone text-wabi-charcoal font-wabi rounded-lg hover:bg-wabi-stone/80 border border-wabi-border focus:outline-none focus:ring-2 focus:ring-wabi-stone focus:ring-offset-2"
+                    variant="secondary"
+                    size="md"
                     aria-label="Skip this kanji"
                   >
                     Skip
-                  </button>
+                  </.button>
                 </div>
               </form>
             <% end %>
@@ -371,13 +375,15 @@
               <p class="text-red-700 text-xs">These controls are not visible in production</p>
             </div>
             
-            <button
+            <.button
               phx-click="reset_progress"
-              class="px-6 py-4 rounded-md bg-gradient-to-br from-red-500 via-red-600 to-red-700 text-white font-bold text-xl hover:from-red-600 hover:to-red-800 shadow-md transform hover:scale-105 transition-all focus:outline-none focus:ring-4 focus:ring-red-300 animate-pulse"
+              variant="danger"
+              size="lg"
               type="button"
+              class="animate-pulse"
             >
               🔄 Reset & Initialize Quiz Data
-            </button>
+            </.button>
             
             <div class="mt-4 p-3 bg-wabi-cream/50 rounded-lg border border-wabi-border">
               <p class="font-mono text-sm text-wabi-charcoal">This will:</p>
