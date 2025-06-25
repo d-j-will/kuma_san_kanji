@@ -401,7 +401,7 @@ defmodule KumaSanKanjiWeb.CoreComponents do
 
   def label(assigns) do
     ~H"""
-    <label for={@for} class="block text-sm font-semibold leading-6 text-zinc-800">
+    <label for={@for} class="block text-base font-medium leading-6 wabi-text">
       {render_slot(@inner_block)}
     </label>
     """
@@ -414,7 +414,7 @@ defmodule KumaSanKanjiWeb.CoreComponents do
 
   def error(assigns) do
     ~H"""
-    <p class="mt-3 flex gap-3 text-sm leading-6 text-rose-600">
+    <p class="mt-3 flex gap-3 text-base leading-6 text-wabi-rust">
       <.icon name="hero-exclamation-circle-mini" class="mt-0.5 h-5 w-5 flex-none" /> {render_slot(
         @inner_block
       )}

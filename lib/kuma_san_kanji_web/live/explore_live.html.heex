@@ -1,17 +1,15 @@
 <div class="px-4 py-10 sm:px-6 sm:py-20 lg:px-8 xl:px-20 xl:py-24">
   <div class="mx-auto max-w-2xl">
-    <h1 class="text-3xl font-display tracking-tight text-accent-blue sm:text-4xl">
-      Explore Kanji <span class="text-sakura-dark">漢字</span>
-    </h1>
-
-    <p class="mt-3 text-lg font-katakana text-gray-700">
+    <h1 class="text-3xl brush-text tracking-tight sm:text-4xl mb-2">
+      Explore Kanji <span class="text-wabi-moss">漢字</span>
+    </h1>    <p class="mt-3 text-xl wabi-text">
       Learn and discover Japanese kanji characters with Kuma-san! Click the button below to see a new kanji.
     </p>
 
     <div class="mt-6 mb-8">
       <button
         phx-click="new_kanji"
-        class="btn-accent rounded-md px-3.5 py-2.5 text-sm font-katakana font-medium"
+        class="btn-wabi-accent text-base"
       >
         Show New Kanji
       </button>
@@ -19,47 +17,44 @@
 
     <div
       :if={@kanji}
-      class="bg-white shadow-lg rounded-lg overflow-hidden border border-accent-purple"
+      class="card-wabi border border-wabi-stone overflow-hidden"
     >
-      <div class="p-6 text-center border-b border-sakura relative overflow-hidden">
-        <!-- Gradient background -->
-        <div class="absolute inset-0 bg-gradient-to-br from-pink-100 via-purple-50 to-blue-100 opacity-70"></div>
-        <div class="absolute inset-0 bg-gradient-to-tl from-sakura-light/40 via-transparent to-accent-blue/20"></div>
+      <div class="p-6 text-center border-b border-wabi-paper relative overflow-hidden wabi-texture">
+        <!-- Natural gradient background -->
+        <div class="absolute inset-0 bg-gradient-to-br from-wabi-cream via-wabi-paper to-wabi-ecru opacity-70"></div>
+        <div class="absolute inset-0 bg-gradient-to-tl from-wabi-stone/20 via-transparent to-wabi-moss/10"></div>
         
-        <!-- Kanji character with enhanced styling -->
+        <!-- Kanji character with brush-like styling -->
         <div class="relative z-10">
-          <div class="inline-flex items-center justify-center w-32 h-32 bg-gradient-to-br from-white/80 to-sakura-light/60 rounded-2xl border-2 border-sakura shadow-lg backdrop-blur-sm">
-            <span class="kanji-display text-8xl font-bold tracking-tight text-center leading-none text-sakura-dark select-none drop-shadow-sm">
+          <div class="kanji-container w-32 h-32">
+            <span class="kanji-display">
               {@kanji.character}
             </span>
           </div>
         </div>
       </div>
 
-      <div class="p-6 bg-white text-gray-700">
-        <div class="grid grid-cols-2 gap-4 mb-6">
+      <div class="p-6 bg-wabi-paper wabi-text">        <div class="grid grid-cols-2 gap-4 mb-6">
           <div>
-            <h3 class="text-sm font-semibold text-accent-blue font-display">Grade</h3>
+            <h3 class="section-header-wabi text-base">Grade</h3>
 
-            <p class="mt-1 text-lg font-katakana">{@kanji.grade || "N/A"}</p>
+            <p class="mt-1 text-xl wabi-accent-text font-medium">{@kanji.grade || "N/A"}</p>
           </div>
 
           <div>
-            <h3 class="text-sm font-semibold text-accent-blue font-display">Stroke Count</h3>
+            <h3 class="section-header-wabi text-base">Stroke Count</h3>
 
-            <p class="mt-1 text-lg font-katakana">{@kanji.stroke_count || "N/A"}</p>
-          </div>
+            <p class="mt-1 text-xl wabi-accent-text font-medium">{@kanji.stroke_count || "N/A"}</p>
+          </div>          <div>
+            <h3 class="section-header-wabi text-sm">JLPT Level</h3>
 
-          <div>
-            <h3 class="text-sm font-semibold text-accent-blue font-display">JLPT Level</h3>
-
-            <p class="mt-1 text-lg font-katakana">N{@kanji.jlpt_level || "N/A"}</p>
+            <p class="mt-1 text-xl wabi-accent-text font-medium">N{@kanji.jlpt_level || "N/A"}</p>
           </div>
         </div>
 
 <!-- Thematic Groups Section -->
         <div :if={@thematic_info.groups != []}>
-          <h3 class="text-lg font-semibold text-accent-blue font-display mb-2">
+          <h3 class="section-header-wabi">
             Thematic Groups
           </h3>
 
@@ -69,11 +64,10 @@
               join_entry =
                 Enum.find(@thematic_info.joins, fn j -> j.thematic_group_id == group.id end)
 
-              subgroup = if join_entry, do: join_entry.subgroup %>
-              <span class="inline-flex items-center rounded-md bg-accent-blue/10 border border-accent-blue px-3 py-1">
-                <span class="font-medium text-accent-blue">{group.name}</span>
+              subgroup = if join_entry, do: join_entry.subgroup %>              <span class="badge-wabi">
+                <span class="font-medium text-wabi-charcoal text-base">{group.name}</span>
                 <%= if subgroup do %>
-                  <span class="ml-1 text-xs font-katakana text-gray-600">({subgroup})</span>
+                  <span class="ml-1 text-sm wabi-accent-text">({subgroup})</span>
                 <% end %>
               </span>
             <% end %>
@@ -82,19 +76,17 @@
 
 <!-- Educational Context Section -->
         <div :if={@thematic_info.edu_context}>
-          <h3 class="text-lg font-semibold text-accent-green font-display mb-2">
+          <h3 class="section-header-wabi text-wabi-moss">
             Educational Context
-          </h3>
-
-          <div class="mb-6 bg-gray-50 rounded-md p-4 border border-accent-green/30">
-            <div class="flex justify-between">
-              <span class="font-medium">Grade {assigns.thematic_info.edu_context.grade}</span>
-              <span class="text-gray-600 font-katakana">
+          </h3>          <div class="mb-6 card-wabi bg-wabi-cream-dark border border-wabi-moss/30">
+            <div class="flex justify-between p-4">
+              <span class="font-medium wabi-text text-base">Grade {assigns.thematic_info.edu_context.grade}</span>
+              <span class="wabi-accent-text text-base">
                 {assigns.thematic_info.edu_context.age_range}
               </span>
             </div>
 
-            <p class="text-gray-600 mt-2 text-sm">
+            <p class="wabi-accent-text mt-2 text-base px-4 pb-4">
               {assigns.thematic_info.edu_context.description}
             </p>
           </div>
@@ -102,23 +94,21 @@
 
 <!-- Learning Metadata Section -->
         <div :if={@learning_meta != []}>
-          <h3 class="text-lg font-semibold text-accent-yellow font-display mb-2">
+          <h3 class="section-header-wabi text-wabi-rust">
             Learning Tips
-          </h3>
-
-          <div class="mb-6 bg-gray-50 rounded-md p-4 border border-accent-yellow/30">
+          </h3>          <div class="mb-6 card-wabi bg-wabi-cream-dark border border-wabi-rust/30">
             <%= for meta <- @learning_meta do %>
-              <div class="mb-3 last:mb-0">
-                <div class="font-medium">{meta.mnemonic_hint}</div>
+              <div class="mb-3 last:mb-0 p-4">
+                <div class="font-medium wabi-text text-base">{meta.mnemonic_hint}</div>
 
                 <%= if meta.stroke_order_tips do %>
-                  <p class="text-sm text-gray-600 mt-1">
+                  <p class="text-base wabi-accent-text mt-1">
                     <strong>Stroke Tips:</strong> {meta.stroke_order_tips}
                   </p>
                 <% end %>
 
                 <%= if meta.visual_evolution do %>
-                  <p class="text-sm text-gray-600 mt-1">
+                  <p class="text-base wabi-accent-text mt-1">
                     <strong>Origin:</strong> {meta.visual_evolution}
                   </p>
                 <% end %>
@@ -127,9 +117,7 @@
           </div>
         </div>
 
-        <h3 class="text-lg font-semibold text-accent-green font-display mb-2">Meanings</h3>
-
-        <ul class="mb-6 list-disc pl-6">
+        <h3 class="section-header-wabi text-wabi-moss">Meanings</h3>        <ul class="mb-6 list-disc pl-6 wabi-text text-base space-y-1">
           <%= for meaning <- @kanji.meanings do %>
             <li class={if meaning.is_primary, do: "font-bold", else: ""}>
               {meaning.value}
@@ -137,29 +125,27 @@
           <% end %>
         </ul>
 
-        <h3 class="text-lg font-semibold text-accent-pink font-display mb-2">Pronunciations</h3>
+        <h3 class="section-header-wabi text-wabi-indigo">Pronunciations</h3>
 
         <div class="mb-6">
-          <div class="overflow-hidden bg-gray-50 rounded-md border border-sakura">
-            <ul role="list" class="divide-y divide-sakura/30">
-              <%= for pronunciation <- @kanji.pronunciations do %>
-                <li class="p-4">
+          <div class="card-wabi overflow-hidden border border-wabi-stone">
+            <ul role="list" class="divide-y divide-wabi-stone/30">
+              <%= for pronunciation <- @kanji.pronunciations do %>                <li class="p-4">
                   <div class="flex justify-between">
-                    <span class="font-medium font-katakana">
+                    <span class="font-medium wabi-text text-base">
                       {pronunciation.value}
-                      <span class="ml-1 text-sm text-gray-600">({pronunciation.romaji})</span>
-                    </span>
+                      <span class="ml-1 text-base wabi-accent-text">({pronunciation.romaji})</span>                    </span>
 
                     <span class={
                       case pronunciation.type do
                         "on" ->
-                          "rounded-full bg-accent-blue/10 border border-accent-blue px-2.5 py-0.5 text-xs font-medium text-accent-blue"
+                          "badge-wabi bg-wabi-indigo/10 border-wabi-indigo text-wabi-indigo"
 
                         "kun" ->
-                          "rounded-full bg-accent-green/10 border border-accent-green px-2.5 py-0.5 text-xs font-medium text-accent-green"
+                          "badge-wabi bg-wabi-moss/10 border-wabi-moss text-wabi-moss"
 
                         _ ->
-                          "rounded-full bg-accent-pink/10 border border-accent-pink px-2.5 py-0.5 text-xs font-medium text-accent-pink"
+                          "badge-wabi bg-wabi-rust/10 border-wabi-rust text-wabi-rust"
                       end
                     }>
                       {pronunciation.type}
@@ -173,34 +159,30 @@
 
 <!-- Usage Examples Section -->
         <div :if={@usage_examples != []}>
-          <h3 class="text-lg font-semibold text-accent-orange font-display mb-2">Common Words</h3>
+          <h3 class="section-header-wabi text-wabi-clay">Common Words</h3>
 
           <div class="mb-6">
-            <div class="overflow-hidden bg-gray-50 rounded-md border border-accent-orange/30">
-              <ul role="list" class="divide-y divide-accent-orange/30">
+            <div class="card-wabi overflow-hidden border border-wabi-clay/30">
+              <ul role="list" class="divide-y divide-wabi-clay/30">
                 <%= for example <- @usage_examples do %>
-                  <li class="p-4">
-                    <div class="flex justify-between">
-                      <span class="font-medium jp-text text-gray-800">
+                  <li class="p-4">                    <div class="flex justify-between">
+                      <span class="font-medium jp-text wabi-text text-base">
                         {example.compound}
-                        <span class="ml-1 text-sm font-katakana text-gray-600">
+                        <span class="ml-1 text-base wabi-accent-text">
                           {example.reading} ({example.romaji})
                         </span>
                       </span>
 
-                      <span class="rounded-full bg-accent-orange/10 border border-accent-orange px-2.5 py-0.5 text-xs font-medium text-accent-orange">
+                      <span class="badge-wabi bg-wabi-clay/10 border-wabi-clay text-wabi-clay">
                         Level {example.common_level}
                       </span>
-                    </div>
-
-                    <p class="text-gray-700 mt-1">{example.meaning}</p>
+                    </div>                    <p class="wabi-text mt-1 text-base">{example.meaning}</p>
 
                     <%= if example.example_sentence do %>
-                      <div class="mt-2 text-sm bg-white p-2 rounded border border-gray-200">
-                        <p class="jp-text">{example.example_sentence}</p>
+                      <div class="mt-2 text-base card-wabi bg-wabi-paper p-2 border border-wabi-stone">
+                        <p class="jp-text wabi-text">{example.example_sentence}</p>
 
-                        <p class="text-gray-600 mt-1">{example.translation}</p>
-                      </div>
+                        <p class="wabi-accent-text mt-1">{example.translation}</p>                      </div>
                     <% end %>
                   </li>
                 <% end %>
@@ -209,17 +191,16 @@
           </div>
         </div>
 
-        <h3 class="text-lg font-semibold text-accent-purple font-display mb-2">
+        <h3 class="section-header-wabi text-wabi-indigo">
           Example Sentences
         </h3>
 
-        <div class="overflow-hidden bg-gray-50 sm:rounded-md border border-accent-purple">
-          <ul role="list" class="divide-y divide-accent-purple/30">
+        <div class="card-wabi overflow-hidden border border-wabi-indigo">          <ul role="list" class="divide-y divide-wabi-indigo/30">
             <%= for sentence <- @kanji.example_sentences do %>
               <li class="p-4">
-                <p class="font-medium jp-text text-gray-800">{sentence.japanese}</p>
+                <p class="font-medium jp-text wabi-text text-base">{sentence.japanese}</p>
 
-                <p class="text-gray-600 mt-1 font-katakana">{sentence.translation}</p>
+                <p class="wabi-accent-text mt-1 text-base">{sentence.translation}</p>
               </li>
             <% end %>
           </ul>
@@ -229,10 +210,9 @@
 
     <div
       :if={!@kanji}
-      class="mt-8 bg-white shadow-lg rounded-lg overflow-hidden border border-sakura p-6"
-    >
-      <div class="text-center">
-        <p class="text-lg text-gray-700 font-katakana">
+      class="mt-8 card-wabi border border-wabi-stone p-6"
+    >      <div class="text-center">
+        <p class="text-xl wabi-text">
           No kanji data available. Please add kanji to the database.
         </p>
       </div>

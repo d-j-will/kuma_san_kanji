@@ -1,39 +1,39 @@
-<div class="min-h-screen bg-gradient-to-br from-white to-sakura-light">
+<div class="min-h-screen bg-gradient-to-br from-wabi-cream to-wabi-ecru">
   <div class="px-4 py-8">
     <!-- Skip to content link for keyboard navigation -->
     <a
       href="#main-content"
-      class="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 bg-accent-blue text-white px-4 py-2 rounded-md z-50 font-katakana"
+      class="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 bg-wabi-moss text-white px-4 py-2 rounded-md z-50 wabi-text text-base"
     >
       Skip to main content
     </a>
     
 <!-- Header with user stats and navigation -->
-    <header class="max-w-4xl mx-auto mb-8" role="banner">        <div class="flex justify-between items-center bg-white/80 backdrop-blur-sm rounded-xl px-6 py-4 shadow-sm border border-sakura-light">
+    <header class="max-w-4xl mx-auto mb-8" role="banner">        <div class="card-wabi border border-wabi-stone">
         <div class="flex items-center space-x-6">
-          <h1 class="text-2xl font-display font-bold text-accent-blue">
+          <h1 class="text-2xl brush-text">
             Kanji Review Quiz
           </h1>
           
 <!-- User statistics -->
           <%= if assigns[:user_stats] do %>
             <div
-              class="flex items-center space-x-4 text-sm font-katakana text-gray-600"
+              class="flex items-center space-x-4 text-base wabi-accent-text"
               role="group"
               aria-label="Quiz statistics"
             >
               <div class="flex items-center space-x-1">
-                <span class="w-2 h-2 bg-green-500 rounded-full" aria-hidden="true">
+                <span class="w-2 h-2 bg-wabi-moss rounded-full" aria-hidden="true">
                 </span> <span>Total: {@user_stats.total_kanji}</span>
               </div>
               
               <div class="flex items-center space-x-1">
-                <span class="w-2 h-2 bg-orange-500 rounded-full" aria-hidden="true">
+                <span class="w-2 h-2 bg-wabi-rust rounded-full" aria-hidden="true">
                 </span> <span>Due: {@user_stats.due_today}</span>
               </div>
               
               <div class="flex items-center space-x-1">
-                <span class="w-2 h-2 bg-blue-500 rounded-full" aria-hidden="true">
+                <span class="w-2 h-2 bg-wabi-indigo rounded-full" aria-hidden="true">
                 </span> <span>Accuracy: {Float.round(@user_stats.accuracy * 100, 1)}%</span>
               </div>
             </div>
@@ -45,7 +45,7 @@
           <button
             type="button"
             phx-click="toggle_keyboard_shortcuts"
-            class="p-2 text-gray-500 hover:text-sakura-dark hover:bg-sakura-light/20 rounded-lg transition-colors font-katakana"
+            class="p-2 wabi-accent-text hover:text-wabi-moss hover:bg-wabi-cream-dark rounded-lg transition-colors text-base"
             aria-label="Toggle keyboard shortcuts help"
             aria-expanded={@keyboard_shortcuts_visible}
           >
@@ -70,30 +70,30 @@
 <!-- Keyboard shortcuts help panel -->
       <%= if @keyboard_shortcuts_visible do %>
         <div
-          class="mt-4 bg-white/90 backdrop-blur-sm rounded-xl p-6 shadow-sm border border-sakura-light"
+          class="mt-4 card-wabi border border-wabi-stone"
           role="region"
           aria-label="Keyboard shortcuts"
         >
-          <h2 class="text-lg font-display font-semibold text-sakura-dark mb-4">Keyboard Shortcuts</h2>
+          <h2 class="text-xl section-header-wabi text-wabi-moss mb-4">Keyboard Shortcuts</h2>
           
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm font-katakana">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-base wabi-text">
             <div class="flex justify-between">
-              <span class="text-gray-600">Submit answer</span>
-              <kbd class="px-2 py-1 bg-sakura-light/20 text-sakura-dark rounded border">
+              <span class="wabi-accent-text">Submit answer</span>
+              <kbd class="px-2 py-1 bg-wabi-cream border border-wabi-stone text-wabi-charcoal rounded">
                 Enter
               </kbd>
             </div>
             
             <div class="flex justify-between">
-              <span class="text-gray-600">Skip kanji</span>
-              <kbd class="px-2 py-1 bg-sakura-light/20 text-sakura-dark rounded border">
+              <span class="wabi-accent-text">Skip kanji</span>
+              <kbd class="px-2 py-1 bg-wabi-cream border border-wabi-stone text-wabi-charcoal rounded">
                 Esc
               </kbd>
             </div>
             
             <div class="flex justify-between">
-              <span class="text-gray-600">Toggle help</span>
-              <kbd class="px-2 py-1 bg-sakura-light/20 text-sakura-dark rounded border">
+              <span class="wabi-accent-text">Toggle help</span>
+              <kbd class="px-2 py-1 bg-wabi-cream border border-wabi-stone text-wabi-charcoal rounded">
                 ?
               </kbd>
             </div>

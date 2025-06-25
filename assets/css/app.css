@@ -2,45 +2,161 @@
 @import "tailwindcss/components";
 @import "tailwindcss/utilities";
 
-/* Import Google Fonts for Katakana-style text and Japanese text */
-@import url('https://fonts.googleapis.com/css2?family=M+PLUS+1p:wght@400;500;700;900&family=Stick&family=Yuji+Syuku&family=Zen+Maru+Gothic:wght@400;500;700;900&display=swap');
+/* Import Google Fonts for Japanese text and Wabi-Sabi aesthetic - No serifs */
+@import url('https://fonts.googleapis.com/css2?family=M+PLUS+1p:wght@400;500;700;900&family=Stick&family=Yuji+Syuku&family=Zen+Maru+Gothic:wght@400;500;700;900&family=Inter:wght@400;500;600;700&display=swap');
 
 /* This file is for your main application CSS */
 
-/* Custom styles for Kuma-san Kanji */
-@layer components {
-  /* Kanji character display */
-  .kanji-display {
-    @apply text-8xl font-bold tracking-tight text-center p-8 leading-none text-sakura-dark;
+/* Custom styles for Wabi-Sabi Kuma-san Kanji */
+@layer components {  /* Wabi-Sabi foundation styles */
+  .wabi-container {
+    @apply bg-gradient-to-br from-wabi-cream to-wabi-ecru min-h-screen font-wabi text-base;    background-image: 
+      radial-gradient(circle at 20% 50%, oklch(45% 0.08 35 / 0.03) 0%, transparent 50%),
+      radial-gradient(circle at 80% 20%, oklch(48% 0.05 120 / 0.03) 0%, transparent 50%),
+      radial-gradient(circle at 40% 80%, oklch(38% 0.025 250 / 0.02) 0%, transparent 50%);
   }
-
-  /* Custom form styles */
+  
+  .wabi-paper {
+    @apply bg-wabi-paper shadow-lg rounded-lg;    box-shadow: 
+      0 4px 12px oklch(0% 0 0 / 0.05),
+      0 1px 3px oklch(0% 0 0 / 0.1),
+      inset 0 0 0 1px oklch(100% 0 0 / 0.4);
+  }
+  
+  .wabi-texture {    background-image: 
+      radial-gradient(circle at 100% 50%, transparent 20%, oklch(100% 0 0 / 0.3) 21%, oklch(100% 0 0 / 0.3) 34%, transparent 35%, transparent),
+      linear-gradient(0deg, transparent 24%, oklch(100% 0 0 / 0.05) 25%, oklch(100% 0 0 / 0.05) 26%, transparent 27%, transparent 74%, oklch(100% 0 0 / 0.05) 75%, oklch(100% 0 0 / 0.05) 76%, transparent 77%, transparent);
+  }
+    /* Kanji character display with brush-like appearance */
+  .kanji-display {
+    @apply text-8xl font-bold tracking-tight text-center p-8 leading-none text-wabi-charcoal;
+    font-family: "Yuji Syuku", "Zen Maru Gothic", "M PLUS 1p", sans-serif;
+    transform: rotate(-0.5deg);    filter: drop-shadow(1px 1px 2px oklch(0% 0 0 / 0.1));
+    text-shadow: 
+      0 1px 1px oklch(0% 0 0 / 0.05),
+      0 2px 4px oklch(0% 0 0 / 0.02);
+  }
+  
+  .kanji-container {
+    @apply relative inline-flex items-center justify-center;
+    transform: rotate(0.3deg);    background: linear-gradient(135deg, oklch(100% 0 0 / 0.9) 0%, oklch(100% 0 0 / 0.7) 100%);
+    border-radius: 16px;
+    box-shadow: 
+      0 8px 32px oklch(0% 0 0 / 0.1),
+      0 2px 8px oklch(0% 0 0 / 0.05),
+      inset 0 0 0 1px oklch(100% 0 0 / 0.5);
+  }
+  /* Asymmetrical buttons with natural feel */
+  .btn-wabi {
+    @apply px-6 py-3 rounded-lg font-wabi font-medium transition-all duration-300 text-base;
+    background-color: oklch(91% 0.015 78);
+    color: oklch(25% 0.015 250);
+    border: 1px solid oklch(0% 0 0 / 0.1);
+    transform: scale(0.98) rotate(0.3deg);
+    box-shadow: 
+      0 2px 8px oklch(0% 0 0 / 0.08),
+      inset 0 0 0 1px oklch(100% 0 0 / 0.3);
+  }
+  
+  .btn-wabi:hover {
+    transform: scale(1) rotate(0.3deg);
+    background-color: oklch(88% 0.018 75);
+    box-shadow: 
+      0 4px 16px oklch(0% 0 0 / 0.12),
+      inset 0 0 0 1px oklch(100% 0 0 / 0.4);
+  }
+  
+  .btn-wabi-accent {
+    @apply btn-wabi;
+    background: linear-gradient(135deg, oklch(48% 0.05 120) 0%, oklch(45% 0.06 118) 100%);
+    color: white;
+    transform: scale(0.98) rotate(-0.2deg);
+  }
+  
+  .btn-wabi-accent:hover {
+    transform: scale(1) rotate(-0.2deg);
+    background: linear-gradient(135deg, oklch(45% 0.06 118) 0%, oklch(42% 0.07 115) 100%);
+  }  /* Custom form styles with natural appearance */
+  .form-input-wabi {
+    @apply bg-wabi-paper border border-wabi-stone rounded-lg px-4 py-3 font-wabi text-base;
+    @apply focus:ring-2 focus:ring-wabi-moss focus:border-wabi-moss;
+    transform: rotate(-0.1deg);
+    box-shadow: inset 0 1px 3px oklch(0% 0 0 / 0.05);
+  }
+  
+  /* Japanese title text with brush feel */
+  .jp-title-wabi {
+    @apply font-brush text-wabi-charcoal;
+    transform: rotate(-0.3deg);
+    filter: drop-shadow(1px 1px 1px oklch(0% 0 0 / 0.1));
+  }
+  
+  /* Navigation with natural asymmetry */
+  .nav-wabi {
+    @apply bg-wabi-paper border-b border-wabi-stone;
+    box-shadow: 0 2px 8px oklch(0% 0 0 / 0.05);
+  }.nav-item-wabi {
+    @apply px-4 py-2 rounded-md font-wabi font-medium transition-all duration-200 text-base;
+    @apply text-wabi-charcoal hover:bg-wabi-cream-dark hover:text-wabi-moss;
+    transform: rotate(0.1deg);
+  }
+    .nav-item-wabi:hover {
+    transform: rotate(0.1deg) scale(1.02);
+    box-shadow: 0 2px 4px oklch(0% 0 0 / 0.05);
+  }
+  
+  /* Content cards with paper-like appearance */
+  .card-wabi {
+    @apply wabi-paper p-6 wabi-texture;
+    transform: rotate(-0.1deg);
+    border: 1px solid oklch(0% 0 0 / 0.05);
+  }
+  
+  .card-wabi:hover {
+    transform: rotate(-0.1deg) translateY(-2px);
+    box-shadow: 
+      0 8px 24px oklch(0% 0 0 / 0.08),
+      0 2px 6px oklch(0% 0 0 / 0.12),
+      inset 0 0 0 1px oklch(100% 0 0 / 0.5);
+  }
+    /* Section headers with natural styling */
+  .section-header-wabi {
+    @apply text-xl font-bold text-wabi-charcoal font-wabi mb-4;
+    transform: rotate(-0.2deg);
+  }  /* Asymmetrical badges and tags */
+  .badge-wabi {
+    @apply inline-flex items-center px-3 py-1 rounded-full text-base font-medium font-wabi;
+    background: linear-gradient(45deg, oklch(96% 0.015 85) 0%, oklch(95% 0.010 80) 100%);
+    color: oklch(25% 0.015 250);
+    border: 1px solid oklch(0% 0 0 / 0.08);
+    transform: rotate(0.5deg);
+    box-shadow: 0 1px 3px oklch(0% 0 0 / 0.05);
+  }
+  
+  /* Keep existing styles for backward compatibility */
   .form-input-focused {
     @apply focus:ring-2 focus:ring-accent-blue focus:border-accent-blue;
   }
   
-  /* Japanese title text */
   .jp-title {
     @apply font-display text-accent-blue;
   }
   
-  /* Cherry blossom themed buttons */
   .btn-sakura {
     @apply bg-sakura px-4 py-2 rounded-lg font-katakana font-bold text-white shadow-md 
            hover:bg-sakura-dark transition-all duration-300;
   }
   
-  /* Accent themed buttons */
   .btn-accent {
     @apply bg-white px-4 py-2 rounded-lg font-katakana font-bold text-accent-blue border border-accent-blue shadow-md
            hover:bg-gray-50 transition-all duration-300;
   }
 }
 
-/* Additional styling for Japanese text */
+/* Additional styling for Japanese text and Wabi-Sabi elements */
 @layer utilities {
   .jp-text {
-    font-family: "Noto Sans JP", "Hiragino Sans", "Hiragino Kaku Gothic ProN", Meiryo, sans-serif;
+    font-family: "Zen Maru Gothic", "M PLUS 1p", "Hiragino Sans", "Hiragino Kaku Gothic ProN", Meiryo, sans-serif;
   }
   
   .katakana-text {
@@ -49,5 +165,38 @@
   
   .display-text {
     @apply font-display;
+  }
+  
+  /* Wabi-Sabi specific utilities */
+  .wabi-text {
+    @apply font-wabi text-wabi-charcoal text-base;
+  }
+  
+  .wabi-accent-text {
+    @apply font-wabi text-wabi-moss text-base;
+  }
+  
+  .brush-text {
+    @apply font-brush text-wabi-charcoal text-lg;
+    filter: drop-shadow(0.5px 0.5px 1px rgba(0,0,0,0.1));
+  }
+  
+  .natural-shadow {
+    box-shadow: 
+      0 4px 12px rgba(0, 0, 0, 0.05),
+      0 1px 3px rgba(0, 0, 0, 0.1);
+  }
+  
+  .paper-texture {
+    background-image: 
+      radial-gradient(circle at 100% 50%, transparent 20%, rgba(255, 255, 255, 0.3) 21%, rgba(255, 255, 255, 0.3) 34%, transparent 35%);
+  }
+  
+  .subtle-rotate {
+    transform: rotate(-0.2deg);
+  }
+  
+  .gentle-rotate {
+    transform: rotate(0.3deg);
   }
 }
