@@ -29,6 +29,13 @@ module.exports = {
           clay: "oklch(50% 0.06 55)",          // Clay brown
           charcoal: "oklch(25% 0.015 250)",    // Sumi ink black
           
+          // Enhanced Kanji-specific colors for better contrast
+          'kanji-primary': "oklch(18% 0.045 250)",    // Deep sumi ink
+          'kanji-accent': "oklch(35% 0.15 15)",       // Rich cinnabar red
+          'kanji-highlight': "oklch(42% 0.12 45)",    // Vermillion accent
+          'kanji-bg': "oklch(97% 0.008 85)",          // Subtle paper background
+          'kanji-shadow': "oklch(12% 0.025 250)",     // Deep shadow
+          
           // Textured variants
           'cream-dark': "oklch(93% 0.018 80)",
           'stone-light': "oklch(88% 0.010 75)",

@@ -8,43 +8,54 @@
 /* This file is for your main application CSS */
 
 /* Custom styles for Wabi-Sabi Kuma-san Kanji */
-@layer components {  /* Wabi-Sabi foundation styles */
+@layer components {
+  /* Wabi-Sabi foundation styles */
   .wabi-container {
-    @apply bg-gradient-to-br from-wabi-cream to-wabi-ecru min-h-screen font-wabi text-base;    background-image: 
+    @apply bg-gradient-to-br from-wabi-cream to-wabi-ecru min-h-screen font-wabi text-base;
+    background-image: 
       radial-gradient(circle at 20% 50%, oklch(45% 0.08 35 / 0.03) 0%, transparent 50%),
       radial-gradient(circle at 80% 20%, oklch(48% 0.05 120 / 0.03) 0%, transparent 50%),
       radial-gradient(circle at 40% 80%, oklch(38% 0.025 250 / 0.02) 0%, transparent 50%);
   }
   
   .wabi-paper {
-    @apply bg-wabi-paper shadow-lg rounded-lg;    box-shadow: 
+    @apply bg-wabi-paper shadow-lg rounded-lg;
+    box-shadow: 
       0 4px 12px oklch(0% 0 0 / 0.05),
       0 1px 3px oklch(0% 0 0 / 0.1),
       inset 0 0 0 1px oklch(100% 0 0 / 0.4);
   }
   
-  .wabi-texture {    background-image: 
+  .wabi-texture {
+    background-image: 
       radial-gradient(circle at 100% 50%, transparent 20%, oklch(100% 0 0 / 0.3) 21%, oklch(100% 0 0 / 0.3) 34%, transparent 35%, transparent),
       linear-gradient(0deg, transparent 24%, oklch(100% 0 0 / 0.05) 25%, oklch(100% 0 0 / 0.05) 26%, transparent 27%, transparent 74%, oklch(100% 0 0 / 0.05) 75%, oklch(100% 0 0 / 0.05) 76%, transparent 77%, transparent);
   }
-    /* Kanji character display with brush-like appearance */
+  
+  /* Enhanced Kanji character display with strong contrast */
   .kanji-display {
-    @apply text-8xl font-bold tracking-tight text-center p-8 leading-none text-wabi-charcoal;
+    @apply text-8xl font-bold tracking-tight text-center p-8 leading-none;
     font-family: "Yuji Syuku", "Zen Maru Gothic", "M PLUS 1p", sans-serif;
-    transform: rotate(-0.5deg);    filter: drop-shadow(1px 1px 2px oklch(0% 0 0 / 0.1));
+    color: oklch(18% 0.045 250);
+    transform: rotate(-0.5deg);
+    filter: drop-shadow(3px 3px 6px oklch(12% 0.025 250 / 0.3));
     text-shadow: 
-      0 1px 1px oklch(0% 0 0 / 0.05),
-      0 2px 4px oklch(0% 0 0 / 0.02);
+      0 2px 4px oklch(12% 0.025 250 / 0.15),
+      0 4px 8px oklch(12% 0.025 250 / 0.08);
   }
   
   .kanji-container {
     @apply relative inline-flex items-center justify-center;
-    transform: rotate(0.3deg);    background: linear-gradient(135deg, oklch(100% 0 0 / 0.9) 0%, oklch(100% 0 0 / 0.7) 100%);
+    transform: rotate(0.3deg);
+    background: linear-gradient(135deg, 
+      oklch(97% 0.008 85) 0%, 
+      oklch(96% 0.012 82) 100%);
     border-radius: 16px;
     box-shadow: 
-      0 8px 32px oklch(0% 0 0 / 0.1),
-      0 2px 8px oklch(0% 0 0 / 0.05),
-      inset 0 0 0 1px oklch(100% 0 0 / 0.5);
+      0 16px 48px oklch(12% 0.025 250 / 0.15),
+      0 6px 16px oklch(12% 0.025 250 / 0.08),
+      inset 0 0 0 1px oklch(100% 0 0 / 0.8),
+      inset 0 1px 0 oklch(100% 0 0 / 0.9);
   }
   /* Asymmetrical buttons with natural feel */
   .btn-wabi {
@@ -181,6 +192,66 @@
     filter: drop-shadow(0.5px 0.5px 1px rgba(0,0,0,0.1));
   }
   
+  /* Enhanced Kanji text utilities for better contrast */
+  .kanji-text {
+    @apply font-brush text-2xl font-bold;
+    color: oklch(18% 0.045 250);
+    filter: drop-shadow(1px 1px 2px oklch(12% 0.025 250 / 0.2));
+    text-shadow: 0 1px 2px oklch(12% 0.025 250 / 0.1);
+  }
+  
+  .kanji-accent {
+    @apply font-brush text-xl font-bold;
+    color: oklch(35% 0.15 15);
+    filter: drop-shadow(1px 1px 2px oklch(12% 0.025 250 / 0.25));
+    text-shadow: 0 1px 3px oklch(12% 0.025 250 / 0.12);
+    transform: rotate(-0.3deg);
+    display: inline-block;
+  }
+  
+  .kanji-highlight {
+    @apply font-brush text-3xl font-bold;
+    color: oklch(42% 0.12 45);
+    background: linear-gradient(135deg, 
+      oklch(97% 0.008 85 / 0.9) 0%, 
+      oklch(96% 0.012 82 / 0.8) 100%);
+    padding: 0.25rem 0.5rem;
+    border-radius: 8px;
+    filter: drop-shadow(2px 2px 4px oklch(12% 0.025 250 / 0.2));
+    text-shadow: 0 1px 3px oklch(12% 0.025 250 / 0.15);
+    box-shadow: 
+      0 4px 12px oklch(12% 0.025 250 / 0.1),
+      inset 0 0 0 1px oklch(100% 0 0 / 0.5);
+    transform: rotate(0.2deg);
+    display: inline-block;
+  }
+  
+  .kanji-primary {
+    @apply font-brush text-4xl font-bold;
+    color: oklch(18% 0.045 250);
+    filter: drop-shadow(2px 2px 4px oklch(12% 0.025 250 / 0.3));
+    text-shadow: 
+      0 2px 4px oklch(12% 0.025 250 / 0.15),
+      0 4px 8px oklch(12% 0.025 250 / 0.08);
+  }
+  
+  /* Kanji color utilities */
+  .text-kanji-primary {
+    color: oklch(18% 0.045 250);
+  }
+  
+  .text-kanji-accent {
+    color: oklch(35% 0.15 15);
+  }
+  
+  .text-kanji-highlight {
+    color: oklch(42% 0.12 45);
+  }
+  
+  .bg-kanji-bg {
+    background-color: oklch(97% 0.008 85);
+  }
+
   .natural-shadow {
     box-shadow: 
       0 4px 12px rgba(0, 0, 0, 0.05),
