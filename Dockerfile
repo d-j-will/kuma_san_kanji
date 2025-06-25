@@ -90,23 +90,6 @@ COPY --from=builder --chown=nobody:root /app/_build/${MIX_ENV}/rel/kuma_san_kanj
 # Copy priv directory for migrations and seeds
 COPY --from=builder --chown=nobody:root /app/priv ./priv
 
-# Create a startup script that handles database setup and seeding
-COPY --chown=nobody:root <<'EOF' /app/entrypoint.sh
-#!/bin/bash
-set -e
-
-echo "Running database migrations..."
-/app/bin/kuma_san_kanji eval "KumaSanKanji.Release.migrate()"
-
-echo "Seeding database..."
-/app/bin/kuma_san_kanji eval "KumaSanKanji.Release.seed()"
-
-echo "Starting server..."
-exec /app/bin/server
-EOF
-
-RUN chmod +x /app/entrypoint.sh
-
 USER nobody
 
 # If using an environment that doesn't automatically reap zombie processes, it is
@@ -114,4 +97,4 @@ USER nobody
 # above and adding an entrypoint. See https://github.com/krallin/tini for details
 # ENTRYPOINT ["/tini", "--"]
 
-CMD ["/app/entrypoint.sh"]
+CMD ["/app/bin/server"]
