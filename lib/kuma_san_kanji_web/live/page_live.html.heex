@@ -6,12 +6,10 @@
 
     <p class="mt-4 text-lg wabi-text">
       Welcome {if @is_authenticated, do: "back", else: ""} to Kuma-san Kanji, your friendly bear guide to learning Japanese Kanji characters!
-    </p>
-
-    <div class="mt-10 flex items-center gap-x-6">
+    </p>    <div class="mt-10 flex items-center gap-x-6">
       <.link
         navigate={~p"/explore"}
-        class="nav-wabi rounded-md px-3.5 py-2.5 text-sm font-wabi font-medium"
+        class="btn-wabi rounded-md px-3.5 py-2.5 text-sm font-wabi font-medium hover:bg-wabi-stone/80 transition-all duration-300"
       >
         Explore Kanji
       </.link>
@@ -24,14 +22,14 @@
       <% else %>
         <.link
           navigate={~p"/signup"}
-          class="nav-wabi rounded-md px-3.5 py-2.5 text-sm font-wabi font-medium"
+          class="btn-wabi-accent rounded-md px-3.5 py-2.5 text-sm font-wabi font-medium hover:bg-wabi-hok_blue_dark transition-all duration-300"
         >
           Sign Up
         </.link>
 
         <.link
           navigate={~p"/login"}
-          class="rounded-md border border-wabi-hok_blue px-3.5 py-2.5 text-sm font-wabi font-medium text-wabi-hok_blue_dark shadow-sm hover:bg-wabi-stone-light"
+          class="btn-wabi rounded-md border border-wabi-hok_blue px-3.5 py-2.5 text-sm font-wabi font-medium text-wabi-hok_blue_dark shadow-sm hover:bg-wabi-stone-light transition-all duration-300"
         >
           Log In
         </.link>

@@ -9,12 +9,13 @@
     </p>    <div class="mt-6 mb-8">
       <.button
         phx-click="new_kanji"
-        variant="secondary"
+        variant="primary"
         size="md"
       >
         Show New Kanji
       </.button>
-    </div><div
+    </div>
+    <div
       :if={@kanji}
       class="wabi-paper wabi-texture overflow-hidden border border-wabi-border"
     >
