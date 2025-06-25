@@ -33,6 +33,7 @@ defmodule KumaSanKanji.MixProject do
   # Type `mix help deps` for examples and options.
   defp deps do
     [
+      {:picosat_elixir, "~> 0.2"},
       {:phoenix, "~> 1.7.21"},
       {:phoenix_html, "~> 4.1"},
       {:phoenix_live_reload, "~> 1.2", only: :dev},
@@ -60,6 +61,7 @@ defmodule KumaSanKanji.MixProject do
       # Ash Framework dependencies
       {:ash, "~> 3.5"},
       {:ash_phoenix, "~> 2.3"},
+      {:ash_authentication, "~> 4.1"},
       {:igniter, "~> 0.6", only: [:dev, :test]},
       {:ash_postgres, "~> 2.4"},
       {:usage_rules, "~> 0.1"},

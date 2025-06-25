@@ -1,7 +1,7 @@
 #!/usr/bin/env elixir
 
 # Debugging script for the SRS.Logic.reset_user_progress function
-# 
+#
 # This script will help us identify why we get an ArgumentError when using
 # the reset progress functionality in the web UI
 

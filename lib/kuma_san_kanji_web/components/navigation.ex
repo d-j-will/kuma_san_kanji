@@ -3,82 +3,77 @@ defmodule KumaSanKanjiWeb.Components.Navigation do
   use Phoenix.VerifiedRoutes, endpoint: KumaSanKanjiWeb.Endpoint, router: KumaSanKanjiWeb.Router
   alias Phoenix.LiveView.JS
 
-  def navbar(assigns) do
-    ~H"""
-    <header class="nav-wabi" id="main-nav" phx-hook="MobileMenu">
+  def navbar(assigns) do    ~H"""
+    <header class="bg-wabi-paper shadow-lg border-b-2 border-wabi-border nav-wabi" id="main-nav" phx-hook="MobileMenu">
       <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div class="flex h-16 items-center justify-between">
           <div class="flex items-center">
             <div class="flex-shrink-0">
-              <.link navigate={~p"/"} class="text-2xl jp-title-wabi">
-                Kuma-san Kanji <span class="text-wabi-hok_blue">漢字</span>
+              <.link navigate={~p"/"} class="text-2xl font-wabi-display text-wabi-hok_blue">
+                Kuma-san Kanji <span class="text-wabi-rust jp-title-wabi">漢字</span>
               </.link>
             </div>
-            
+
             <div class="hidden md:ml-6 md:flex md:space-x-8">
               <.link
                 navigate={~p"/"}
-                class="nav-item-wabi inline-flex items-center border-b-2 border-transparent px-1 pt-1 text-base font-medium hover:border-wabi-hok_blue/50"
+                class="nav-item-wabi inline-flex items-center border-b-2 border-transparent px-1 pt-1 text-sm font-wabi font-medium text-wabi-charcoal hover:border-wabi-rust hover:text-wabi-rust"
               >
                 Home
               </.link>
-              
+
               <.link
                 navigate={~p"/explore"}
-                class="nav-item-wabi inline-flex items-center border-b-2 border-transparent px-1 pt-1 text-base font-medium hover:border-wabi-hok_blue/50"
+                class="nav-item-wabi inline-flex items-center border-b-2 border-transparent px-1 pt-1 text-sm font-wabi font-medium text-wabi-charcoal hover:border-wabi-rust hover:text-wabi-rust"
               >
                 Explore
               </.link>
-              
+
               <%= if @current_user do %>
                 <.link
                   navigate={~p"/quiz"}
-                  class="nav-item-wabi inline-flex items-center border-b-2 border-transparent px-1 pt-1 text-base font-medium hover:border-wabi-hok_blue/50"
+                  class="nav-item-wabi inline-flex items-center border-b-2 border-transparent px-1 pt-1 text-sm font-wabi font-medium text-wabi-charcoal hover:border-wabi-rust hover:text-wabi-rust"
                 >
                   Quiz
                 </.link>
               <% end %>
             </div>
-          </div>
-          
-          <div class="hidden md:ml-6 md:flex md:items-center">
+          </div>          <div class="hidden md:ml-6 md:flex md:items-center">
             <div class="flex items-center space-x-4">
               <%= if @current_user do %>
-                <div class="text-base wabi-accent-text">
-                  Hello, <span class="font-bold text-wabi-charcoal">{@current_user.username}</span>
+                <div class="text-sm font-wabi text-wabi-charcoal/70">
+                  Hello, <span class="font-bold text-wabi-hok_blue">{@current_user.username}</span>
                 </div>
-                
+
                 <.link
                   href={~p"/logout"}
                   method="delete"
-                  class="btn-wabi text-base"
+                  class="btn-wabi rounded-md bg-wabi-stone px-3 py-2 text-sm font-wabi font-semibold text-wabi-charcoal border border-wabi-border hover:bg-wabi-stone/80"
                 >
                   Log out
                 </.link>
               <% else %>
                 <.link
                   navigate={~p"/signup"}
-                  class="btn-wabi-accent text-base"
+                  class="btn-wabi-accent rounded-md bg-wabi-hok_blue px-3 py-2 text-sm font-wabi font-semibold text-wabi-cream hover:bg-wabi-hok_blue_dark"
                 >
                   Sign up
                 </.link>
-                
+
                 <.link
                   navigate={~p"/login"}
-                  class="btn-wabi text-base"
+                  class="btn-wabi rounded-md bg-wabi-stone px-3 py-2 text-sm font-wabi font-semibold text-wabi-charcoal border border-wabi-border hover:bg-wabi-stone/80"
                 >
                   Log in
                 </.link>
               <% end %>
             </div>
-          </div>
-          
-          <div class="-mr-2 flex items-center md:hidden">
+          </div>          <div class="-mr-2 flex items-center md:hidden">
             <!-- Mobile menu button -->
             <button
               phx-click={JS.dispatch("toggle-mobile-menu")}
               type="button"
-              class="btn-wabi p-2"
+              class="relative inline-flex items-center justify-center rounded-md bg-wabi-paper p-2 text-wabi-charcoal/60 hover:bg-wabi-cream hover:text-wabi-charcoal focus:outline-none focus:ring-2 focus:ring-wabi-hok_blue focus:ring-offset-2"
               aria-expanded="false"
             >
               <span class="absolute -inset-0.5"></span> <span class="sr-only">Open main menu</span>
@@ -99,50 +94,46 @@ defmodule KumaSanKanjiWeb.Components.Navigation do
             </button>
           </div>
         </div>
-      </div>
-      
-    <!-- Mobile menu, show/hide based on menu state. -->
+      </div>    <!-- Mobile menu, show/hide based on menu state. -->
       <div class="md:hidden hidden" id="mobile-menu">
-        <div class="space-y-1 pb-3 pt-2 bg-wabi-paper">
+        <div class="space-y-1 pb-3 pt-2 bg-wabi-cream/50">
           <.link
             navigate={~p"/"}
-            class="nav-item-wabi block border-l-4 border-transparent py-2 pl-3 pr-4 text-base font-medium hover:border-wabi-hok_blue hover:bg-wabi-cream-dark"
+            class="block border-l-4 border-transparent py-2 pl-3 pr-4 text-base font-wabi font-medium text-wabi-charcoal hover:border-wabi-rust hover:bg-wabi-cream hover:text-wabi-rust"
           >
             Home
           </.link>
-          
+
           <.link
             navigate={~p"/explore"}
-            class="nav-item-wabi block border-l-4 border-transparent py-2 pl-3 pr-4 text-base font-medium hover:border-wabi-hok_blue hover:bg-wabi-cream-dark"
+            class="block border-l-4 border-transparent py-2 pl-3 pr-4 text-base font-wabi font-medium text-wabi-charcoal hover:border-wabi-rust hover:bg-wabi-cream hover:text-wabi-rust"
           >
             Explore
           </.link>
-          
+
           <%= if @current_user do %>
             <.link
               navigate={~p"/quiz"}
-              class="nav-item-wabi block border-l-4 border-transparent py-2 pl-3 pr-4 text-base font-medium hover:border-wabi-hok_blue hover:bg-wabi-cream-dark"
+              class="block border-l-4 border-transparent py-2 pl-3 pr-4 text-base font-wabi font-medium text-wabi-charcoal hover:border-wabi-rust hover:bg-wabi-cream hover:text-wabi-rust"
             >
               Quiz
             </.link>
           <% end %>
-        </div>
-        
-        <div class="border-t border-wabi-stone pb-3 pt-4 bg-wabi-paper">
+        </div>        <div class="border-t border-wabi-border_light pb-3 pt-4 bg-wabi-cream/30">
           <%= if @current_user do %>
             <div class="flex items-center px-4">
               <div class="ml-3">
-                <div class="text-base font-medium wabi-text">{@current_user.username}</div>
-                
-                <div class="text-base font-medium wabi-accent-text">{@current_user.email}</div>
+                <div class="text-base font-medium text-wabi-charcoal">{@current_user.username}</div>
+
+                <div class="text-sm font-medium text-wabi-charcoal/60">{@current_user.email}</div>
               </div>
             </div>
-            
+
             <div class="mt-3 space-y-1">
               <.link
                 href={~p"/logout"}
                 method="delete"
-                class="block px-4 py-2 text-base font-medium wabi-accent-text hover:bg-wabi-cream-dark"
+                class="block px-4 py-2 text-base font-medium text-wabi-charcoal/70 hover:bg-wabi-cream hover:text-wabi-charcoal"
               >
                 Log out
               </.link>
@@ -151,14 +142,14 @@ defmodule KumaSanKanjiWeb.Components.Navigation do
             <div class="mt-3 space-y-1 px-2">
               <.link
                 navigate={~p"/signup"}
-                class="btn-wabi-accent block text-center text-base mb-2"
+                class="block rounded-md px-3 py-2 text-base font-medium text-wabi-charcoal/70 hover:bg-wabi-cream hover:text-wabi-charcoal"
               >
                 Sign up
               </.link>
-              
+
               <.link
                 navigate={~p"/login"}
-                class="btn-wabi block text-center text-base"
+                class="block rounded-md px-3 py-2 text-base font-medium text-wabi-charcoal/70 hover:bg-wabi-cream hover:text-wabi-charcoal"
               >
                 Log in
               </.link>

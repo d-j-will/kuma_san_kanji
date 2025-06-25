@@ -1,0 +1,39 @@
+services:
+  # Removed local db service - using Fly Postgres instead
+  # To connect to Fly Postgres, use: fly proxy 5433 -a kuma-san-kanji-db
+  # Then set DATABASE_URL environment variable
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    container_name: kuma_san_kanji_app
+    environment:
+      MIX_ENV: dev
+      # DATABASE_URL should be set as environment variable or in .env file
+      # Example: DATABASE_URL=postgres://postgres:password@host.docker.internal:5433/database_name
+      SECRET_KEY_BASE: 1vLrv+LQ2sQ4mBM6nEP8kBwuaVDx1N+vV6+bHybZLJDGEK1lRYdrsAF+tzAqLtst
+      PHX_HOST: localhost
+      PORT: 4000
+      PHX_SERVER: true
+    ports:
+      - "4000:4000"
+    # Removed dependency on local db service
+    command: >
+      sh -c "
+        echo 'Setting up development environment...' &&
+        echo 'Note: Ensure DATABASE_URL is set and Fly Postgres is accessible' &&
+        mix deps.get &&
+        mix deps.compile &&
+        mix ecto.create --quiet &&
+        mix ecto.migrate --quiet &&
+        mix run priv/repo/seeds.exs &&
+        echo 'Starting Phoenix server...' &&
+        mix phx.server
+      "
+
+# Removed postgres_data volume as we're using Fly Postgres
+
+networks:
+  default:
+    name: kuma_san_kanji_network

@@ -1,39 +1,39 @@
-<div class="min-h-screen bg-gradient-to-br from-wabi-cream to-wabi-ecru">
+<div class="min-h-screen bg-gradient-to-br from-wabi-paper to-wabi-cream">
   <div class="px-4 py-8">
     <!-- Skip to content link for keyboard navigation -->
     <a
       href="#main-content"
-      class="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 bg-wabi-hok_blue text-white px-4 py-2 rounded-md z-50 wabi-text text-base"
+      class="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 bg-wabi-hok_blue text-wabi-cream px-4 py-2 rounded-md z-50 font-wabi"
     >
       Skip to main content
     </a>
     
 <!-- Header with user stats and navigation -->
-    <header class="max-w-4xl mx-auto mb-8" role="banner">        <div class="card-wabi border border-wabi-stone">
+    <header class="max-w-4xl mx-auto mb-8" role="banner">        <div class="flex justify-between items-center bg-wabi-paper/80 backdrop-blur-sm rounded-xl px-6 py-4 shadow-sm border border-wabi-border_light">
         <div class="flex items-center space-x-6">
-          <h1 class="text-2xl brush-text">
+          <h1 class="text-2xl font-wabi-display font-bold text-wabi-hok_blue">
             Kanji Review Quiz
           </h1>
           
 <!-- User statistics -->
           <%= if assigns[:user_stats] do %>
             <div
-              class="flex items-center space-x-4 text-base wabi-accent-text"
+              class="flex items-center space-x-4 text-sm font-wabi text-wabi-charcoal/70"
               role="group"
               aria-label="Quiz statistics"
             >
               <div class="flex items-center space-x-1">
-                <span class="w-2 h-2 bg-wabi-hok_blue rounded-full" aria-hidden="true">
+                <span class="w-2 h-2 bg-green-500 rounded-full" aria-hidden="true">
                 </span> <span>Total: {@user_stats.total_kanji}</span>
               </div>
               
               <div class="flex items-center space-x-1">
-                <span class="w-2 h-2 bg-wabi-rust rounded-full" aria-hidden="true">
+                <span class="w-2 h-2 bg-orange-500 rounded-full" aria-hidden="true">
                 </span> <span>Due: {@user_stats.due_today}</span>
               </div>
               
               <div class="flex items-center space-x-1">
-                <span class="w-2 h-2 bg-wabi-indigo rounded-full" aria-hidden="true">
+                <span class="w-2 h-2 bg-blue-500 rounded-full" aria-hidden="true">
                 </span> <span>Accuracy: {Float.round(@user_stats.accuracy * 100, 1)}%</span>
               </div>
             </div>
@@ -45,7 +45,7 @@
           <button
             type="button"
             phx-click="toggle_keyboard_shortcuts"
-            class="p-2 wabi-accent-text hover:text-wabi-hok_blue hover:bg-wabi-cream-dark rounded-lg transition-colors text-base"
+            class="p-2 text-wabi-charcoal/60 hover:text-wabi-rust hover:bg-wabi-cream/20 rounded-lg transition-colors font-wabi"
             aria-label="Toggle keyboard shortcuts help"
             aria-expanded={@keyboard_shortcuts_visible}
           >
@@ -70,37 +70,37 @@
 <!-- Keyboard shortcuts help panel -->
       <%= if @keyboard_shortcuts_visible do %>
         <div
-          class="mt-4 card-wabi border border-wabi-stone"
+          class="mt-4 bg-wabi-paper/90 backdrop-blur-sm rounded-xl p-6 shadow-sm border border-wabi-border_light"
           role="region"
           aria-label="Keyboard shortcuts"
         >
-          <h2 class="text-xl section-header-wabi text-wabi-hok_blue mb-4">Keyboard Shortcuts</h2>
+          <h2 class="text-lg font-wabi-display font-semibold text-wabi-rust mb-4">Keyboard Shortcuts</h2>
           
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-base wabi-text">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm font-wabi">
             <div class="flex justify-between">
-              <span class="wabi-accent-text">Submit answer</span>
-              <kbd class="px-2 py-1 bg-wabi-cream border border-wabi-stone text-wabi-charcoal rounded">
+              <span class="text-wabi-charcoal/70">Submit answer</span>
+              <kbd class="px-2 py-1 bg-wabi-cream/20 text-wabi-rust rounded border">
                 Enter
               </kbd>
             </div>
             
             <div class="flex justify-between">
-              <span class="wabi-accent-text">Skip kanji</span>
-              <kbd class="px-2 py-1 bg-wabi-cream border border-wabi-stone text-wabi-charcoal rounded">
+              <span class="text-wabi-charcoal/70">Skip kanji</span>
+              <kbd class="px-2 py-1 bg-wabi-cream/20 text-wabi-rust rounded border">
                 Esc
               </kbd>
             </div>
             
             <div class="flex justify-between">
-              <span class="wabi-accent-text">Toggle help</span>
-              <kbd class="px-2 py-1 bg-wabi-cream border border-wabi-stone text-wabi-charcoal rounded">
+              <span class="text-wabi-charcoal/70">Toggle help</span>
+              <kbd class="px-2 py-1 bg-wabi-cream/20 text-wabi-rust rounded border">
                 ?
               </kbd>
             </div>
             
             <div class="flex justify-between">
-              <span class="text-gray-600">Continue after feedback</span>
-              <kbd class="px-2 py-1 bg-sakura-light/20 text-sakura-dark rounded border">
+              <span class="text-wabi-charcoal/70">Continue after feedback</span>
+              <kbd class="px-2 py-1 bg-wabi-cream/20 text-wabi-rust rounded border">
                 Enter
               </kbd>
             </div>
@@ -113,8 +113,8 @@
       <%= if @quiz_error or is_nil(@current_kanji) do %>
         <!-- No kanji available -->
         <div class="text-center py-16" role="region" aria-label="No reviews available">
-          <div class="bg-white/80 backdrop-blur-sm rounded-xl p-8 shadow-sm border border-sakura-light">
-            <div class="w-16 h-16 bg-blue-500 rounded-full mx-auto mb-4 flex items-center justify-center">
+          <div class="bg-wabi-paper/80 backdrop-blur-sm rounded-xl p-8 shadow-sm border border-wabi-border_light">
+            <div class="w-16 h-16 bg-wabi-hok_blue rounded-full mx-auto mb-4 flex items-center justify-center">
               <svg
                 class="w-8 h-8 text-white"
                 fill="none"
@@ -131,11 +131,11 @@
               </svg>
             </div>
             
-            <h2 class="text-xl font-display font-semibold text-sakura-dark mb-2">
+            <h2 class="text-xl font-wabi-display font-semibold text-wabi-rust mb-2">
               No Reviews Available
             </h2>
             
-            <p class="text-gray-600 font-katakana mb-6">
+            <p class="text-wabi-charcoal/70 font-wabi mb-6">
               You don't have any kanji due for review right now. Start exploring to add kanji to your study set!
             </p>
             
@@ -143,7 +143,7 @@
               <button
                 type="button"
                 phx-click="restart_quiz"
-                class="px-6 py-3 bg-sakura text-white font-katakana rounded-lg hover:bg-sakura-dark transition-colors focus:outline-none focus:ring-2 focus:ring-sakura focus:ring-offset-2"
+                class="px-6 py-3 bg-wabi-hok_blue text-wabi-cream font-wabi rounded-lg hover:bg-wabi-hok_blue_dark transition-colors focus:outline-none focus:ring-2 focus:ring-wabi-hok_blue focus:ring-offset-2"
                 aria-label="Check for more reviews"
               >
                 Check Again
@@ -156,7 +156,7 @@
         <div class="space-y-6">
           <!-- Kanji card -->
           <div
-            class="bg-white/80 backdrop-blur-sm rounded-xl shadow-sm border border-sakura-light"
+            class="bg-wabi-paper/80 backdrop-blur-sm rounded-xl shadow-sm border border-wabi-border_light"
             role="region"
             aria-label="Current kanji"
           >
@@ -164,17 +164,17 @@
               <!-- Kanji character display -->
               <div class="mb-6">
                 <div
-                  class="kanji-container w-32 h-32"
+                  class="inline-flex items-center justify-center w-32 h-32 bg-gradient-to-br from-wabi-cream/20 to-wabi-paper rounded-2xl border-2 border-wabi-border_light shadow-inner"
                   role="img"
                   aria-label={"Kanji character: " <> @current_kanji.character}
                 >
-                  <span class="kanji-display text-6xl">
+                  <span class="text-6xl font-bold tracking-tight text-center leading-none text-wabi-kanji-primary select-none">
                     {@current_kanji.character}
                   </span>
                 </div>
               </div>
               <!-- Kanji metadata -->
-              <div class="mb-6 text-sm font-katakana text-gray-600">
+              <div class="mb-6 text-sm font-wabi text-wabi-charcoal/70">
                 <p>Grade: {@current_kanji.grade || "N/A"} |
                   Strokes: {@current_kanji.stroke_count} |
                   JLPT: {@current_kanji.jlpt_level || "N/A"}</p>
@@ -182,7 +182,7 @@
               <!-- Progress indicator -->
               <div class="mb-6">
                 <div class="flex flex-col items-center space-y-2">
-                  <div class="flex items-center space-x-2 text-xs font-katakana text-gray-500">
+                  <div class="flex items-center space-x-2 text-xs font-wabi text-wabi-charcoal/60">
                     <span>Progress:</span>
                     <div class="flex items-center space-x-1">
                       <%= for i <- 1..5 do %>
@@ -191,7 +191,7 @@
                             "w-2 h-2 rounded-full",
                             if(@current_progress.repetitions >= i,
                               do: "bg-green-500",
-                              else: "bg-gray-200"
+                              else: "bg-wabi-stone/40"
                             )
                           ]}
                           aria-hidden="true"
@@ -200,7 +200,7 @@
                       <% end %>
                     </div>
                   </div>
-                  <div class="text-xs font-katakana text-gray-500">
+                  <div class="text-xs font-wabi text-wabi-charcoal/60">
                     Rep: {@current_progress.repetitions}
                   </div>
                 </div>
@@ -208,7 +208,7 @@
             </div>
           </div>
           <!-- Answer section -->
-          <div class="bg-white/80 backdrop-blur-sm rounded-xl p-6 shadow-sm border border-sakura-light">
+          <div class="bg-wabi-paper/80 backdrop-blur-sm rounded-xl p-6 shadow-sm border border-wabi-border_light">
             <%= if @show_feedback do %>
               <!-- Feedback display -->
               <div
@@ -274,14 +274,14 @@
                   <% end %>
                 </div>
                 
-                <p class="text-sakura-dark font-katakana mb-6 leading-relaxed">
+                <p class="text-wabi-rust font-wabi mb-6 leading-relaxed">
                   {@feedback_message}
                 </p>
                 
                 <button
                   type="button"
                   phx-click="next_kanji"
-                  class="px-8 py-3 bg-sakura text-white font-katakana rounded-lg hover:bg-sakura-dark transition-colors focus:outline-none focus:ring-2 focus:ring-sakura focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                  class="px-8 py-3 bg-wabi-hok_blue text-wabi-cream font-wabi rounded-lg hover:bg-wabi-hok_blue_dark transition-colors focus:outline-none focus:ring-2 focus:ring-wabi-hok_blue focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
                   aria-label="Continue to next kanji"
                   disabled={not @show_feedback}
                   autofocus
@@ -300,7 +300,7 @@
                 <div>
                   <label
                     for="answer-input"
-                    class="block text-sm font-katakana font-medium text-sakura-dark mb-2"
+                    class="block text-sm font-wabi font-medium text-wabi-rust mb-2"
                   >
                     Enter the meaning or reading:
                   </label>
@@ -313,7 +313,7 @@
                     phx-change="update_answer"
                     phx-keydown="key_down"
                     phx-hook="FocusInput"
-                    class="w-full px-4 py-3 border border-sakura-light rounded-lg focus:outline-none focus:ring-2 focus:ring-sakura focus:border-transparent text-lg font-katakana"
+                    class="w-full px-4 py-3 border border-wabi-border rounded-lg focus:outline-none focus:ring-2 focus:ring-wabi-hok_blue focus:border-transparent text-lg font-wabi"
                     placeholder="Your answer..."
                     autocomplete="off"
                     autocapitalize="off"
@@ -322,7 +322,7 @@
                     autofocus
                     required
                   />
-                  <p id="answer-help" class="mt-2 text-sm text-gray-600 font-katakana">
+                  <p id="answer-help" class="mt-2 text-sm text-wabi-charcoal/70 font-wabi">
                     Enter either the English meaning or Japanese reading (hiragana/katakana/romaji)
                   </p>
                 </div>
@@ -330,7 +330,7 @@
                 <div class="flex justify-center space-x-4">
                   <button
                     type="submit"
-                    class="btn-sakura px-8 py-3 border border-sakura-dark focus:outline-none focus:ring-2 focus:ring-sakura focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                    class="px-8 py-3 bg-wabi-hok_blue text-wabi-cream font-wabi rounded-lg hover:bg-wabi-hok_blue_dark border border-wabi-border focus:outline-none focus:ring-2 focus:ring-wabi-hok_blue focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
                     disabled={String.trim(@user_answer) == ""}
                     aria-label="Submit your answer"
                   >
@@ -340,7 +340,7 @@
                   <button
                     type="button"
                     phx-click="skip_kanji"
-                    class="btn-accent px-6 py-3 rounded-lg"
+                    class="px-6 py-3 bg-wabi-stone text-wabi-charcoal font-wabi rounded-lg hover:bg-wabi-stone/80 border border-wabi-border focus:outline-none focus:ring-2 focus:ring-wabi-stone focus:ring-offset-2"
                     aria-label="Skip this kanji"
                   >
                     Skip
@@ -351,7 +351,7 @@
           </div>
           <!-- Session progress -->
           <div
-            class="bg-white/60 backdrop-blur-sm rounded-xl p-4 text-center text-sm text-gray-600 font-katakana"
+            class="bg-wabi-paper/60 backdrop-blur-sm rounded-xl p-4 text-center text-sm text-wabi-charcoal/70 font-wabi"
             role="region"
             aria-label="Session progress"
           >
@@ -379,10 +379,10 @@
               🔄 Reset & Initialize Quiz Data
             </button>
             
-            <div class="mt-4 p-3 bg-gray-100 rounded-lg border border-gray-300">
-              <p class="font-mono text-sm text-gray-700">This will:</p>
+            <div class="mt-4 p-3 bg-wabi-cream/50 rounded-lg border border-wabi-border">
+              <p class="font-mono text-sm text-wabi-charcoal">This will:</p>
               
-              <ul class="text-left list-disc pl-5 mt-1 font-mono text-xs text-gray-600">
+              <ul class="text-left list-disc pl-5 mt-1 font-mono text-xs text-wabi-charcoal/70">
                 <li>Delete all existing SRS progress records</li>
                 
                 <li>Create 15 new kanji review entries</li>

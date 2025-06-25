@@ -1,26 +1,25 @@
 <div class="px-4 py-10 sm:px-6 sm:py-20 lg:px-8 xl:px-20 xl:py-24">
   <div class="mx-auto max-w-md">
-    <h1 class="text-3xl brush-text tracking-tight sm:text-4xl">
-      Sign Up <span class="kanji-accent">登録</span>
+    <h1 class="text-3xl font-bold tracking-tight font-wabi-display text-wabi-hok_blue sm:text-4xl">
+      Sign Up <span class="text-wabi-rust">登録</span>
     </h1>
     
-    <p class="mt-3 text-xl wabi-accent-text">
+    <p class="mt-3 text-lg font-wabi text-wabi-charcoal/70">
       Create an account to track your progress and save your favorite kanji.
     </p>
     
-    <.form for={@form} as={:user} phx-change="validate" phx-submit="signup" class="mt-8 space-y-6">
-      <.input
+    <.form for={@form} as={:user} phx-change="validate" phx-submit="signup" class="mt-8 space-y-6">      <.input
         field={@form[:email]}
         label="Email address"
         required
-        class="form-input-wabi block w-full text-base"
+        class="block w-full rounded-md border-wabi-border shadow-sm focus:border-wabi-hok_blue focus:ring-wabi-hok_blue sm:text-sm"
         placeholder="you@example.com"
       />
       <.input
         field={@form[:username]}
         label="Username"
         required
-        class="form-input-wabi block w-full text-base"
+        class="block w-full rounded-md border-wabi-border shadow-sm focus:border-wabi-hok_blue focus:ring-wabi-hok_blue sm:text-sm"
         placeholder="kuma_student"
       />
       <.input
@@ -29,28 +28,27 @@
         type="password"
         required
         minlength="8"
-        class="form-input-wabi block w-full text-base"
+        class="block w-full rounded-md border-wabi-border shadow-sm focus:border-wabi-hok_blue focus:ring-wabi-hok_blue sm:text-sm"
         placeholder="Minimum 8 characters"
       />
-      <p class="mt-2 text-base wabi-accent-text">
+      <p class="mt-2 text-xs text-wabi-charcoal/60 font-wabi">
         Password must be at least 8 characters and include a number
       </p>
-      
-      <div>
+        <div>
         <button
           type="submit"
-          class="btn-wabi-accent w-full text-base"
+          class="w-full rounded-md bg-wabi-hok_blue py-2.5 px-3.5 text-sm font-wabi font-medium text-wabi-cream shadow-sm hover:bg-wabi-hok_blue_dark focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-wabi-hok_blue"
         >
           Create account
         </button>
       </div>
       
-      <div class="text-center text-base">
-        <p class="wabi-accent-text">
+      <div class="text-center text-sm">
+        <p class="text-wabi-charcoal/70 font-wabi">
           Already have an account?
           <.link
             navigate={~p"/login"}
-            class="font-semibold text-wabi-hok_blue hover:text-wabi-charcoal"
+            class="font-semibold text-wabi-rust hover:text-wabi-clay"
           >
             Log in
           </.link>

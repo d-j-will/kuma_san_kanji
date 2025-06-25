@@ -1,34 +1,37 @@
 <div class="px-4 py-10 sm:px-6 sm:py-20 lg:px-8 xl:px-20 xl:py-24">
-  <div class="mx-auto max-w-2xl">    <h1 class="text-[2rem] mt-4 brush-text tracking-tight sm:text-5xl">
+  <div class="mx-auto max-w-2xl">
+    <h1 class="text-[2rem] mt-4 font-wabi-display tracking-tight text-wabi-hok_blue_dark sm:text-5xl">
       Kuma-san Kanji <span class="kanji-highlight">漢字</span>
-    </h1><p class="mt-4 text-xl wabi-text">
+    </h1>
+
+    <p class="mt-4 text-lg wabi-text">
       Welcome {if @is_authenticated, do: "back", else: ""} to Kuma-san Kanji, your friendly bear guide to learning Japanese Kanji characters!
     </p>
 
-    <div class="mt-10 flex items-center gap-x-6 flex-wrap">
+    <div class="mt-10 flex items-center gap-x-6">
       <.link
         navigate={~p"/explore"}
-        class="btn-wabi-accent text-base"
+        class="nav-wabi rounded-md px-3.5 py-2.5 text-sm font-wabi font-medium"
       >
         Explore Kanji
       </.link>
 
       <%= if @is_authenticated do %>
-        <p class="text-base wabi-accent-text">
+        <p class="text-sm wabi-text">
           You're logged in as
-          <span class="font-bold wabi-text">{@current_user.username}</span>
+          <span class="font-bold text-wabi-hok_blue_dark">{@current_user.username}</span>
         </p>
       <% else %>
         <.link
           navigate={~p"/signup"}
-          class="btn-wabi-accent text-base"
+          class="nav-wabi rounded-md px-3.5 py-2.5 text-sm font-wabi font-medium"
         >
           Sign Up
         </.link>
 
         <.link
           navigate={~p"/login"}
-          class="btn-wabi text-base"
+          class="rounded-md border border-wabi-hok_blue px-3.5 py-2.5 text-sm font-wabi font-medium text-wabi-hok_blue_dark shadow-sm hover:bg-wabi-stone-light"
         >
           Log In
         </.link>
@@ -36,12 +39,13 @@
     </div>
 
     <div class="mt-10">
-      <h2 class="text-2xl section-header-wabi">
+      <h2 class="text-2xl font-wabi-display tracking-tight text-wabi-hok_blue_dark">
         How it works
-      </h2>      <div class="mt-4 card-wabi border border-wabi-stone bg-wabi-cream-dark/20 p-6">        <ol class="list-decimal pl-6 space-y-3 wabi-text text-lg">
-          <li>Explore new kanji characters daily.</li>
+      </h2>
 
-          <li>Learn meanings, readings, and stroke counts.</li>
+      <div class="mt-4 wabi-paper wabi-texture p-6">
+        <ol class="list-decimal pl-6 space-y-2 wabi-text">
+          <li>Explore new kanji characters daily.</li>          <li>Learn meanings, readings, and stroke counts.</li>
 
           <li>Practice with example sentences.</li>
 

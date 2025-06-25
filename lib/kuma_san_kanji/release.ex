@@ -41,12 +41,12 @@ defmodule KumaSanKanji.Release do
       {:ok, _, _} = Ecto.Migrator.with_repo(repo, fn repo ->
         # Get all table names (excluding system tables)
         result = repo.query!("""
-          SELECT tablename 
-          FROM pg_tables 
-          WHERE schemaname = 'public' 
+          SELECT tablename
+          FROM pg_tables
+          WHERE schemaname = 'public'
           AND tablename != 'schema_migrations'
         """, [])
-        
+
         tables = result.rows |> Enum.map(&List.first/1)
 
         # Drop all tables with CASCADE to handle foreign key constraints

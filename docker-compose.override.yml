@@ -1,0 +1,31 @@
+# Development overrides for docker-compose.yml
+# This file is automatically loaded by docker-compose
+
+services:
+  app:
+    # Mount source code for live reload
+    volumes:
+      - .:/app
+      - /app/deps
+      - /app/_build
+    environment:
+      # Enable hot reloading
+      PHX_SERVER: "true"
+      LIVERELOAD: "true"
+      # DATABASE_URL will be set via environment variable for Fly Postgres connection
+    # Override command for development with live reload support
+    command: >
+      sh -c "
+        echo 'Setting up development environment with Fly Postgres...' &&
+        echo 'Ensure DATABASE_URL is set and fly proxy is running' &&
+        mix deps.get &&
+        mix assets.setup &&
+        mix ecto.create --quiet &&
+        mix ecto.migrate --quiet &&
+        mix run priv/repo/seeds.exs &&
+        echo 'Starting Phoenix server with live reload...' &&
+        mix phx.server
+      "
+
+  # Removed pgAdmin - not needed for Fly Postgres
+  # You can access your Fly Postgres directly via: fly postgres connect -a kuma-san-kanji-db
