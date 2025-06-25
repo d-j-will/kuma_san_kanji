@@ -8,22 +8,29 @@
 /* This file is for your main application CSS */
 
 /* Custom styles for Wabi-Sabi Kuma-san Kanji */
-@layer components {
-  /* Wabi-Sabi foundation styles */
+@layer components {  /* Wabi-Sabi foundation styles with zen garden background */
   .wabi-container {
-    @apply bg-gradient-to-br from-wabi-cream to-wabi-ecru min-h-screen font-wabi text-base;
+    @apply min-h-screen font-wabi text-base;
     background-image: 
+      url('/images/zen-garden-bg.svg'),
       radial-gradient(circle at 20% 50%, oklch(45% 0.08 35 / 0.03) 0%, transparent 50%),
       radial-gradient(circle at 80% 20%, oklch(48% 0.05 120 / 0.03) 0%, transparent 50%),
       radial-gradient(circle at 40% 80%, oklch(38% 0.025 250 / 0.02) 0%, transparent 50%);
+    background-size: cover, auto, auto, auto;
+    background-position: center, center, center, center;
+    background-repeat: no-repeat, no-repeat, no-repeat, no-repeat;
+    background-attachment: fixed;
   }
-  
-  .wabi-paper {
-    @apply bg-wabi-paper shadow-lg rounded-lg;
+    .wabi-paper {
+    @apply shadow-lg rounded-lg;
+    background: linear-gradient(135deg, 
+      oklch(97% 0.008 85 / 0.95) 0%, 
+      oklch(96% 0.012 82 / 0.93) 100%);
+    backdrop-filter: blur(8px);
     box-shadow: 
-      0 4px 12px oklch(0% 0 0 / 0.05),
-      0 1px 3px oklch(0% 0 0 / 0.1),
-      inset 0 0 0 1px oklch(100% 0 0 / 0.4);
+      0 4px 12px oklch(0% 0 0 / 0.08),
+      0 1px 3px oklch(0% 0 0 / 0.12),
+      inset 0 0 0 1px oklch(100% 0 0 / 0.5);
   }
   
   .wabi-texture {
@@ -101,11 +108,14 @@
     transform: rotate(-0.3deg);
     filter: drop-shadow(1px 1px 1px oklch(0% 0 0 / 0.1));
   }
-  
-  /* Navigation with natural asymmetry */
+    /* Navigation with natural asymmetry and better background integration */
   .nav-wabi {
-    @apply bg-wabi-paper border-b border-wabi-stone;
-    box-shadow: 0 2px 8px oklch(0% 0 0 / 0.05);
+    background: linear-gradient(135deg, 
+      oklch(97% 0.008 85 / 0.92) 0%, 
+      oklch(96% 0.012 82 / 0.90) 100%);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid oklch(0% 0 0 / 0.08);
+    box-shadow: 0 2px 12px oklch(0% 0 0 / 0.08);
   }.nav-item-wabi {
     @apply px-4 py-2 rounded-md font-wabi font-medium transition-all duration-200 text-base;
     @apply text-wabi-charcoal hover:bg-wabi-cream-dark hover:text-wabi-hok_blue;
@@ -115,12 +125,20 @@
     transform: rotate(0.1deg) scale(1.02);
     box-shadow: 0 2px 4px oklch(0% 0 0 / 0.05);
   }
-  
-  /* Content cards with paper-like appearance */
+    /* Content cards with paper-like appearance and background integration */
   .card-wabi {
-    @apply wabi-paper p-6 wabi-texture;
+    @apply p-6 wabi-texture;
+    background: linear-gradient(135deg, 
+      oklch(97% 0.008 85 / 0.95) 0%, 
+      oklch(96% 0.012 82 / 0.93) 100%);
+    backdrop-filter: blur(8px);
     transform: rotate(-0.1deg);
-    border: 1px solid oklch(0% 0 0 / 0.05);
+    border: 1px solid oklch(0% 0 0 / 0.08);
+    border-radius: 12px;
+    box-shadow: 
+      0 4px 12px oklch(0% 0 0 / 0.08),
+      0 1px 3px oklch(0% 0 0 / 0.12),
+      inset 0 0 0 1px oklch(100% 0 0 / 0.5);
   }
   
   .card-wabi:hover {
@@ -141,7 +159,16 @@
     color: oklch(25% 0.015 250);
     border: 1px solid oklch(0% 0 0 / 0.08);
     transform: rotate(0.5deg);
-    box-shadow: 0 1px 3px oklch(0% 0 0 / 0.05);
+    box-shadow: 0 1px 3px oklch(0% 0 0 / 0.05);  }
+  
+  /* Main content area with subtle background overlay */
+  .main-content-wabi {
+    background: linear-gradient(135deg, 
+      oklch(98% 0.005 85 / 0.7) 0%, 
+      oklch(97% 0.008 82 / 0.6) 100%);
+    backdrop-filter: blur(2px);
+    border-radius: 16px;
+    min-height: calc(100vh - 200px);
   }
   
   /* Keep existing styles for backward compatibility */
