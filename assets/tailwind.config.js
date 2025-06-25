@@ -20,12 +20,10 @@ module.exports = {
           stone: "oklch(85% 0.012 75)",        // Stone gray
           ecru: "oklch(95% 0.010 80)",         // Gentle ecru
           paper: "oklch(98% 0.008 85)",        // Handmade paper
-          shadow: "oklch(0% 0 0 / 0.08)",      // Subtle shadows
-          
-          // Natural accent colors
+          shadow: "oklch(0% 0 0 / 0.08)",      // Subtle shadows          // Natural accent colors
           indigo: "oklch(38% 0.025 250)",      // Natural indigo
           rust: "oklch(45% 0.08 35)",          // Rust/clay
-          moss: "oklch(48% 0.05 120)",         // Moss green
+          hok_blue: "oklch(42% 0.12 230)",     // Hokusai blue
           clay: "oklch(50% 0.06 55)",          // Clay brown
           charcoal: "oklch(25% 0.015 250)",    // Sumi ink black
           

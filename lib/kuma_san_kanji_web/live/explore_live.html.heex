@@ -22,7 +22,7 @@
       <div class="p-6 text-center border-b border-wabi-paper relative overflow-hidden wabi-texture">
         <!-- Natural gradient background -->
         <div class="absolute inset-0 bg-gradient-to-br from-wabi-cream via-wabi-paper to-wabi-ecru opacity-70"></div>
-        <div class="absolute inset-0 bg-gradient-to-tl from-wabi-stone/20 via-transparent to-wabi-moss/10"></div>
+        <div class="absolute inset-0 bg-gradient-to-tl from-wabi-stone/20 via-transparent to-wabi-hok_blue/10"></div>
         
         <!-- Kanji character with brush-like styling -->
         <div class="relative z-10">
@@ -76,9 +76,9 @@
 
 <!-- Educational Context Section -->
         <div :if={@thematic_info.edu_context}>
-          <h3 class="section-header-wabi text-wabi-moss">
+          <h3 class="section-header-wabi text-wabi-hok_blue">
             Educational Context
-          </h3>          <div class="mb-6 card-wabi bg-wabi-cream-dark border border-wabi-moss/30">
+          </h3>          <div class="mb-6 card-wabi bg-wabi-cream-dark border border-wabi-hok_blue/30">
             <div class="flex justify-between p-4">
               <span class="font-medium wabi-text text-base">Grade {assigns.thematic_info.edu_context.grade}</span>
               <span class="wabi-accent-text text-base">
@@ -117,7 +117,7 @@
           </div>
         </div>
 
-        <h3 class="section-header-wabi text-wabi-moss">Meanings</h3>        <ul class="mb-6 list-disc pl-6 wabi-text text-base space-y-1">
+        <h3 class="section-header-wabi text-wabi-hok_blue">Meanings</h3>        <ul class="mb-6 list-disc pl-6 wabi-text text-base space-y-1">
           <%= for meaning <- @kanji.meanings do %>
             <li class={if meaning.is_primary, do: "font-bold", else: ""}>
               {meaning.value}
@@ -142,7 +142,7 @@
                           "badge-wabi bg-wabi-indigo/10 border-wabi-indigo text-wabi-indigo"
 
                         "kun" ->
-                          "badge-wabi bg-wabi-moss/10 border-wabi-moss text-wabi-moss"
+                          "badge-wabi bg-wabi-hok_blue/10 border-wabi-hok_blue text-wabi-hok_blue"
 
                         _ ->
                           "badge-wabi bg-wabi-rust/10 border-wabi-rust text-wabi-rust"

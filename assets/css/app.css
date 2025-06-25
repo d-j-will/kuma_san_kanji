@@ -90,7 +90,7 @@
   }  /* Custom form styles with natural appearance */
   .form-input-wabi {
     @apply bg-wabi-paper border border-wabi-stone rounded-lg px-4 py-3 font-wabi text-base;
-    @apply focus:ring-2 focus:ring-wabi-moss focus:border-wabi-moss;
+    @apply focus:ring-2 focus:ring-wabi-hok_blue focus:border-wabi-hok_blue;
     transform: rotate(-0.1deg);
     box-shadow: inset 0 1px 3px oklch(0% 0 0 / 0.05);
   }
@@ -108,7 +108,7 @@
     box-shadow: 0 2px 8px oklch(0% 0 0 / 0.05);
   }.nav-item-wabi {
     @apply px-4 py-2 rounded-md font-wabi font-medium transition-all duration-200 text-base;
-    @apply text-wabi-charcoal hover:bg-wabi-cream-dark hover:text-wabi-moss;
+    @apply text-wabi-charcoal hover:bg-wabi-cream-dark hover:text-wabi-hok_blue;
     transform: rotate(0.1deg);
   }
     .nav-item-wabi:hover {
@@ -184,7 +184,7 @@
   }
   
   .wabi-accent-text {
-    @apply font-wabi text-wabi-moss text-base;
+    @apply font-wabi text-wabi-hok_blue text-base;
   }
   
   .brush-text {

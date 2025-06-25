@@ -11,21 +11,21 @@ defmodule KumaSanKanjiWeb.Components.Navigation do
           <div class="flex items-center">
             <div class="flex-shrink-0">
               <.link navigate={~p"/"} class="text-2xl jp-title-wabi">
-                Kuma-san Kanji <span class="text-wabi-moss">漢字</span>
+                Kuma-san Kanji <span class="text-wabi-hok_blue">漢字</span>
               </.link>
             </div>
             
             <div class="hidden md:ml-6 md:flex md:space-x-8">
               <.link
                 navigate={~p"/"}
-                class="nav-item-wabi inline-flex items-center border-b-2 border-transparent px-1 pt-1 text-base font-medium hover:border-wabi-moss/50"
+                class="nav-item-wabi inline-flex items-center border-b-2 border-transparent px-1 pt-1 text-base font-medium hover:border-wabi-hok_blue/50"
               >
                 Home
               </.link>
               
               <.link
                 navigate={~p"/explore"}
-                class="nav-item-wabi inline-flex items-center border-b-2 border-transparent px-1 pt-1 text-base font-medium hover:border-wabi-moss/50"
+                class="nav-item-wabi inline-flex items-center border-b-2 border-transparent px-1 pt-1 text-base font-medium hover:border-wabi-hok_blue/50"
               >
                 Explore
               </.link>
@@ -33,7 +33,7 @@ defmodule KumaSanKanjiWeb.Components.Navigation do
               <%= if @current_user do %>
                 <.link
                   navigate={~p"/quiz"}
-                  class="nav-item-wabi inline-flex items-center border-b-2 border-transparent px-1 pt-1 text-base font-medium hover:border-wabi-moss/50"
+                  class="nav-item-wabi inline-flex items-center border-b-2 border-transparent px-1 pt-1 text-base font-medium hover:border-wabi-hok_blue/50"
                 >
                   Quiz
                 </.link>
@@ -106,14 +106,14 @@ defmodule KumaSanKanjiWeb.Components.Navigation do
         <div class="space-y-1 pb-3 pt-2 bg-wabi-paper">
           <.link
             navigate={~p"/"}
-            class="nav-item-wabi block border-l-4 border-transparent py-2 pl-3 pr-4 text-base font-medium hover:border-wabi-moss hover:bg-wabi-cream-dark"
+            class="nav-item-wabi block border-l-4 border-transparent py-2 pl-3 pr-4 text-base font-medium hover:border-wabi-hok_blue hover:bg-wabi-cream-dark"
           >
             Home
           </.link>
           
           <.link
             navigate={~p"/explore"}
-            class="nav-item-wabi block border-l-4 border-transparent py-2 pl-3 pr-4 text-base font-medium hover:border-wabi-moss hover:bg-wabi-cream-dark"
+            class="nav-item-wabi block border-l-4 border-transparent py-2 pl-3 pr-4 text-base font-medium hover:border-wabi-hok_blue hover:bg-wabi-cream-dark"
           >
             Explore
           </.link>
@@ -121,7 +121,7 @@ defmodule KumaSanKanjiWeb.Components.Navigation do
           <%= if @current_user do %>
             <.link
               navigate={~p"/quiz"}
-              class="nav-item-wabi block border-l-4 border-transparent py-2 pl-3 pr-4 text-base font-medium hover:border-wabi-moss hover:bg-wabi-cream-dark"
+              class="nav-item-wabi block border-l-4 border-transparent py-2 pl-3 pr-4 text-base font-medium hover:border-wabi-hok_blue hover:bg-wabi-cream-dark"
             >
               Quiz
             </.link>
