@@ -13,12 +13,14 @@ This guide explains how to deploy KumaSanKanji to Fly.io using PostgreSQL instea
 ### Option 1: Using the Deploy Script (Recommended)
 
 **On Linux/Mac:**
+
 ```bash
 chmod +x scripts/deploy-fly.sh
 ./scripts/deploy-fly.sh
 ```
 
 **On Windows:**
+
 ```powershell
 .\scripts\deploy-fly.ps1
 ```
@@ -26,17 +28,21 @@ chmod +x scripts/deploy-fly.sh
 ### Option 2: Manual Deployment
 
 1. **Create PostgreSQL Database** (if not already created):
+
    ```bash
    fly postgres create --name kuma-san-kanji-db --region lhr --vm-size shared-cpu-1x --initial-cluster-size 1
    ```
 
 2. **Get Database Connection String**:
+
    ```bash
    fly postgres connect --app kuma-san-kanji-db
    ```
+
    Note the connection details for the next step.
 
 3. **Set Application Secrets**:
+
    ```bash
    # Replace with your actual database credentials
    fly secrets set DATABASE_URL="postgresql://username:password@hostname:port/database_name"
@@ -46,6 +52,7 @@ chmod +x scripts/deploy-fly.sh
    ```
 
 4. **Deploy the Application**:
+
    ```bash
    fly deploy
    ```
@@ -53,19 +60,23 @@ chmod +x scripts/deploy-fly.sh
 ## Configuration Changes Made
 
 ### 1. Updated `fly.toml`
+
 - Removed SQLite-specific configuration (`DATABASE_PATH`, mounts)
 - Added `release_command` to run migrations and seeding on deploy
 - Removed the volume mount (no longer needed for PostgreSQL)
 
 ### 2. Updated Release Module (`lib/kuma_san_kanji/release.ex`)
+
 - Changed `reset_and_seed/0` to work with PostgreSQL instead of SQLite
 - Uses PostgreSQL-specific queries to drop tables with CASCADE
 
 ### 3. Created Release Scripts
+
 - `rel/overlays/bin/migrate_and_seed` - Runs migrations and seeding
 - `rel/overlays/bin/migrate_and_seed.bat` - Windows version
 
 ### 4. Updated Dockerfile
+
 - Includes entrypoint script that runs migrations and seeding before starting the server
 - Copies priv directory for migrations and seeds
 
@@ -92,26 +103,31 @@ The application expects these environment variables in production:
 ## Monitoring and Maintenance
 
 ### View Logs
+
 ```bash
 fly logs
 ```
 
 ### SSH into Application
+
 ```bash
 fly ssh console
 ```
 
 ### Connect to PostgreSQL
+
 ```bash
 fly postgres connect --app kuma-san-kanji-db
 ```
 
 ### Check Application Status
+
 ```bash
 fly status
 ```
 
 ### Manual Migration (if needed)
+
 ```bash
 fly ssh console
 # Inside the container:
@@ -119,6 +135,7 @@ fly ssh console
 ```
 
 ### Manual Seeding (if needed)
+
 ```bash
 fly ssh console
 # Inside the container:
@@ -130,12 +147,14 @@ fly ssh console
 If you need to rollback a deployment:
 
 1. **Rollback Application**:
+
    ```bash
    fly releases
    fly releases rollback <version>
    ```
 
 2. **Rollback Database** (if schema changes were made):
+
    ```bash
    fly ssh console
    /app/bin/kuma_san_kanji eval "KumaSanKanji.Release.rollback(KumaSanKanji.Repo, <version>)"
@@ -201,6 +220,7 @@ fly deploy
 - **Min Machines**: Set to 0 for maximum cost savings (cold starts acceptable)
 
 For production workloads, consider:
+
 - Dedicated CPU instances
 - Multiple regions for redundancy
 - Larger PostgreSQL instances

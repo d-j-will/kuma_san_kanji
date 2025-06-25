@@ -39,6 +39,14 @@
       linear-gradient(0deg, transparent 24%, oklch(100% 0 0 / 0.05) 25%, oklch(100% 0 0 / 0.05) 26%, transparent 27%, transparent 74%, oklch(100% 0 0 / 0.05) 75%, oklch(100% 0 0 / 0.05) 76%, transparent 77%, transparent);
   }
   
+  /* Improved text styles with better contrast */
+  .wabi-text {
+    @apply font-wabi text-wabi-charcoal text-base;
+  }
+    .wabi-accent-text {
+    @apply font-wabi text-wabi-hok_blue_dark text-base; /* Using darker variant for better contrast */
+  }
+  
   /* Enhanced Kanji character display with strong contrast */
   .kanji-display {
     @apply text-8xl font-bold tracking-tight text-center p-8 leading-none;
@@ -94,12 +102,17 @@
   .btn-wabi-accent:hover {
     transform: scale(1) rotate(-0.2deg);
     background: linear-gradient(135deg, oklch(45% 0.06 118) 0%, oklch(42% 0.07 115) 100%);
-  }  /* Custom form styles with natural appearance */
+  }  /* Custom form styles with natural appearance and improved contrast */
   .form-input-wabi {
-    @apply bg-wabi-paper border border-wabi-stone rounded-lg px-4 py-3 font-wabi text-base;
+    @apply bg-wabi-paper border-wabi-border rounded-lg px-4 py-3 font-wabi text-base;
     @apply focus:ring-2 focus:ring-wabi-hok_blue focus:border-wabi-hok_blue;
     transform: rotate(-0.1deg);
     box-shadow: inset 0 1px 3px oklch(0% 0 0 / 0.05);
+    border-color: oklch(75% 0.015 75); /* Better contrast border */
+  }
+  
+  .form-input-wabi:focus {
+    border-color: oklch(32% 0.12 230); /* Darker focus state */
   }
   
   /* Japanese title text with brush feel */
@@ -107,23 +120,24 @@
     @apply font-brush text-wabi-charcoal;
     transform: rotate(-0.3deg);
     filter: drop-shadow(1px 1px 1px oklch(0% 0 0 / 0.1));
-  }
-    /* Navigation with natural asymmetry and better background integration */
+  }    /* Navigation with natural asymmetry and better background integration */
   .nav-wabi {
     background: linear-gradient(135deg, 
       oklch(97% 0.008 85 / 0.92) 0%, 
       oklch(96% 0.012 82 / 0.90) 100%);
     backdrop-filter: blur(12px);
-    border-bottom: 1px solid oklch(0% 0 0 / 0.08);
+    border-bottom: 1px solid oklch(75% 0.015 75 / 0.3); /* Improved border visibility */
     box-shadow: 0 2px 12px oklch(0% 0 0 / 0.08);
   }.nav-item-wabi {
     @apply px-4 py-2 rounded-md font-wabi font-medium transition-all duration-200 text-base;
-    @apply text-wabi-charcoal hover:bg-wabi-cream-dark hover:text-wabi-hok_blue;
+    @apply text-wabi-charcoal hover:bg-wabi-cream-dark;
     transform: rotate(0.1deg);
   }
-    .nav-item-wabi:hover {
+  
+  .nav-item-wabi:hover {
     transform: rotate(0.1deg) scale(1.02);
     box-shadow: 0 2px 4px oklch(0% 0 0 / 0.05);
+    color: oklch(28% 0.12 230); /* Darker blue on hover for better contrast */
   }
     /* Content cards with paper-like appearance and background integration */
   .card-wabi {
@@ -148,18 +162,33 @@
       0 2px 6px oklch(0% 0 0 / 0.12),
       inset 0 0 0 1px oklch(100% 0 0 / 0.5);
   }
-    /* Section headers with natural styling */
+  /* Section headers with natural styling and improved contrast */
   .section-header-wabi {
     @apply text-xl font-bold text-wabi-charcoal font-wabi mb-4;
     transform: rotate(-0.2deg);
-  }  /* Asymmetrical badges and tags */
+  }  /* Asymmetrical badges and tags with improved readability */
   .badge-wabi {
     @apply inline-flex items-center px-3 py-1 rounded-full text-base font-medium font-wabi;
     background: linear-gradient(45deg, oklch(96% 0.015 85) 0%, oklch(95% 0.010 80) 100%);
-    color: oklch(25% 0.015 250);
-    border: 1px solid oklch(0% 0 0 / 0.08);
+    color: oklch(20% 0.015 250); /* Darker text for better contrast */
+    border: 1px solid oklch(75% 0.015 75); /* Improved border */
     transform: rotate(0.5deg);
     box-shadow: 0 1px 3px oklch(0% 0 0 / 0.05);  }
+  
+  /* Improved link and accent text contrast */
+  .link-wabi {
+    @apply font-wabi text-wabi-hok_blue_dark underline decoration-1 underline-offset-2;
+    transition: color 0.2s ease;
+  }
+  
+  .link-wabi:hover {
+    color: oklch(25% 0.12 230); /* Even darker on hover */
+  }
+  
+  /* Status and info text with better readability */
+  .info-text-wabi {
+    @apply font-wabi text-wabi-hok_blue_dark text-base;
+  }
   
   /* Main content area with subtle background overlay */
   .main-content-wabi {
@@ -207,12 +236,7 @@
   
   /* Wabi-Sabi specific utilities */
   .wabi-text {
-    @apply font-wabi text-wabi-charcoal text-base;
-  }
-  
-  .wabi-accent-text {
-    @apply font-wabi text-wabi-hok_blue text-base;
-  }
+    @apply font-wabi text-wabi-charcoal text-base;  }
   
   .brush-text {
     @apply font-brush text-wabi-charcoal text-lg;
@@ -278,11 +302,40 @@
   .bg-kanji-bg {
     background-color: oklch(97% 0.008 85);
   }
-
   .natural-shadow {
     box-shadow: 
       0 4px 12px rgba(0, 0, 0, 0.05),
       0 1px 3px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* High contrast accessibility utilities */
+  .text-high-contrast {
+    color: oklch(15% 0.02 250) !important;  /* Very dark for accessibility */
+  }
+  
+  .border-high-contrast {
+    border-color: oklch(60% 0.02 250) !important;  /* Visible borders */
+  }
+  
+  .bg-high-contrast {
+    background-color: oklch(92% 0.005 85) !important;  /* High contrast background */
+  }
+  
+  /* Improved accent text for better readability */
+  .text-accent-readable {
+    color: oklch(28% 0.12 230);  /* Darker Hokusai blue for better contrast */
+  }
+  
+  /* Enhanced button contrast */
+  .btn-high-contrast {
+    background-color: oklch(88% 0.018 75);
+    color: oklch(20% 0.015 250);
+    border-color: oklch(70% 0.015 75);
+  }
+  
+  .btn-high-contrast:hover {
+    background-color: oklch(85% 0.022 72);
+    color: oklch(18% 0.015 250);
   }
   
   .paper-texture {

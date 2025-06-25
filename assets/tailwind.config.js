@@ -20,12 +20,17 @@ module.exports = {
           stone: "oklch(85% 0.012 75)",        // Stone gray
           ecru: "oklch(95% 0.010 80)",         // Gentle ecru
           paper: "oklch(98% 0.008 85)",        // Handmade paper
-          shadow: "oklch(0% 0 0 / 0.08)",      // Subtle shadows          // Natural accent colors
+          shadow: "oklch(0% 0 0 / 0.08)",      // Subtle shadows          // Natural accent colors - improved contrast
           indigo: "oklch(38% 0.025 250)",      // Natural indigo
           rust: "oklch(45% 0.08 35)",          // Rust/clay
-          hok_blue: "oklch(42% 0.12 230)",     // Hokusai blue
+          hok_blue: "oklch(32% 0.12 230)",     // Hokusai blue - darker for better contrast
+          hok_blue_dark: "oklch(28% 0.12 230)", // Even darker variant for high contrast
           clay: "oklch(50% 0.06 55)",          // Clay brown
           charcoal: "oklch(25% 0.015 250)",    // Sumi ink black
+          
+          // Improved border and UI colors
+          border: "oklch(75% 0.015 75)",       // Darker border for better visibility
+          border_light: "oklch(82% 0.012 75)",  // Lighter variant
           
           // Enhanced Kanji-specific colors for better contrast
           'kanji-primary': "oklch(18% 0.045 250)",    // Deep sumi ink

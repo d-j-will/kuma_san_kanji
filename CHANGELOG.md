@@ -4,43 +4,51 @@
 
 ### ✅ MAJOR: Successfully Migrated from SQLite to PostgreSQL
 
-#### Migration Changes Completed:
+#### Migration Changes Completed
 
 **Dependencies Updated:**
+
 - ✅ Replaced `ash_sqlite` with `ash_postgres` in mix.exs
 - ✅ Added PostgreSQL driver and related dependencies
 
 **Configuration Updated:**
+
 - ✅ Updated all environment configurations (dev, test, prod, runtime)
 - ✅ Configured PostgreSQL connection settings for all environments
 - ✅ Updated database URLs and connection parameters
 
 **Ash Resources Updated:**
+
 - ✅ Changed all resources from `AshSqlite.DataLayer` to `AshPostgres.DataLayer`
 - ✅ Updated all `sqlite` blocks to `postgres` blocks in resource definitions
 - ✅ Updated 11 Ash resources with proper PostgreSQL configuration
 
 **Database Schema:**
+
 - ✅ Generated new PostgreSQL-compatible migrations
 - ✅ Successfully migrated all existing data structure to PostgreSQL
 - ✅ All foreign key constraints and indexes working correctly
 
 **Testing:**
+
 - ✅ All 81 tests passing on PostgreSQL backend
 - ✅ Database seeding working correctly (81 kanji + related data)
 - ✅ Updated test configuration for PostgreSQL test database
 
 **Application Updates:**
+
 - ✅ Updated repository module with PostgreSQL extensions
 - ✅ Fixed application startup to skip migrations in test environment
 - ✅ Updated test scripts to use PostgreSQL commands
 
 **Data Verification:**
+
 - ✅ Seeded data: 81 kanji, 167 meanings, 211 pronunciations, 162 examples
 - ✅ All relationships and constraints working properly
 - ✅ Phoenix server running successfully on PostgreSQL
 
 **Benefits of Migration:**
+
 - 🚀 Better performance for complex queries and joins
 - 🔧 Support for advanced PostgreSQL features (JSONB, full-text search, etc.)
 - 📈 Better scalability for production environments
@@ -147,6 +155,7 @@ All migrations successfully applied:
   - All Content domain resources now compile successfully
 
 ### Domain Architecture Improvements
+
 - Added explicit aliases for Content domain resources to ensure proper loading order
 - Added ChangeTracking extension to the Content domain for better audit capabilities
 - Configured domain validation to be skipped in test environment for faster tests
@@ -154,6 +163,7 @@ All migrations successfully applied:
 - Fixed resource references in seeds and LiveView modules
 
 ### Bug Fixes
+
 - Fixed Ash resource compilation errors by ensuring proper module loading
 - Fixed circular dependencies between domain modules
 
@@ -368,19 +378,23 @@ All migrations successfully applied:
 - Implement end-to-end testing
 
 ## 2025-06-03
+
 - Fixed issue with `mix deps.get` by running the command in the correct directory (`kuma_san_kanji/`).
 
 ## 2025-06-04
+
 - Fixed compilation error in `KumaSanKanji.Accounts.User` by replacing invalid `manual :login` action with a generic Ash action using `action :login, :struct do ... end` and a `run` block, following Ash documentation.
 - Re-seeded the database using priv/repo/seeds.exs.
 
 ## 2025-06-05
+
 - Enhanced duplicate kanji progress merge logic in `fix_duplicates.exs` to combine all SRS fields (interval, ease_factor, repetitions, review dates, last_result) for accurate user progress migration.
 - Fixed FunctionClauseError in quiz stats: next_review_date is now normalized to NaiveDateTime for all types (string, DateTime, NaiveDateTime) in SRS logic.
 - Fixed Ash filter error in due_for_review by removing unsupported strftime and using direct datetime comparison. Quiz page now loads due kanji correctly.
 - Added a dev-only 'Reset Quiz Progress' button to the quiz page and supporting backend logic for easy testing. Button only appears in dev mode and securely deletes all user progress for the current user.
 
 ## 2025-06-10
+
 - Added detailed error logging and improved error surfacing in quiz_live.ex to help diagnose quiz page errors. Added try/rescue in session helpers and user-friendly error messages with debug info in non-production.
 
 ## [Unreleased] - 2024-06-11
@@ -388,3 +402,11 @@ All migrations successfully applied:
 - Fixed unused variable warning in `restore_session_if_exists/2` by renaming `user_id` to `_user_id` in the nil clause.
 
 - Ensured all div tags in the 'active quiz state' block of `quiz_live.html.heex` are properly closed to resolve template parse error.
+
+## [Latest] - 2025-06-25
+
+### ♿ **ACCESSIBILITY: Enhanced Color Contrast for WCAG Compliance**
+
+#### Contrast Improvements While Maintaining Wabi-Sabi Aesthetic
+
+**Fixed Critical Contrast Issues:**
