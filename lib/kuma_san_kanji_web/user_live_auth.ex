@@ -1,31 +1,14 @@
 defmodule KumaSanKanjiWeb.UserLiveAuth do
   @moduledoc """
-  Module for handling LiveView authentication.
+  Helpers for authenticating users in LiveViews.
   """
 
   import Phoenix.Component
   use KumaSanKanjiWeb, :verified_routes
 
-  # This is used for nested liveviews to fetch the current user.
-  # To use, place the following at the top of that liveview:
-  # on_mount {KumaSanKanjiWeb.UserLiveAuth, :current_user}
-  def on_mount(:current_user, _params, session, socket) do
-    case AshAuthentication.Plug.Helpers.retrieve_from_session(session, KumaSanKanji.Accounts) do
-      {:ok, user} -> {:cont, assign(socket, :current_user, user)}
-      _ -> {:cont, assign(socket, :current_user, nil)}
-    end
-  end
-
-  # This is the standard AshAuthentication hook
-  def on_mount(:mount_current_user, _params, session, socket) do
-    # Get current user from session using AshAuthentication
-    current_user =
-      case AshAuthentication.Plug.Helpers.retrieve_from_session(session, KumaSanKanji.Accounts) do
-        {:ok, user} -> user
-        _ -> nil
-      end
-
-    socket = assign(socket, :current_user, current_user)
+  def on_mount(:mount_current_user, _params, _session, socket) do
+    # The ash_authentication_live_session already sets current_user
+    # This hook just ensures the socket continues with the user already set
     {:cont, socket}
   end
 

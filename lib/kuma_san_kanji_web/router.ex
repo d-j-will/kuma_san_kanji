@@ -24,7 +24,7 @@ defmodule KumaSanKanjiWeb.Router do
   scope "/", KumaSanKanjiWeb do
     pipe_through :browser
 
-    live_session :default, on_mount: {KumaSanKanjiWeb.UserLiveAuth, :mount_current_user} do
+    ash_authentication_live_session :default do
       live "/", PageLive
       live "/explore", ExploreLive
     end
@@ -47,7 +47,8 @@ defmodule KumaSanKanjiWeb.Router do
   scope "/", KumaSanKanjiWeb do
     pipe_through :browser
 
-    live_session :authenticated_routes, on_mount: [{KumaSanKanjiWeb.UserLiveAuth, :mount_current_user}, {KumaSanKanjiWeb.UserLiveAuth, :live_user_required}] do
+    ash_authentication_live_session :authenticated_routes,
+      on_mount: {KumaSanKanjiWeb.UserLiveAuth, :live_user_required} do
       live "/quiz", QuizLive
     end
   end
