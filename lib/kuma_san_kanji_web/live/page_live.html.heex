@@ -7,11 +7,10 @@
     <p class="mt-4 text-lg wabi-text">
       Welcome {if @is_authenticated, do: "back", else: ""} to Kuma-san Kanji, your friendly bear guide to learning Japanese Kanji characters!
     </p>    <div class="mt-10 flex items-center gap-x-6">
-      <.link
-        navigate={~p"/explore"}
-        class="btn-wabi rounded-md px-3.5 py-2.5 text-sm font-wabi font-medium hover:bg-wabi-stone/80 transition-all duration-300"
-      >
-        Explore Kanji
+      <.link navigate={~p"/explore"}>
+        <.button variant="secondary" size="md">
+          Explore Kanji
+        </.button>
       </.link>
 
       <%= if @is_authenticated do %>
@@ -20,18 +19,16 @@
           <span class="font-bold text-wabi-hok_blue_dark">{@current_user.username}</span>
         </p>
       <% else %>
-        <.link
-          navigate={~p"/signup"}
-          class="btn-wabi-accent rounded-md px-3.5 py-2.5 text-sm font-wabi font-medium hover:bg-wabi-hok_blue_dark transition-all duration-300"
-        >
-          Sign Up
+        <.link navigate={~p"/signup"}>
+          <.button variant="primary" size="md">
+            Sign Up
+          </.button>
         </.link>
 
-        <.link
-          navigate={~p"/login"}
-          class="btn-wabi rounded-md border border-wabi-hok_blue px-3.5 py-2.5 text-sm font-wabi font-medium text-wabi-hok_blue_dark shadow-sm hover:bg-wabi-stone-light transition-all duration-300"
-        >
-          Log In
+        <.link navigate={~p"/login"}>
+          <.button variant="secondary" size="md" class="border border-wabi-hok_blue text-wabi-hok_blue_dark shadow-sm">
+            Log In
+          </.button>
         </.link>
       <% end %>
     </div>
