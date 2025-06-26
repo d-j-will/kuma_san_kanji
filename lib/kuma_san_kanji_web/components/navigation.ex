@@ -3,8 +3,13 @@ defmodule KumaSanKanjiWeb.Components.Navigation do
   use Phoenix.VerifiedRoutes, endpoint: KumaSanKanjiWeb.Endpoint, router: KumaSanKanjiWeb.Router
   alias Phoenix.LiveView.JS
 
-  def navbar(assigns) do    ~H"""
-    <header class="bg-wabi-paper shadow-lg border-b-2 border-wabi-border nav-wabi" id="main-nav" phx-hook="MobileMenu">
+  def navbar(assigns) do
+    ~H"""
+    <header
+      class="bg-wabi-paper shadow-lg border-b-2 border-wabi-border nav-wabi"
+      id="main-nav"
+      phx-hook="MobileMenu"
+    >
       <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div class="flex h-16 items-center justify-between">
           <div class="flex items-center">
@@ -38,19 +43,23 @@ defmodule KumaSanKanjiWeb.Components.Navigation do
                 </.link>
               <% end %>
             </div>
-          </div>          <div class="hidden md:ml-6 md:flex md:items-center">
+          </div>
+
+          <div class="hidden md:ml-6 md:flex md:items-center">
             <div class="flex items-center space-x-4">
               <%= if @current_user do %>
                 <div class="text-sm font-wabi text-wabi-charcoal/70">
-                  Hello, <span class="font-bold text-wabi-hok_blue"><%= @current_user.username || @current_user.email || "User" %></span>
+                  Hello,
+                  <span class="font-bold text-wabi-hok_blue">
+                    {@current_user.username || @current_user.email || "User"}
+                  </span>
                 </div>
 
                 <.link
-                  href={~p"/logout"}
-                  method="delete"
+                  href={~p"/sign-out"}
                   class="btn-wabi rounded-md bg-wabi-stone px-3 py-2 text-sm font-wabi font-semibold text-wabi-charcoal border border-wabi-border hover:bg-wabi-stone/80"
                 >
-                  Log out
+                  Sign Out
                 </.link>
               <% else %>
                 <.link
@@ -61,7 +70,9 @@ defmodule KumaSanKanjiWeb.Components.Navigation do
                 </.link>
               <% end %>
             </div>
-          </div>          <div class="-mr-2 flex items-center md:hidden">
+          </div>
+
+          <div class="-mr-2 flex items-center md:hidden">
             <!-- Mobile menu button -->
             <button
               phx-click={JS.dispatch("toggle-mobile-menu")}
@@ -87,7 +98,8 @@ defmodule KumaSanKanjiWeb.Components.Navigation do
             </button>
           </div>
         </div>
-      </div>    <!-- Mobile menu, show/hide based on menu state. -->
+      </div>
+      <!-- Mobile menu, show/hide based on menu state. -->
       <div class="md:hidden hidden" id="mobile-menu">
         <div class="space-y-1 pb-3 pt-2 bg-wabi-cream/50">
           <.link
@@ -112,23 +124,28 @@ defmodule KumaSanKanjiWeb.Components.Navigation do
               Quiz
             </.link>
           <% end %>
-        </div>        <div class="border-t border-wabi-border_light pb-3 pt-4 bg-wabi-cream/30">
+        </div>
+
+        <div class="border-t border-wabi-border_light pb-3 pt-4 bg-wabi-cream/30">
           <%= if @current_user do %>
             <div class="flex items-center px-4">
               <div class="ml-3">
-                <div class="text-base font-medium text-wabi-charcoal"><%= @current_user.username || @current_user.email || "User" %></div>
+                <div class="text-base font-medium text-wabi-charcoal">
+                  {@current_user.username || @current_user.email || "User"}
+                </div>
 
-                <div class="text-sm font-medium text-wabi-charcoal/60"><%= @current_user.email || "" %></div>
+                <div class="text-sm font-medium text-wabi-charcoal/60">
+                  {@current_user.email || ""}
+                </div>
               </div>
             </div>
 
             <div class="mt-3 space-y-1">
               <.link
-                href={~p"/logout"}
-                method="delete"
+                href={~p"/sign-out"}
                 class="block px-4 py-2 text-base font-medium text-wabi-charcoal/70 hover:bg-wabi-cream hover:text-wabi-charcoal"
               >
-                Log out
+                Sign Out
               </.link>
             </div>
           <% else %>
