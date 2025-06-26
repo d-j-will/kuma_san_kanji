@@ -14,27 +14,17 @@ defmodule KumaSanKanji.Auth do
   Returns `{:ok, user}` if successful, otherwise `{:error, reason}`.
   """
   def login(email, password) do
-    require Ash.Query
-
-    case User.login(email, password) do
-      {:ok, %User{} = user} ->
+    case AshAuthentication.authenticate(
+           KumaSanKanji.Domain,
+           KumaSanKanji.Accounts.User,
+           :password,
+           %{email: email, password: password}
+         ) do
+      {:ok, user} ->
         {:ok, user}
 
-      {:ok, [%User{} = user]} ->
-        {:ok, user}
-
-      {:ok, []} ->
-        {:error, :not_found}
-
-      {:error, %Ash.Error.Invalid{errors: errors}} ->
-        if Enum.any?(errors, fn err -> Map.get(err, :field) == :password end) do
-          {:error, :invalid_credentials}
-        else
-          {:error, %Ash.Error.Invalid{errors: errors}}
-        end
-
-      {:error, _} = err ->
-        err
+      {:error, reason} ->
+        {:error, reason}
     end
   end
 

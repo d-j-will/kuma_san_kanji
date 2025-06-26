@@ -35,6 +35,7 @@ defmodule KumaSanKanjiWeb.Endpoint do
     socket "/phoenix/live_reload/socket", Phoenix.LiveReloader.Socket
     plug Phoenix.LiveReloader
     plug Phoenix.CodeReloader
+    plug AshPhoenix.Plug.CheckCodegenStatus
   end
 
   plug Phoenix.LiveDashboard.RequestLogger,

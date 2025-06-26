@@ -19,15 +19,9 @@
           <span class="font-bold text-wabi-hok_blue_dark">{@current_user.username}</span>
         </p>
       <% else %>
-        <.link navigate={~p"/signup"}>
+        <.link navigate={~p"/sign-in"}>
           <.button variant="primary" size="md">
-            Sign Up
-          </.button>
-        </.link>
-
-        <.link navigate={~p"/login"}>
-          <.button variant="secondary" size="md" class="border border-wabi-hok_blue text-wabi-hok_blue_dark shadow-sm">
-            Log In
+            Sign In
           </.button>
         </.link>
       <% end %>
@@ -44,7 +38,7 @@
 
           <li>Practice with example sentences.</li>
 
-          <li>Sign up to track your progress.</li>
+          <li>Sign in to track your progress.</li>
         </ol>
       </div>
     </div>

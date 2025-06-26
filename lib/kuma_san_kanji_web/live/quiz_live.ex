@@ -20,7 +20,7 @@ defmodule KumaSanKanjiWeb.QuizLive do
   @rate_limit_max_answers 100
 
   # Authentication required for this LiveView
-  on_mount {KumaSanKanjiWeb.UserLiveAuth, :ensure_authenticated}
+  on_mount {KumaSanKanjiWeb.UserLiveAuth, :live_user_required}
 
   @impl true
   def mount(params, _session_token, socket) do

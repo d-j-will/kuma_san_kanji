@@ -36,6 +36,9 @@
 /deps/
 *.ez
 
+# Secrets
+/config/*.secret.exs
+
 # Generated on crash by the VM
 erl_crash.dump
 

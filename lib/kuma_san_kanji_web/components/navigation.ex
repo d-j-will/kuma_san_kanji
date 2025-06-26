@@ -42,7 +42,7 @@ defmodule KumaSanKanjiWeb.Components.Navigation do
             <div class="flex items-center space-x-4">
               <%= if @current_user do %>
                 <div class="text-sm font-wabi text-wabi-charcoal/70">
-                  Hello, <span class="font-bold text-wabi-hok_blue">{@current_user.username}</span>
+                  Hello, <span class="font-bold text-wabi-hok_blue"><%= @current_user.username || @current_user.email || "User" %></span>
                 </div>
 
                 <.link
@@ -54,17 +54,10 @@ defmodule KumaSanKanjiWeb.Components.Navigation do
                 </.link>
               <% else %>
                 <.link
-                  navigate={~p"/signup"}
+                  navigate={~p"/sign-in"}
                   class="btn-wabi-accent rounded-md bg-wabi-hok_blue px-3 py-2 text-sm font-wabi font-semibold text-wabi-cream hover:bg-wabi-hok_blue_dark"
                 >
-                  Sign up
-                </.link>
-
-                <.link
-                  navigate={~p"/login"}
-                  class="btn-wabi rounded-md bg-wabi-stone px-3 py-2 text-sm font-wabi font-semibold text-wabi-charcoal border border-wabi-border hover:bg-wabi-stone/80"
-                >
-                  Log in
+                  Sign In
                 </.link>
               <% end %>
             </div>
@@ -123,9 +116,9 @@ defmodule KumaSanKanjiWeb.Components.Navigation do
           <%= if @current_user do %>
             <div class="flex items-center px-4">
               <div class="ml-3">
-                <div class="text-base font-medium text-wabi-charcoal">{@current_user.username}</div>
+                <div class="text-base font-medium text-wabi-charcoal"><%= @current_user.username || @current_user.email || "User" %></div>
 
-                <div class="text-sm font-medium text-wabi-charcoal/60">{@current_user.email}</div>
+                <div class="text-sm font-medium text-wabi-charcoal/60"><%= @current_user.email || "" %></div>
               </div>
             </div>
 
@@ -141,17 +134,10 @@ defmodule KumaSanKanjiWeb.Components.Navigation do
           <% else %>
             <div class="mt-3 space-y-1 px-2">
               <.link
-                navigate={~p"/signup"}
+                navigate={~p"/sign-in"}
                 class="block rounded-md px-3 py-2 text-base font-medium text-wabi-charcoal/70 hover:bg-wabi-cream hover:text-wabi-charcoal"
               >
-                Sign up
-              </.link>
-
-              <.link
-                navigate={~p"/login"}
-                class="block rounded-md px-3 py-2 text-base font-medium text-wabi-charcoal/70 hover:bg-wabi-cream hover:text-wabi-charcoal"
-              >
-                Log in
+                Sign In
               </.link>
             </div>
           <% end %>

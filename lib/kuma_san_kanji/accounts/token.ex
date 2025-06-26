@@ -1,6 +1,6 @@
 defmodule KumaSanKanji.Accounts.Token do
   use Ash.Resource,
-    otp_app: :kskanji,
+    otp_app: :kuma_san_kanji,
     domain: KumaSanKanji.Accounts,
     authorizers: [Ash.Policy.Authorizer],
     extensions: [AshAuthentication.TokenResource],

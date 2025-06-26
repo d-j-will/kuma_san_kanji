@@ -4,57 +4,52 @@ defmodule KumaSanKanjiWeb.UserLiveAuth do
   """
 
   import Phoenix.Component
-  import Phoenix.LiveView
+  use KumaSanKanjiWeb, :verified_routes
 
-  alias KumaSanKanji.Auth
-
-  @doc """
-  Assigns the current_user to the socket assigns.
-  """
-  def on_mount(
-        :mount_current_user,
-        _params,
-        %{"user_id" => user_id, "token" => token} = _session,
-        socket
-      )
-      when is_binary(user_id) and is_binary(token) do
-    case Auth.get_user_from_session(user_id, token) do
-      {:ok, user} ->
-        {:cont, assign(socket, current_user: user)}
-
-      {:error, _} ->
-        {:cont, assign(socket, current_user: nil)}
+  # This is used for nested liveviews to fetch the current user.
+  # To use, place the following at the top of that liveview:
+  # on_mount {KumaSanKanjiWeb.UserLiveAuth, :current_user}
+  def on_mount(:current_user, _params, session, socket) do
+    case AshAuthentication.Plug.Helpers.retrieve_from_session(session, KumaSanKanji.Accounts) do
+      {:ok, user} -> {:cont, assign(socket, :current_user, user)}
+      _ -> {:cont, assign(socket, :current_user, nil)}
     end
   end
 
-  def on_mount(:mount_current_user, _params, _session, socket) do
-    {:cont, assign(socket, current_user: nil)}
+  # This is the standard AshAuthentication hook
+  def on_mount(:mount_current_user, _params, session, socket) do
+    # Get current user from session using AshAuthentication
+    current_user =
+      case AshAuthentication.Plug.Helpers.retrieve_from_session(session, KumaSanKanji.Accounts) do
+        {:ok, user} -> user
+        _ -> nil
+      end
+
+    socket = assign(socket, :current_user, current_user)
+    {:cont, socket}
   end
 
-  # Ensures user is authenticated. If not, redirects to login page.
-  def on_mount(
-        :ensure_authenticated,
-        _params,
-        %{"user_id" => user_id, "token" => token} = _session,
-        socket
-      )
-      when is_binary(user_id) and is_binary(token) do
-    case Auth.get_user_from_session(user_id, token) do
-      {:ok, user} ->
-        {:cont, assign(socket, current_user: user)}
-
-      {:error, _} ->
-        {:halt, redirect_to_login(socket)}
+  def on_mount(:live_user_optional, _params, _session, socket) do
+    if socket.assigns[:current_user] do
+      {:cont, socket}
+    else
+      {:cont, assign(socket, :current_user, nil)}
     end
   end
 
-  def on_mount(:ensure_authenticated, _params, _session, socket) do
-    {:halt, redirect_to_login(socket)}
+  def on_mount(:live_user_required, _params, _session, socket) do
+    if socket.assigns[:current_user] do
+      {:cont, socket}
+    else
+      {:halt, Phoenix.LiveView.redirect(socket, to: ~p"/sign-in")}
+    end
   end
 
-  # Helper function for redirecting to login
-  defp redirect_to_login(socket) do
-    socket
-    |> redirect(to: "/login", flash: %{error: "You must log in to access this page."})
+  def on_mount(:live_no_user, _params, _session, socket) do
+    if socket.assigns[:current_user] do
+      {:halt, Phoenix.LiveView.redirect(socket, to: ~p"/")}
+    else
+      {:cont, assign(socket, :current_user, nil)}
+    end
   end
 end

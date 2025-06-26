@@ -1,7 +1,9 @@
 defmodule KumaSanKanjiWeb.Router do
   use KumaSanKanjiWeb, :router
 
-  import KumaSanKanjiWeb.UserAuth
+  use AshAuthentication.Phoenix.Router
+
+  import AshAuthentication.Plug.Helpers
 
   pipeline :browser do
     plug :accepts, ["html"]
@@ -10,15 +12,13 @@ defmodule KumaSanKanjiWeb.Router do
     plug :put_root_layout, html: {KumaSanKanjiWeb.Layouts, :root}
     plug :protect_from_forgery
     plug :put_secure_browser_headers
-    plug :fetch_current_user
+    plug :load_from_session
   end
 
   pipeline :api do
     plug :accepts, ["json"]
-  end
-
-  pipeline :require_auth do
-    plug :require_authenticated_user
+    plug :load_from_bearer
+    plug :set_actor, :user
   end
 
   scope "/", KumaSanKanjiWeb do
@@ -26,18 +26,27 @@ defmodule KumaSanKanjiWeb.Router do
 
     live "/", PageLive
     live "/explore", ExploreLive
-    live "/signup", SignupLive
-    live "/login", LoginLive
+    auth_routes AuthController, KumaSanKanji.Accounts.User, path: "/auth"
+    sign_out_route AuthController
 
-    post "/login", AuthController, :login
-    delete "/logout", AuthController, :logout
+    # Remove these if you'd like to use your own authentication views
+    sign_in_route register_path: "/register",
+                  reset_path: "/reset",
+                  auth_routes_prefix: "/auth",
+                  on_mount: [{KumaSanKanjiWeb.UserLiveAuth, :live_no_user}],
+                  overrides: [
+                    KumaSanKanjiWeb.AuthOverrides,
+                    AshAuthentication.Phoenix.Overrides.Default
+                  ]
   end
 
   # Protected routes that require authentication
   scope "/", KumaSanKanjiWeb do
-    pipe_through [:browser, :require_auth]
+    pipe_through :browser
 
-    live "/quiz", QuizLive
+    ash_authentication_live_session :authenticated_routes do
+      live "/quiz", QuizLive
+    end
   end
 
   # Other scopes may use custom stacks.
