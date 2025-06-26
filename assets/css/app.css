@@ -8,19 +8,23 @@
 /* This file is for your main application CSS */
 
 /* Custom styles for Wabi-Sabi Kuma-san Kanji */
-@layer components {  /* Wabi-Sabi foundation styles with zen garden background */
-  .wabi-container {
-    @apply min-h-screen font-wabi text-base;
-    background-image: 
-      url('/images/zen-garden-bg.svg'),
-      radial-gradient(circle at 20% 50%, oklch(45% 0.08 35 / 0.03) 0%, transparent 50%),
-      radial-gradient(circle at 80% 20%, oklch(48% 0.05 120 / 0.03) 0%, transparent 50%),
-      radial-gradient(circle at 40% 80%, oklch(38% 0.025 250 / 0.02) 0%, transparent 50%);
-    background-size: cover, auto, auto, auto;
-    background-position: center, center, center, center;
-    background-repeat: no-repeat, no-repeat, no-repeat, no-repeat;
-    background-attachment: fixed;
-  }
+/* Wabi-Sabi foundation styles with zen garden background */
+.wabi-container {
+  min-height: 100vh;
+  font-size: 1rem;
+  line-height: 1.5;
+  background-image: 
+    url('/images/zen-garden-bg.svg'),
+    radial-gradient(circle at 20% 50%, oklch(45% 0.08 35 / 0.03) 0%, transparent 50%),
+    radial-gradient(circle at 80% 20%, oklch(48% 0.05 120 / 0.03) 0%, transparent 50%),
+    radial-gradient(circle at 40% 80%, oklch(38% 0.025 250 / 0.02) 0%, transparent 50%);
+  background-size: cover, auto, auto, auto;
+  background-position: center, center, center, center;
+  background-repeat: no-repeat, no-repeat, no-repeat, no-repeat;
+  background-attachment: fixed;
+}
+
+@layer components {
     .wabi-paper {
     @apply shadow-lg rounded-lg;
     background: linear-gradient(135deg, 

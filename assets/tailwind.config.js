@@ -11,6 +11,16 @@ module.exports = {
     "../lib/kuma_san_kanji_web.ex",
     "../lib/kuma_san_kanji_web/**/*.*ex"
   ],
+  safelist: [
+    'wabi-container',
+    'wabi-paper',
+    'wabi-texture',
+    'wabi-text',
+    'wabi-accent-text',
+    'kanji-display',
+    'kanji-container',
+    'btn-wabi'
+  ],
   theme: {
     extend: {      colors: {
         brand: "oklch(63.5% 0.25 31)",        // Wabi-Sabi inspired natural color palette in oklch format
