@@ -94,7 +94,7 @@ defmodule KumaSanKanjiWeb.QuizLive do
           |> assign(:last_answer_times, quiz_state[:last_answer_times] || [])
           |> assign(:quiz_complete, false)
           |> assign(:keyboard_shortcuts_visible, false)
-          |> assign(:dev_mode, Mix.env() == :dev)
+          |> assign(:dev_mode, Application.get_env(:kuma_san_kanji, :dev_routes, false))
 
         {:ok, socket}
     end
