@@ -94,7 +94,7 @@ defmodule KumaSanKanjiWeb.QuizLive do
           |> assign(:last_answer_times, quiz_state[:last_answer_times] || [])
           |> assign(:quiz_complete, false)
           |> assign(:keyboard_shortcuts_visible, false)
-          |> assign(:dev_mode, Mix.env() == :dev)
+          |> assign(:dev_mode, dev_mode?())
 
         {:ok, socket}
     end
@@ -627,7 +627,7 @@ defmodule KumaSanKanjiWeb.QuizLive do
     case reason do
       :no_session_id -> "No quiz session found."
       {:exception, msg} -> "Quiz error: #{msg}"
-      _ -> if Mix.env() == :prod, do: "Quiz Error", else: "Quiz Error (#{inspect(reason)})"
+      _ -> if dev_mode?(), do: "Quiz Error (#{inspect(reason)})", else: "Quiz Error"
     end
   end
 
@@ -638,4 +638,10 @@ defmodule KumaSanKanjiWeb.QuizLive do
 
   defp get_validation_error_message(:invalid_characters), do: "Answer contains invalid characters"
   defp get_validation_error_message(:invalid_format), do: "Invalid answer format"
+
+  # Helper function to safely check if we're in development mode
+  # In production, Mix module is not available, so we need to handle this gracefully
+  defp dev_mode? do
+    Code.ensure_loaded?(Mix) and function_exported?(Mix, :env, 0) and Mix.env() == :dev
+  end
 end
