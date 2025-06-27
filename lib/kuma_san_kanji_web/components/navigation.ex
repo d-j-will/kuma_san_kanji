@@ -2,6 +2,7 @@ defmodule KumaSanKanjiWeb.Components.Navigation do
   use Phoenix.Component
   use Phoenix.VerifiedRoutes, endpoint: KumaSanKanjiWeb.Endpoint, router: KumaSanKanjiWeb.Router
   alias Phoenix.LiveView.JS
+  import KumaSanKanjiWeb.LiveHelpers
 
   def navbar(assigns) do
     ~H"""
@@ -41,6 +42,15 @@ defmodule KumaSanKanjiWeb.Components.Navigation do
                 >
                   Quiz
                 </.link>
+                
+                <%= if admin?(@current_user) do %>
+                  <.link
+                    navigate={~p"/admin/users"}
+                    class="nav-item-wabi inline-flex items-center border-b-2 border-transparent px-1 pt-1 text-sm font-wabi font-medium text-wabi-charcoal hover:border-wabi-rust hover:text-wabi-rust"
+                  >
+                    Admin
+                  </.link>
+                <% end %>
               <% end %>
             </div>
           </div>

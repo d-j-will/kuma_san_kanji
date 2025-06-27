@@ -13,6 +13,7 @@ defmodule KumaSanKanjiWeb.QuizLive do
 
   alias KumaSanKanji.SRS.Logic
   alias KumaSanKanji.Quiz.Session
+  import KumaSanKanjiWeb.LiveHelpers
 
   # Rate limiting: max 100 answers per 5 minutes per user
   # 5 minutes in milliseconds
@@ -74,10 +75,10 @@ defmodule KumaSanKanjiWeb.QuizLive do
 
         socket =
           socket
-          |> put_flash(:error, get_error_message(reason) <> " (debug: #{inspect(reason)})")
+          |> put_flash(:error, get_error_message(reason, user) <> " (debug: #{inspect(reason)})")
           |> assign(:quiz_error, true)
           |> assign(:keyboard_shortcuts_visible, false)
-          |> assign(:dev_mode, Mix.env() == :dev)
+          |> assign(:dev_mode, dev_mode_enabled?(user))
 
         {:ok, socket}
 
@@ -94,7 +95,7 @@ defmodule KumaSanKanjiWeb.QuizLive do
           |> assign(:last_answer_times, quiz_state[:last_answer_times] || [])
           |> assign(:quiz_complete, false)
           |> assign(:keyboard_shortcuts_visible, false)
-          |> assign(:dev_mode, dev_mode?())
+          |> assign(:dev_mode, dev_mode_enabled?(user))
 
         {:ok, socket}
     end
@@ -151,7 +152,7 @@ defmodule KumaSanKanjiWeb.QuizLive do
       {:error, reason} ->
         socket =
           socket
-          |> put_flash(:error, "Failed to skip kanji: #{get_error_message(reason)}")
+          |> put_flash(:error, "Failed to skip kanji: #{get_error_message(reason, user)}")
 
         {:noreply, socket}
     end
@@ -190,7 +191,7 @@ defmodule KumaSanKanjiWeb.QuizLive do
       {:error, reason} ->
         socket =
           socket
-          |> put_flash(:error, get_error_message(reason))
+          |> put_flash(:error, get_error_message(reason, user))
 
         {:noreply, socket}
     end
@@ -199,9 +200,9 @@ defmodule KumaSanKanjiWeb.QuizLive do
   @impl true
   def handle_event("reset_progress", _params, socket) do
     require Logger
+    user = socket.assigns.current_user
 
-    if Mix.env() == :dev do
-      user = socket.assigns.current_user
+    if dev_mode_enabled?(user) do
 
       # Add detailed error handling with try/rescue
       try do
@@ -240,7 +241,7 @@ defmodule KumaSanKanjiWeb.QuizLive do
                  put_flash(
                    socket,
                    :error,
-                   "Failed to re-initialize quiz: #{get_error_message(reason)}"
+                   "Failed to re-initialize quiz: #{get_error_message(reason, user)}"
                  )}
             end
 
@@ -523,7 +524,7 @@ defmodule KumaSanKanjiWeb.QuizLive do
       {:error, reason} ->
         socket =
           socket
-          |> put_flash(:error, "Failed to record answer: #{get_error_message(reason)}")
+          |> put_flash(:error, "Failed to record answer: #{get_error_message(reason, user)}")
 
         {:noreply, socket}
     end
@@ -574,7 +575,7 @@ defmodule KumaSanKanjiWeb.QuizLive do
       {:error, reason} ->
         socket =
           socket
-          |> put_flash(:error, "Failed to load next kanji: #{get_error_message(reason)}")
+          |> put_flash(:error, "Failed to load next kanji: #{get_error_message(reason, user)}")
           |> assign(:quiz_error, true)
 
         {:noreply, socket}
@@ -622,12 +623,12 @@ defmodule KumaSanKanjiWeb.QuizLive do
   end
 
   # Helper to get a user-friendly error message
-  # Only show debug info in non-prod environments
-  defp get_error_message(reason) do
+  # Only show debug info in non-prod environments or for users with dev mode enabled
+  defp get_error_message(reason, user) do
     case reason do
       :no_session_id -> "No quiz session found."
       {:exception, msg} -> "Quiz error: #{msg}"
-      _ -> if dev_mode?(), do: "Quiz Error (#{inspect(reason)})", else: "Quiz Error"
+      _ -> if dev_mode_enabled?(user), do: "Quiz Error (#{inspect(reason)})", else: "Quiz Error"
     end
   end
 
@@ -638,10 +639,4 @@ defmodule KumaSanKanjiWeb.QuizLive do
 
   defp get_validation_error_message(:invalid_characters), do: "Answer contains invalid characters"
   defp get_validation_error_message(:invalid_format), do: "Invalid answer format"
-
-  # Helper function to safely check if we're in development mode
-  # In production, Mix module is not available, so we need to handle this gracefully
-  defp dev_mode? do
-    Code.ensure_loaded?(Mix) and function_exported?(Mix, :env, 0) and Mix.env() == :dev
-  end
 end
