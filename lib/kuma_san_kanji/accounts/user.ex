@@ -60,6 +60,12 @@ defmodule KumaSanKanji.Accounts.User do
       end
     end
 
+    # Simple create action for testing only
+    create :create_for_test do
+      accept [:email, :username]
+      # Timestamps will be automatically set by Ash
+    end
+
     defaults [:read]
 
     read :get_by_subject do

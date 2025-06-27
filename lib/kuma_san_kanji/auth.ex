@@ -10,25 +10,6 @@ defmodule KumaSanKanji.Auth do
   @max_token_age 60 * 60 * 24 * 7
 
   @doc """
-  Logs in a user by email and password.
-  Returns `{:ok, user}` if successful, otherwise `{:error, reason}`.
-  """
-  def login(email, password) do
-    case AshAuthentication.authenticate(
-           KumaSanKanji.Domain,
-           KumaSanKanji.Accounts.User,
-           :password,
-           %{email: email, password: password}
-         ) do
-      {:ok, user} ->
-        {:ok, user}
-
-      {:error, reason} ->
-        {:error, reason}
-    end
-  end
-
-  @doc """
   Gets a user by ID.
   Returns `{:ok, user}` if found, otherwise `{:error, :not_found}`.
   """

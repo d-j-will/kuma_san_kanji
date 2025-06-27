@@ -1,23 +1,18 @@
 defmodule KumaSanKanji.SRS.IntegrationTest do
   use KumaSanKanjiWeb.ConnCase, async: false
   import Phoenix.LiveViewTest
+  import KumaSanKanji.TestHelpers
   require Ash.Query
 
   alias KumaSanKanji.SRS.Logic
   alias KumaSanKanji.SRS.UserKanjiProgress
-  alias KumaSanKanji.Accounts.User
   alias KumaSanKanji.Kanji.{Kanji, Meaning, Pronunciation}
-  # Setup helpers
-  defp create_test_user(_) do
-    {:ok, user} =
-      User
-      |> Ash.Changeset.for_create(:sign_up, %{
-        email: "test-#{System.system_time(:millisecond)}@example.com",
-        username: "testuser#{System.system_time(:millisecond)}",
-        password: "Password123!"
-      })
-      |> Ash.create()
 
+  # Setup helpers
+  defp setup_test_user(_) do
+    user = create_simple_test_user("test-#{System.system_time(:millisecond)}@example.com")
+    # Set up authentication mocks for LiveView tests
+    setup_auth_mocks(user)
     %{user: user}
   end
 
@@ -74,12 +69,7 @@ defmodule KumaSanKanji.SRS.IntegrationTest do
   end
 
   defp login_user(%{conn: conn, user: user}) do
-    conn =
-      post(conn, ~p"/login", %{
-        "email" => user.email,
-        "password" => "Password123!"
-      })
-
+    conn = log_in_user(conn, user)
     %{conn: conn}
   end
 
@@ -89,7 +79,7 @@ defmodule KumaSanKanji.SRS.IntegrationTest do
   end
 
   describe "SRS quiz integration tests" do
-    setup [:create_test_user, :create_test_kanji, :login_user, :initialize_srs_progress]
+    setup [:setup_test_user, :create_test_kanji, :login_user, :initialize_srs_progress]
 
     @tag :integration
     test "end-to-end quiz flow - submission to progression", %{
@@ -217,21 +207,15 @@ defmodule KumaSanKanji.SRS.IntegrationTest do
   end
 
   describe "SRS quiz security tests" do
-    setup [:create_test_user, :create_test_kanji, :login_user, :initialize_srs_progress]
+    setup [:setup_test_user, :create_test_kanji, :login_user, :initialize_srs_progress]
 
     @tag :security
     # Create another user who shouldn't have access
     test "unauthorized access is prevented", %{
       progress: progress
     } do
-      {:ok, other_user} =
-        User
-        |> Ash.Changeset.for_create(:sign_up, %{
-          email: "other-#{System.system_time(:millisecond)}@example.com",
-          username: "otheruser#{System.system_time(:millisecond)}",
-          password: "Password123!"
-        })
-        |> Ash.create()
+      # Create another user using the test helper
+      other_user = create_simple_test_user("other-#{System.system_time(:millisecond)}@example.com")
 
       # Try to access first user's progress
       result = Logic.record_review(progress.id, :correct, other_user.id)
@@ -273,7 +257,7 @@ defmodule KumaSanKanji.SRS.IntegrationTest do
   end
 
   describe "SRS edge cases" do
-    setup [:create_test_user, :create_test_kanji, :login_user, :initialize_srs_progress]
+    setup [:setup_test_user, :create_test_kanji, :login_user, :initialize_srs_progress]
 
     @tag :edge_case
     test "concurrent updates are handled properly", %{
@@ -313,7 +297,7 @@ defmodule KumaSanKanji.SRS.IntegrationTest do
   end
 
   describe "SRS quiz accessibility" do
-    setup [:create_test_user, :create_test_kanji, :login_user, :initialize_srs_progress]
+    setup [:setup_test_user, :create_test_kanji, :login_user, :initialize_srs_progress]
 
     @tag :accessibility
     test "ARIA attributes are properly set", %{

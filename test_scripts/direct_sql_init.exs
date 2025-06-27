@@ -78,8 +78,7 @@ end
 
 IO.puts("")
 IO.puts("🎯 Next steps:")
-IO.puts("1. Login at: http://localhost:4000/users/log_in")
-IO.puts("2. Email: test@example.com")
-IO.puts("3. Password: password123")
-IO.puts("4. Visit quiz: http://localhost:4000/quiz")
-IO.puts("5. Test the SRS system!")
+IO.puts("1. Login via Auth0 at: http://localhost:4000/sign-in")
+IO.puts("2. Sign up if needed (Auth0 managed authentication)")
+IO.puts("3. Visit quiz: http://localhost:4000/quiz")
+IO.puts("4. Test the SRS system!")

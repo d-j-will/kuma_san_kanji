@@ -1,10 +1,11 @@
 defmodule KumaSanKanji.SRS.LogicTest do
   use KumaSanKanji.DataCase
 
+  import KumaSanKanji.TestHelpers
+
   alias KumaSanKanji.SRS.Logic
   alias KumaSanKanji.SRS.UserKanjiProgress
   alias KumaSanKanji.Kanji
-  alias KumaSanKanji.Accounts.User
 
   describe "get_due_kanji/2" do
     setup do
@@ -194,13 +195,7 @@ defmodule KumaSanKanji.SRS.LogicTest do
 
   # Helper functions for test setup
   defp create_user do
-    User
-    |> Ash.Changeset.for_create(:create, %{
-      email: "test#{System.unique_integer()}@example.com",
-      username: "testuser#{System.unique_integer()}",
-      hashed_password: Pbkdf2.hash_pwd_salt("password123")
-    })
-    |> Ash.create!()
+    create_simple_test_user("test#{System.unique_integer()}@example.com")
   end
 
   defp create_kanji do

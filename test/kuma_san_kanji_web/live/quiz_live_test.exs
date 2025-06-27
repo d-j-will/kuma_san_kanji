@@ -2,21 +2,16 @@ defmodule KumaSanKanjiWeb.QuizLiveTest do
 
   use KumaSanKanjiWeb.ConnCase, async: false
   import Phoenix.LiveViewTest
+  import KumaSanKanji.TestHelpers
 
   alias KumaSanKanji.SRS.Logic
-  alias KumaSanKanji.Accounts.User
 
   setup do
     # Create test user
-    {:ok, user} =
-      User
-      |> Ash.Changeset.for_create(:register, %{
-        email: "quiz-test-#{System.system_time(:millisecond)}@example.com",
-        username: "testuser#{System.system_time(:millisecond)}",
-        password: "Password123!",
-        password_confirmation: "Password123!"
-      })
-      |> Ash.create()
+    user = create_simple_test_user("quiz-test-#{System.system_time(:millisecond)}@example.com")
+
+    # Set up authentication mocks for LiveView tests
+    setup_auth_mocks(user)
 
     # Create test kanji
     {:ok, kanji} = KumaSanKanji.Domain.create_kanji(%{
@@ -48,11 +43,8 @@ defmodule KumaSanKanjiWeb.QuizLiveTest do
     # Initialize SRS progress
     {:ok, progress} = Logic.initialize_progress(user.id, kanji.id)
 
-    # Login user
-    conn =
-      post(build_conn(), ~p"/login", %{
-        "user" => %{"email" => user.email, "password" => "Password123!"}
-      })
+    # Create authenticated connection
+    conn = log_in_user(build_conn(), user)
 
     {:ok, conn: conn, user: user, kanji: kanji, progress: progress}
   end

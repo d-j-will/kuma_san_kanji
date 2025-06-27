@@ -1,53 +1,26 @@
 # Create development user for testing
-# This script creates a test user for development and testing purposes
+# 
+# ⚠️  OBSOLETE: This script is no longer needed after Auth0 migration.
+# Authentication is now handled via Auth0, so dev users should be created
+# through the Auth0 dashboard or sign-up flow at /sign-in
+#
+# This script is kept for reference only.
 
 alias KumaSanKanji.Accounts.User
 require Ash.Query
 
-# Development user credentials
-dev_email = "test@example.com"
-dev_username = "testuser"
-dev_password = "password123"
+IO.puts("⚠️  This script is OBSOLETE after Auth0 migration!")
+IO.puts("")
+IO.puts("With Auth0 authentication, users are now created through:")
+IO.puts("1. Auth0 Dashboard (for admin-created users)")
+IO.puts("2. Sign-up flow at /sign-in (for self-service registration)")
+IO.puts("")
+IO.puts("To create a dev user:")
+IO.puts("1. Start the application: mix phx.server")
+IO.puts("2. Navigate to http://localhost:4000/sign-in")
+IO.puts("3. Click 'Sign up' and create an account")
+IO.puts("")
+IO.puts("This script is maintained for reference purposes only.")
 
-IO.puts("Creating development user...")
-IO.puts("Email: #{dev_email}")
-IO.puts("Username: #{dev_username}")
-IO.puts("Password: #{dev_password}")
-
-# Check if user already exists using proper Ash query
-query = User |> Ash.Query.filter(email == ^dev_email)
-
-case Ash.read(query) do
-  {:ok, []} ->
-    # User doesn't exist, create new one
-    case User.sign_up(dev_email, dev_username, dev_password) do
-      {:ok, user} ->
-        IO.puts("✅ Development user created successfully!")
-        IO.puts("User ID: #{user.id}")
-        IO.puts("Email: #{user.email}")
-        IO.puts("Username: #{user.username}")
-        IO.puts("Joined at: #{user.joined_at}")
-        IO.puts("")
-        IO.puts("🔑 LOGIN CREDENTIALS:")
-        IO.puts("Email: #{dev_email}")
-        IO.puts("Password: #{dev_password}")
-
-      {:error, error} ->
-        IO.puts("❌ Failed to create development user:")
-        IO.inspect(error)
-    end
-
-  {:ok, [existing_user]} ->
-    IO.puts("ℹ️  Development user already exists!")
-    IO.puts("User ID: #{existing_user.id}")
-    IO.puts("Email: #{existing_user.email}")
-    IO.puts("Username: #{existing_user.username}")
-    IO.puts("")
-    IO.puts("🔑 LOGIN CREDENTIALS:")
-    IO.puts("Email: #{dev_email}")
-    IO.puts("Password: #{dev_password}")
-
-  {:error, error} ->
-    IO.puts("❌ Error checking for existing user:")
-    IO.inspect(error)
-end
+# Legacy code (no longer functional with Auth0):
+# User.sign_up/3 action no longer exists - users are created via Auth0

@@ -1,85 +1,101 @@
 defmodule KumaSanKanjiWeb.UserLiveAuthTest do
   use KumaSanKanjiWeb.ConnCase, async: false
 
-  alias KumaSanKanji.Accounts.User
-  alias KumaSanKanji.Auth
+  import KumaSanKanji.TestHelpers
+
   alias KumaSanKanjiWeb.UserLiveAuth
 
   describe "on_mount :mount_current_user" do
-    setup %{conn: conn} do
-      {:ok, user} = User.sign_up("liveauth@example.com", "liveuser", "password123")
-      session_data = Auth.create_session(conn, user)
-
-      %{user: user, session_data: session_data}
+    setup do
+      user = create_test_user("liveauth@example.com")
+      %{user: user}
     end
 
-    test "assigns current_user if session is valid", %{user: user, session_data: session_data} do
-      session = %{"user_id" => session_data["user_id"], "token" => session_data["token"]}
+    test "continues with socket when current_user is already assigned", %{user: user} do
+      socket = %Phoenix.LiveView.Socket{}
+      socket = Phoenix.Component.assign(socket, :current_user, user)
 
-      {:cont, new_socket} =
-        UserLiveAuth.on_mount(:mount_current_user, %{}, session, %Phoenix.LiveView.Socket{})
+      {:cont, new_socket} = UserLiveAuth.on_mount(:mount_current_user, %{}, %{}, socket)
 
       assert new_socket.assigns.current_user.id == user.id
     end
 
-    test "assigns nil if session is invalid", %{} do
-      invalid_session = %{"user_id" => Ecto.UUID.generate(), "token" => "invalid_token"}
+    test "continues when current_user is nil" do
+      socket = %Phoenix.LiveView.Socket{}
 
-      {:cont, new_socket} =
-        UserLiveAuth.on_mount(
-          :mount_current_user,
-          %{},
-          invalid_session,
-          %Phoenix.LiveView.Socket{}
-        )
+      {:cont, _new_socket} = UserLiveAuth.on_mount(:mount_current_user, %{}, %{}, socket)
+    end
+  end
 
-      assert new_socket.assigns.current_user == nil
+  describe "on_mount :live_user_optional" do
+    setup do
+      user = create_test_user("liveauth2@example.com")
+      %{user: user}
     end
 
-    test "assigns nil if session is empty" do
-      {:cont, new_socket} =
-        UserLiveAuth.on_mount(:mount_current_user, %{}, %{}, %Phoenix.LiveView.Socket{})
+    test "continues if user is assigned", %{user: user} do
+      socket = %Phoenix.LiveView.Socket{}
+      socket = Phoenix.Component.assign(socket, :current_user, user)
+
+      {:cont, new_socket} = UserLiveAuth.on_mount(:live_user_optional, %{}, %{}, socket)
+
+      assert new_socket.assigns.current_user.id == user.id
+    end
+
+    test "assigns nil if no user is assigned" do
+      socket = %Phoenix.LiveView.Socket{}
+
+      {:cont, new_socket} = UserLiveAuth.on_mount(:live_user_optional, %{}, %{}, socket)
 
       assert new_socket.assigns.current_user == nil
     end
   end
 
-  describe "on_mount :ensure_authenticated" do
-    setup %{conn: conn} do
-      {:ok, user} = User.sign_up("liveauth2@example.com", "liveuser2", "password123")
-      session_data = Auth.create_session(conn, user)
-
-      socket = %Phoenix.LiveView.Socket{}
-
-      %{user: user, session_data: session_data, socket: socket}
+  describe "on_mount :live_user_required" do
+    setup do
+      user = create_test_user("liveauth3@example.com")
+      %{user: user}
     end
 
-    test "continues if user is authenticated", %{
-      user: user,
-      session_data: session_data,
-      socket: socket
-    } do
-      session = %{"user_id" => session_data["user_id"], "token" => session_data["token"]}
+    test "continues if user is authenticated", %{user: user} do
+      socket = %Phoenix.LiveView.Socket{}
+      socket = Phoenix.Component.assign(socket, :current_user, user)
 
-      {:cont, new_socket} = UserLiveAuth.on_mount(:ensure_authenticated, %{}, session, socket)
+      {:cont, new_socket} = UserLiveAuth.on_mount(:live_user_required, %{}, %{}, socket)
 
       assert new_socket.assigns.current_user.id == user.id
     end
 
-    test "halts and redirects if user is not authenticated", %{socket: socket} do
-      {:halt, %{redirected: {:redirect, %{to: path}}}} =
-        UserLiveAuth.on_mount(:ensure_authenticated, %{}, %{}, socket)
+    test "halts and redirects if user is not authenticated" do
+      socket = %Phoenix.LiveView.Socket{}
 
-      assert path == "/login"
+      {:halt, result_socket} = UserLiveAuth.on_mount(:live_user_required, %{}, %{}, socket)
+
+      assert %{redirected: {:redirect, %{to: "/sign-in"}}} = result_socket
+    end
+  end
+
+  describe "on_mount :live_no_user" do
+    setup do
+      user = create_test_user("liveauth4@example.com")
+      %{user: user}
     end
 
-    test "halts and redirects if token is invalid", %{user: user, socket: socket} do
-      invalid_session = %{"user_id" => user.id, "token" => "invalid_token"}
+    test "halts and redirects if user is authenticated", %{user: user} do
+      socket = %Phoenix.LiveView.Socket{}
+      socket = Phoenix.Component.assign(socket, :current_user, user)
 
-      {:halt, %{redirected: {:redirect, %{to: path}}}} =
-        UserLiveAuth.on_mount(:ensure_authenticated, %{}, invalid_session, socket)
+      {:halt, result_socket} = UserLiveAuth.on_mount(:live_no_user, %{}, %{}, socket)
 
-      assert path == "/login"
+      assert %{redirected: {:redirect, %{to: "/"}}} = result_socket
+    end
+
+    test "continues and assigns nil if no user is authenticated" do
+      socket = %Phoenix.LiveView.Socket{}
+
+      {:cont, new_socket} = UserLiveAuth.on_mount(:live_no_user, %{}, %{}, socket)
+
+      assert new_socket.assigns.current_user == nil
     end
   end
 end
