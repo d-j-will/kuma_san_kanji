@@ -60,9 +60,9 @@ defmodule KumaSanKanji.Accounts.User do
       end
     end
 
-    # Simple create action for testing only
+    # Simple create action for testing and seeding
     create :create_for_test do
-      accept [:email, :username]
+      accept [:email, :username, :admin, :dev_mode_enabled]
       # Timestamps will be automatically set by Ash
     end
 

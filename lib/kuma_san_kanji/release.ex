@@ -25,8 +25,9 @@ defmodule KumaSanKanji.Release do
     start_seed_dependencies()
 
     IO.puts("Running database seeds...")
-    # Call the seeding function from the Seeds module
-    KumaSanKanji.Seeds.insert_initial_data()
+    # Run the complete seed script which includes both initial data and admin seeding
+    Code.eval_file("priv/repo/seeds.exs")
+    
     IO.puts("Database seeding completed")
   end
 
@@ -71,7 +72,8 @@ defmodule KumaSanKanji.Release do
     IO.puts("Migrations complete, seeding database...")
 
     # Seed the database
-    KumaSanKanji.Seeds.insert_initial_data()
+    # Run the complete seed script which includes both initial data and admin seeding
+    Code.eval_file("priv/repo/seeds.exs")
 
     IO.puts("Database reset and seeding completed!")
   end
