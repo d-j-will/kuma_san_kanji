@@ -1,36 +1,26 @@
 defmodule KumaSanKanjiWeb.Admin.UserAdminLive do
   use KumaSanKanjiWeb, :live_view
-  
-  import KumaSanKanjiWeb.LiveHelpers
 
   @impl true
   def mount(_params, _session, socket) do
-    current_user = socket.assigns[:current_user]
-    
-    if admin?(current_user) do
-      users = KumaSanKanji.Accounts.list_users!(load: [:dev_mode_enabled, :admin])
-      {:ok, assign(socket, users: users)}
-    else
-      {:ok, 
-       socket 
-       |> put_flash(:error, "Access denied. Admin privileges required.")
-       |> redirect(to: ~p"/")}
-    end
+    # Admin check is now handled by the router's live_session configuration
+    users = KumaSanKanji.Accounts.list_users!(load: [:dev_mode_enabled, :admin])
+    {:ok, assign(socket, users: users)}
   end
 
   @impl true
   def handle_event("toggle_dev_mode", %{"user_id" => user_id, "enabled" => enabled}, socket) do
     enabled = enabled == "true"
     current_user = socket.assigns.current_user
-    
+
     case KumaSanKanji.Accounts.toggle_user_dev_mode(user_id, enabled, actor: current_user) do
       {:ok, _user} ->
         users = KumaSanKanji.Accounts.list_users!(load: [:dev_mode_enabled, :admin])
-        {:noreply, 
+        {:noreply,
          socket
          |> assign(users: users)
          |> put_flash(:info, "Dev mode #{if enabled, do: "enabled", else: "disabled"} for user")}
-      
+
       {:error, _error} ->
         {:noreply, put_flash(socket, :error, "Failed to update user dev mode")}
     end
@@ -45,7 +35,7 @@ defmodule KumaSanKanjiWeb.Admin.UserAdminLive do
           <h1 class="text-2xl font-bold text-gray-900">User Administration</h1>
           <p class="mt-2 text-sm text-gray-600">Manage user dev mode settings and permissions</p>
         </div>
-        
+
         <div class="p-6">
           <div class="overflow-x-auto">
             <table class="min-w-full divide-y divide-gray-200">
@@ -79,22 +69,22 @@ defmodule KumaSanKanjiWeb.Admin.UserAdminLive do
                   <td class="px-6 py-4 whitespace-nowrap">
                     <span class={[
                       "inline-flex px-2 py-1 text-xs font-semibold rounded-full",
-                      if(user.admin, 
-                        do: "bg-purple-100 text-purple-800", 
+                      if(user.admin,
+                        do: "bg-purple-100 text-purple-800",
                         else: "bg-gray-100 text-gray-800")
                     ]}>
                       <%= if user.admin, do: "Admin", else: "User" %>
                     </span>
                   </td>
                   <td class="px-6 py-4 whitespace-nowrap">
-                    <button 
-                      phx-click="toggle_dev_mode" 
-                      phx-value-user_id={user.id} 
+                    <button
+                      phx-click="toggle_dev_mode"
+                      phx-value-user_id={user.id}
                       phx-value-enabled={!user.dev_mode_enabled}
                       class={[
                         "inline-flex px-3 py-1 rounded-md text-sm font-medium transition-colors",
-                        if(user.dev_mode_enabled, 
-                          do: "bg-green-100 text-green-800 hover:bg-green-200", 
+                        if(user.dev_mode_enabled,
+                          do: "bg-green-100 text-green-800 hover:bg-green-200",
                           else: "bg-gray-100 text-gray-800 hover:bg-gray-200")
                       ]}
                     >
@@ -112,7 +102,7 @@ defmodule KumaSanKanjiWeb.Admin.UserAdminLive do
               </tbody>
             </table>
           </div>
-          
+
           <div class="mt-6 p-4 bg-blue-50 rounded-md">
             <div class="flex">
               <div class="flex-shrink-0">
@@ -126,7 +116,7 @@ defmodule KumaSanKanjiWeb.Admin.UserAdminLive do
                 </h3>
                 <div class="mt-2 text-sm text-blue-700">
                   <p>
-                    Dev mode allows users to see debug information and development features in production. 
+                    Dev mode allows users to see debug information and development features in production.
                     It's always enabled in development environments, but can be toggled per-user in production.
                   </p>
                 </div>

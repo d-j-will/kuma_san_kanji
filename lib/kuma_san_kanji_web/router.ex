@@ -50,6 +50,11 @@ defmodule KumaSanKanjiWeb.Router do
     ash_authentication_live_session :authenticated_routes,
       on_mount: {KumaSanKanjiWeb.UserLiveAuth, :live_user_required} do
       live "/quiz", QuizLive
+    end
+    
+    # Admin routes that require admin privileges
+    ash_authentication_live_session :admin_routes,
+      on_mount: {KumaSanKanjiWeb.UserLiveAuth, :live_admin_required} do
       live "/admin/users", Admin.UserAdminLive
     end
   end

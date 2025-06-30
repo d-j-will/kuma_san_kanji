@@ -1,5 +1,5 @@
 # Create development user for testing
-# 
+#
 # ⚠️  OBSOLETE: This script is no longer needed after Auth0 migration.
 # Authentication is now handled via Auth0, so dev users should be created
 # through the Auth0 dashboard or sign-up flow at /sign-in

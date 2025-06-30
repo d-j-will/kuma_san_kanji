@@ -70,7 +70,7 @@ defmodule KumaSanKanji.Accounts.User do
       argument :enabled, :boolean do
         allow_nil? false
       end
-      
+
       change set_attribute(:dev_mode_enabled, arg(:enabled))
     end
 

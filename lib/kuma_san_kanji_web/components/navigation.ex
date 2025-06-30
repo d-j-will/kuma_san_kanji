@@ -42,7 +42,7 @@ defmodule KumaSanKanjiWeb.Components.Navigation do
                 >
                   Quiz
                 </.link>
-                
+
                 <%= if admin?(@current_user) do %>
                   <.link
                     navigate={~p"/admin/users"}

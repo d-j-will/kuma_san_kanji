@@ -7,7 +7,8 @@ defmodule KumaSanKanji.AuthTest do
 
   describe "get_user/1" do
     setup do
-      user = create_simple_test_user("test@example.com")
+      email = "test-#{System.unique_integer()}@example.com"
+      user = create_simple_test_user(email)
       %{user: user}
     end
 
@@ -23,7 +24,8 @@ defmodule KumaSanKanji.AuthTest do
 
   describe "create_session/2" do
     setup do
-      user = create_simple_test_user("test3@example.com")
+      email = "test-session-#{System.unique_integer()}@example.com"
+      user = create_simple_test_user(email)
       %{user: user}
     end
 
@@ -37,8 +39,8 @@ defmodule KumaSanKanji.AuthTest do
     end
 
     test "generates unique tokens for different users" do
-      user1 = create_simple_test_user("user1@example.com")
-      user2 = create_simple_test_user("user2@example.com")
+      user1 = create_simple_test_user("user1-#{System.unique_integer()}@example.com")
+      user2 = create_simple_test_user("user2-#{System.unique_integer()}@example.com")
 
       conn = %Plug.Conn{}
       session1 = create_test_session(conn, user1)
@@ -50,7 +52,7 @@ defmodule KumaSanKanji.AuthTest do
 
   describe "session token verification" do
     setup do
-      user = create_simple_test_user("test4@example.com")
+      user = create_simple_test_user("test-verify-#{System.unique_integer()}@example.com")
       %{user: user}
     end
 

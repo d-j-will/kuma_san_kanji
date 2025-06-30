@@ -98,7 +98,7 @@ defmodule KumaSanKanji.TestHelpers do
     # Try to get token from user metadata first (if it exists)
     token = case user.__metadata__ do
       %{token: token} when is_binary(token) -> token
-      _ -> 
+      _ ->
         # Fallback: generate a simple token for testing
         Phoenix.Token.sign(KumaSanKanjiWeb.Endpoint, "user auth", user.id)
     end
@@ -118,7 +118,7 @@ defmodule KumaSanKanji.TestHelpers do
     stub(KumaSanKanjiWeb.UserLiveAuth, :on_mount, fn
       :live_user_required, _params, _session, socket ->
         {:cont, Phoenix.Component.assign(socket, :current_user, user)}
-      
+
       _hook, _params, _session, socket ->
         # For other hooks, just continue with the user assigned
         {:cont, Phoenix.Component.assign(socket, :current_user, user)}

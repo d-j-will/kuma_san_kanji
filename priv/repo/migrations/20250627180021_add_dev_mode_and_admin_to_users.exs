@@ -2,9 +2,22 @@ defmodule KumaSanKanji.Repo.Migrations.AddDevModeAndAdminToUsers do
   use Ecto.Migration
 
   def change do
-    alter table(:users) do
-      add(:dev_mode_enabled, :boolean, null: false, default: false)
-      add(:admin, :boolean, null: false, default: false)
-    end
+    execute(
+      """
+      DO $$
+      BEGIN
+          IF NOT EXISTS (SELECT 1 FROM information_schema.columns
+                         WHERE table_name='users' AND column_name='dev_mode_enabled') THEN
+              ALTER TABLE users ADD COLUMN dev_mode_enabled boolean NOT NULL DEFAULT false;
+          END IF;
+
+          IF NOT EXISTS (SELECT 1 FROM information_schema.columns
+                         WHERE table_name='users' AND column_name='admin') THEN
+              ALTER TABLE users ADD COLUMN admin boolean NOT NULL DEFAULT false;
+          END IF;
+      END $$;
+      """,
+      ""
+    )
   end
 end

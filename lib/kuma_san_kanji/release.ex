@@ -27,7 +27,7 @@ defmodule KumaSanKanji.Release do
     IO.puts("Running database seeds...")
     # Run the complete seed script which includes both initial data and admin seeding
     Code.eval_file("priv/repo/seeds.exs")
-    
+
     IO.puts("Database seeding completed")
   end
 
