@@ -24,7 +24,7 @@ case KumaSanKanji.Accounts.get_user_by_email(admin_email, authorize?: false) do
         Logger.error("❌ Failed to make user admin: #{inspect(reason)}")
     end
 
-  {:error, error} when is_map(error) and is_list(Map.get(error, :errors, [])) ->
+  {:error, %Ash.Error.Invalid{}} ->
     # User doesn't exist - create placeholder
     Logger.info("Creating admin placeholder for #{admin_email}")
     username = admin_email |> String.split("@") |> List.first()

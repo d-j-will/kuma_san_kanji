@@ -78,6 +78,66 @@ defmodule KumaSanKanji.Release do
     IO.puts("Database reset and seeding completed!")
   end
 
+  def setup_admin_user do
+    load_app()
+    start_seed_dependencies()
+    
+    admin_email = System.get_env("ADMIN_EMAIL") || "davewil1973@gmail.com"
+    IO.puts("Setting up admin user with email: #{admin_email}")
+
+    try do
+      case KumaSanKanji.Accounts.get_user_by_email(admin_email, authorize?: false) do
+        {:ok, user} ->
+          if user.admin do
+            IO.puts("✅ User #{user.email} is already an admin")
+          else
+            IO.puts("Making user #{user.email} an admin...")
+            case KumaSanKanji.Accounts.update_user(user, %{admin: true}, authorize?: false) do
+              {:ok, updated_user} -> 
+                IO.puts("✅ Successfully made #{updated_user.email} an admin")
+              {:error, reason} -> 
+                IO.puts("❌ Failed to make user admin: #{inspect(reason)}")
+            end
+          end
+
+        {:error, _} ->
+          # User doesn't exist - create a placeholder admin user
+          IO.puts("User not found. Creating admin placeholder for #{admin_email}")
+          username = admin_email |> String.split("@") |> List.first()
+
+          case KumaSanKanji.Accounts.create_test_user(%{
+            email: admin_email,
+            username: username,
+            admin: true,
+            dev_mode_enabled: true
+          }, authorize?: false) do
+            {:ok, user} -> 
+              IO.puts("✅ Created admin placeholder: #{user.email}")
+            {:error, reason} -> 
+              IO.puts("❌ Failed to create admin placeholder: #{inspect(reason)}")
+          end
+      end
+    rescue
+      error ->
+        IO.puts("❌ Error during admin setup: #{inspect(error)}")
+    end
+  end
+
+  def seed_with_admin do
+    load_app()
+    start_seed_dependencies()
+
+    IO.puts("Running database seeds with admin setup...")
+    
+    # Run the complete seed script which includes both initial data and admin seeding
+    Code.eval_file("priv/repo/seeds.exs")
+    
+    # Set up admin user
+    setup_admin_user()
+
+    IO.puts("Database seeding with admin setup completed")
+  end
+
   defp repos do
     Application.fetch_env!(@app, :ecto_repos)
   end

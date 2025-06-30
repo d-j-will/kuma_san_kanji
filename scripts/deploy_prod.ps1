@@ -17,8 +17,8 @@ if ($SetSecret) {
 Write-Host "📦 Deploying application..." -ForegroundColor Yellow
 fly deploy
 
-Write-Host "🌱 Running production seeds..." -ForegroundColor Yellow
-fly ssh console -C "/app/scripts/seed.sh"
+Write-Host "🌱 Setting up admin user..." -ForegroundColor Yellow
+fly ssh console -C "/app/bin/kuma_san_kanji eval 'KumaSanKanji.Release.setup_admin_user()'"
 
 Write-Host "✅ Production deployment complete!" -ForegroundColor Green
 Write-Host "🌐 Application available at: https://kuma-san-kanji.fly.dev" -ForegroundColor Cyan
