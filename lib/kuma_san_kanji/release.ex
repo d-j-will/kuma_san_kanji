@@ -151,9 +151,13 @@ defmodule KumaSanKanji.Release do
     Application.ensure_all_started(:telemetry)
     Application.ensure_all_started(:ash)
 
-    # Start the repository for database access
+    # Start the repository for database access (handle if already started)
     for repo <- repos() do
-      {:ok, _} = repo.start_link()
+      case repo.start_link() do
+        {:ok, _} -> :ok
+        {:error, {:already_started, _}} -> :ok
+        {:error, reason} -> raise "Failed to start #{repo}: #{inspect(reason)}"
+      end
     end
   end
 end
