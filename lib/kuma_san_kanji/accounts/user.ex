@@ -97,14 +97,14 @@ defmodule KumaSanKanji.Accounts.User do
       authorize_if always()
     end
 
+    # Temporarily allow all read operations for debugging
+    policy action_type(:read) do
+      authorize_if always()
+    end
+
     # Only admins can toggle dev mode for users
     policy action(:toggle_dev_mode) do
       authorize_if actor_attribute_equals(:admin, true)
-    end
-
-    # Allow basic read operations
-    policy action_type(:read) do
-      authorize_if always()
     end
 
     # Allow create_for_test for testing purposes
@@ -114,17 +114,12 @@ defmodule KumaSanKanji.Accounts.User do
 
     # Allow generic update for admin operations
     policy action(:update) do
-      authorize_if always()  # We'll control this at the application level
+      authorize_if actor_attribute_equals(:admin, true)
     end
 
-    # Allow destroy for cleanup
+    # Allow destroy for cleanup (admin only)
     policy action(:destroy) do
-      authorize_if always()
-    end
-
-    # Default to forbidding other actions
-    policy always() do
-      forbid_if always()
+      authorize_if actor_attribute_equals(:admin, true)
     end
   end
 

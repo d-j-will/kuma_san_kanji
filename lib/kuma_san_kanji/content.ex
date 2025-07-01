@@ -10,7 +10,7 @@ defmodule KumaSanKanji.Content do
       Ash.Extensions.ChangeTracking
     ],
     # Explicitly alias resources to ensure they're loaded
-    validate_domain_config?: Mix.env() != :test
+    validate_domain_config?: Application.get_env(:kuma_san_kanji, :env) != :test
 
   alias KumaSanKanji.Content.ThematicGroup
   alias KumaSanKanji.Content.KanjiThematicGroup

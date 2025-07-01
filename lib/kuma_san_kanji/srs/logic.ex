@@ -222,7 +222,7 @@ defmodule KumaSanKanji.SRS.Logic do
   {:ok, %{cleared: integer, initialized: integer}} | {:error, reason}
   """
   def reset_user_progress(user_id, options \\ []) when is_binary(user_id) do
-    if Mix.env() == :dev do
+    if Application.get_env(:kuma_san_kanji, :env) == :dev do
       require Logger
       import Ash.Query
 

@@ -1,11 +1,38 @@
 defmodule KumaSanKanjiWeb.Admin.UserAdminLive do
   use KumaSanKanjiWeb, :live_view
+  import KumaSanKanjiWeb.LiveHelpers
 
   @impl true
   def mount(_params, _session, socket) do
-    # Admin check is now handled by the router's live_session configuration
-    users = KumaSanKanji.Accounts.list_users!(load: [:dev_mode_enabled, :admin])
-    {:ok, assign(socket, users: users)}
+    current_user = socket.assigns.current_user
+    
+    # Add debugging
+    IO.inspect(current_user, label: "Current user in UserAdminLive")
+    IO.inspect(admin?(current_user), label: "Is admin?")
+    
+    # Check if user is admin
+    if admin?(current_user) do
+      # Try to list users with more specific error handling
+      try do
+        users = KumaSanKanji.Accounts.list_users!(
+          load: [:dev_mode_enabled, :admin],
+          actor: current_user
+        )
+        {:ok, assign(socket, users: users)}
+      rescue
+        error ->
+          IO.inspect(error, label: "Error loading users")
+          {:ok,
+           socket
+           |> put_flash(:error, "Failed to load users: #{inspect(error)}")
+           |> redirect(to: ~p"/")}
+      end
+    else
+      {:ok,
+       socket
+       |> put_flash(:error, "Access denied. Admin privileges required.")
+       |> redirect(to: ~p"/")}
+    end
   end
 
   @impl true
@@ -15,7 +42,10 @@ defmodule KumaSanKanjiWeb.Admin.UserAdminLive do
 
     case KumaSanKanji.Accounts.toggle_user_dev_mode(user_id, enabled, actor: current_user) do
       {:ok, _user} ->
-        users = KumaSanKanji.Accounts.list_users!(load: [:dev_mode_enabled, :admin])
+        users = KumaSanKanji.Accounts.list_users!(
+          load: [:dev_mode_enabled, :admin],
+          actor: current_user
+        )
         {:noreply,
          socket
          |> assign(users: users)

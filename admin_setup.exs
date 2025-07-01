@@ -18,9 +18,9 @@ case KumaSanKanji.Accounts.get_user_by_email(admin_email, authorize?: false) do
   {:ok, user} ->
     Logger.info("Making user #{user.email} an admin")
     case KumaSanKanji.Accounts.update_user(user, %{admin: true}, authorize?: false) do
-      {:ok, updated_user} -> 
+      {:ok, updated_user} ->
         Logger.info("✅ Successfully made #{updated_user.email} an admin")
-      {:error, reason} -> 
+      {:error, reason} ->
         Logger.error("❌ Failed to make user admin: #{inspect(reason)}")
     end
 
@@ -35,9 +35,9 @@ case KumaSanKanji.Accounts.get_user_by_email(admin_email, authorize?: false) do
       admin: true,
       dev_mode_enabled: true
     }, authorize?: false) do
-      {:ok, user} -> 
+      {:ok, user} ->
         Logger.info("✅ Created admin placeholder: #{user.email}")
-      {:error, reason} -> 
+      {:error, reason} ->
         Logger.error("❌ Failed to create admin placeholder: #{inspect(reason)}")
     end
 

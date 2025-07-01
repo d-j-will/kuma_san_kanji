@@ -11,7 +11,7 @@ kill_signal = 'SIGTERM'
 
 # Deploy configuration
 [deploy]
-  release_command = '/app/bin/kuma_san_kanji eval "KumaSanKanji.Release.migrate()" && /app/bin/kuma_san_kanji eval "KumaSanKanji.Release.setup_admin_user()"'
+  release_command = '/app/bin/kuma_san_kanji eval "KumaSanKanji.Release.migrate() && KumaSanKanji.Release.setup_admin_user()"'
 
 [env]
   PHX_HOST = 'kuma-san-kanji.fly.dev'

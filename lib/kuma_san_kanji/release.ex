@@ -97,6 +97,7 @@ defmodule KumaSanKanji.Release do
                 IO.puts("✅ Successfully made #{updated_user.email} an admin")
               {:error, reason} -> 
                 IO.puts("❌ Failed to make user admin: #{inspect(reason)}")
+                raise "Admin setup failed: #{inspect(reason)}"
             end
           end
 
@@ -115,11 +116,13 @@ defmodule KumaSanKanji.Release do
               IO.puts("✅ Created admin placeholder: #{user.email}")
             {:error, reason} -> 
               IO.puts("❌ Failed to create admin placeholder: #{inspect(reason)}")
+              raise "Admin creation failed: #{inspect(reason)}"
           end
       end
     rescue
       error ->
         IO.puts("❌ Error during admin setup: #{inspect(error)}")
+        reraise error, __STACKTRACE__
     end
   end
 
@@ -136,6 +139,21 @@ defmodule KumaSanKanji.Release do
     setup_admin_user()
 
     IO.puts("Database seeding with admin setup completed")
+  end
+
+  def migrate_and_setup do
+    load_app()
+    start_seed_dependencies()
+
+    IO.puts("Running migrations...")
+    for repo <- repos() do
+      {:ok, _, _} = Ecto.Migrator.with_repo(repo, &Ecto.Migrator.run(&1, :up, all: true))
+    end
+    IO.puts("Migrations completed")
+
+    IO.puts("Setting up admin user...")
+    setup_admin_user()
+    IO.puts("Admin setup completed")
   end
 
   defp repos do

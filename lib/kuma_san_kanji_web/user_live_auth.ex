@@ -31,7 +31,7 @@ defmodule KumaSanKanjiWeb.UserLiveAuth do
 
   def on_mount(:live_admin_required, _params, _session, socket) do
     user = socket.assigns[:current_user]
-
+    
     if user && admin?(user) do
       {:cont, socket}
     else
