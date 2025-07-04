@@ -81,7 +81,7 @@ defmodule KumaSanKanji.Release do
   def setup_admin_user do
     load_app()
     start_seed_dependencies()
-    
+
     admin_email = System.get_env("ADMIN_EMAIL") || "davewil1973@gmail.com"
     IO.puts("Setting up admin user with email: #{admin_email}")
 
@@ -93,9 +93,9 @@ defmodule KumaSanKanji.Release do
           else
             IO.puts("Making user #{user.email} an admin...")
             case KumaSanKanji.Accounts.update_user(user, %{admin: true}, authorize?: false) do
-              {:ok, updated_user} -> 
+              {:ok, updated_user} ->
                 IO.puts("✅ Successfully made #{updated_user.email} an admin")
-              {:error, reason} -> 
+              {:error, reason} ->
                 IO.puts("❌ Failed to make user admin: #{inspect(reason)}")
                 raise "Admin setup failed: #{inspect(reason)}"
             end
@@ -112,9 +112,9 @@ defmodule KumaSanKanji.Release do
             admin: true,
             dev_mode_enabled: true
           }, authorize?: false) do
-            {:ok, user} -> 
+            {:ok, user} ->
               IO.puts("✅ Created admin placeholder: #{user.email}")
-            {:error, reason} -> 
+            {:error, reason} ->
               IO.puts("❌ Failed to create admin placeholder: #{inspect(reason)}")
               raise "Admin creation failed: #{inspect(reason)}"
           end
@@ -131,10 +131,10 @@ defmodule KumaSanKanji.Release do
     start_seed_dependencies()
 
     IO.puts("Running database seeds with admin setup...")
-    
+
     # Run the complete seed script which includes both initial data and admin seeding
     Code.eval_file("priv/repo/seeds.exs")
-    
+
     # Set up admin user
     setup_admin_user()
 

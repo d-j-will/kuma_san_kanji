@@ -5,11 +5,7 @@ defmodule KumaSanKanjiWeb.Admin.UserAdminLive do
   @impl true
   def mount(_params, _session, socket) do
     current_user = socket.assigns.current_user
-    
-    # Add debugging
-    IO.inspect(current_user, label: "Current user in UserAdminLive")
-    IO.inspect(admin?(current_user), label: "Is admin?")
-    
+
     # Check if user is admin
     if admin?(current_user) do
       # Try to list users with more specific error handling
@@ -40,19 +36,28 @@ defmodule KumaSanKanjiWeb.Admin.UserAdminLive do
     enabled = enabled == "true"
     current_user = socket.assigns.current_user
 
-    case KumaSanKanji.Accounts.toggle_user_dev_mode(user_id, enabled, actor: current_user) do
-      {:ok, _user} ->
-        users = KumaSanKanji.Accounts.list_users!(
-          load: [:dev_mode_enabled, :admin],
-          actor: current_user
-        )
-        {:noreply,
-         socket
-         |> assign(users: users)
-         |> put_flash(:info, "Dev mode #{if enabled, do: "enabled", else: "disabled"} for user")}
+    # First get the user
+    case KumaSanKanji.Accounts.get_user_by_id(user_id, actor: current_user) do
+      {:ok, user} ->
+        # Then toggle dev mode
+        case KumaSanKanji.Accounts.toggle_user_dev_mode(user, %{enabled: enabled}, actor: current_user) do
+          {:ok, _updated_user} ->
+            users = KumaSanKanji.Accounts.list_users!(
+              load: [:dev_mode_enabled, :admin],
+              actor: current_user
+            )
+
+            {:noreply,
+             socket
+             |> assign(users: users)
+             |> put_flash(:info, "Dev mode #{if enabled, do: "enabled", else: "disabled"} for user")}
+
+          {:error, _error} ->
+            {:noreply, put_flash(socket, :error, "Failed to update user dev mode")}
+        end
 
       {:error, _error} ->
-        {:noreply, put_flash(socket, :error, "Failed to update user dev mode")}
+        {:noreply, put_flash(socket, :error, "Failed to find user")}
     end
   end
 
@@ -110,7 +115,7 @@ defmodule KumaSanKanjiWeb.Admin.UserAdminLive do
                     <button
                       phx-click="toggle_dev_mode"
                       phx-value-user_id={user.id}
-                      phx-value-enabled={!user.dev_mode_enabled}
+                      phx-value-enabled={to_string(!user.dev_mode_enabled)}
                       class={[
                         "inline-flex px-3 py-1 rounded-md text-sm font-medium transition-colors",
                         if(user.dev_mode_enabled,
