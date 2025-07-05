@@ -89,7 +89,7 @@ defmodule KumaSanKanji.SRS.Logic do
   ## Returns
   {:ok, %UserKanjiProgress{}} | {:error, reason}
   """
-  def initialize_progress(user_id, kanji_id)
+  def initialize_progress(user_id, kanji_id, actor \\ nil)
       when is_binary(user_id) and is_binary(kanji_id) do
     require Logger
     Logger.debug("[SRS.Logic] Initializing progress for user #{user_id}, kanji #{kanji_id}")
@@ -98,7 +98,7 @@ defmodule KumaSanKanji.SRS.Logic do
       # Validate that kanji exists
       case Kanji
            |> Ash.Query.filter(id == ^kanji_id)
-           |> Ash.read() do
+           |> Ash.read(actor: actor) do
         {:ok, [kanji]} ->
           Logger.debug("[SRS.Logic] Found kanji: #{kanji.character}")
 
@@ -108,7 +108,7 @@ defmodule KumaSanKanji.SRS.Logic do
                  user_id: user_id,
                  kanji_id: kanji_id
                })
-               |> Ash.read() do
+               |> Ash.read(actor: actor) do
             {:ok, [existing]} ->
               Logger.debug(
                 "[SRS.Logic] Progress already exists for this kanji, returning existing"
@@ -122,7 +122,7 @@ defmodule KumaSanKanji.SRS.Logic do
 
               UserKanjiProgress
               |> Ash.Changeset.for_create(:initialize, %{user_id: user_id, kanji_id: kanji_id})
-              |> Ash.create()
+              |> Ash.create(actor: actor)
 
             {:error, reason} ->
               Logger.error("[SRS.Logic] Error checking progress existence: #{inspect(reason)}")
@@ -191,7 +191,7 @@ defmodule KumaSanKanji.SRS.Logic do
   ## Returns
   {:ok, [%UserKanjiProgress{}]} | {:error, reason}
   """
-  def bulk_initialize_progress(user_id, kanji_ids)
+  def bulk_initialize_progress(user_id, kanji_ids, actor \\ nil)
       when is_binary(user_id) and is_list(kanji_ids) do
     # Validate kanji_ids list
     if length(kanji_ids) > 100 do
@@ -201,7 +201,7 @@ defmodule KumaSanKanji.SRS.Logic do
       kanji_ids
       |> Enum.chunk_every(20)
       |> Enum.reduce_while({:ok, []}, fn batch, {:ok, acc} ->
-        case process_batch(user_id, batch) do
+        case process_batch(user_id, batch, actor) do
           {:ok, batch_results} -> {:cont, {:ok, acc ++ batch_results}}
           {:error, reason} -> {:halt, {:error, reason}}
         end
@@ -222,6 +222,18 @@ defmodule KumaSanKanji.SRS.Logic do
   {:ok, %{cleared: integer, initialized: integer}} | {:error, reason}
   """
   def reset_user_progress(user_id, options \\ []) when is_binary(user_id) do
+    # Extract actor from options for authorization
+    actor = Keyword.get(options, :actor)
+
+    # Ensure we have an actor for authorization
+    if is_nil(actor) do
+      {:error, :no_actor_provided}
+    else
+      do_reset_user_progress(user_id, actor, options)
+    end
+  end
+
+  defp do_reset_user_progress(user_id, actor, options) when is_binary(user_id) do
     if Application.get_env(:kuma_san_kanji, :env) == :dev do
       require Logger
       import Ash.Query
@@ -239,7 +251,7 @@ defmodule KumaSanKanji.SRS.Logic do
       # Step 1: Delete all UserKanjiProgress records for this user - with detailed error handling
       delete_result =
         try do
-          case UserKanjiProgress |> filter(user_id == ^user_id) |> Ash.read() do
+          case UserKanjiProgress |> filter(user_id == ^user_id) |> Ash.read(actor: actor) do
             {:ok, progress_records}
             when is_list(progress_records) and length(progress_records) > 0 ->
               Logger.debug(
@@ -250,7 +262,7 @@ defmodule KumaSanKanji.SRS.Logic do
                 Enum.map(progress_records, fn record ->
                   # Create a proper destroy changeset using the record itself
                   Logger.debug("[SRS.Logic] Deleting record ID: #{record.id}")
-                  Ash.Changeset.for_destroy(record, :destroy) |> Ash.destroy()
+                  Ash.Changeset.for_destroy(record, :destroy) |> Ash.destroy(actor: actor)
                 end)
 
               errors = Enum.filter(results, &match?({:error, _}, &1))
@@ -301,7 +313,7 @@ defmodule KumaSanKanji.SRS.Logic do
               # Start with easier kanji first
               |> Ash.Query.sort(grade: :asc)
               |> Ash.Query.limit(limit)
-              |> Ash.read()
+              |> Ash.read(actor: actor)
 
             case kanji_ids_result do
               {:ok, kanji_list} when is_list(kanji_list) and length(kanji_list) > 0 ->
@@ -316,7 +328,7 @@ defmodule KumaSanKanji.SRS.Logic do
                     "[SRS.Logic] Calling bulk_initialize_progress with #{length(kanji_ids)} kanji IDs"
                   )
 
-                  init_result = bulk_initialize_progress(user_id, kanji_ids)
+                  init_result = bulk_initialize_progress(user_id, kanji_ids, actor)
 
                   case init_result do
                     {:ok, initialized_progress}
@@ -505,7 +517,7 @@ defmodule KumaSanKanji.SRS.Logic do
     }
   end
 
-  defp process_batch(user_id, kanji_ids) do
+  defp process_batch(user_id, kanji_ids, actor) do
     require Logger
 
     Logger.debug("[SRS.Logic] Processing batch of #{length(kanji_ids)} kanji")
@@ -514,7 +526,7 @@ defmodule KumaSanKanji.SRS.Logic do
       results =
         Enum.map(kanji_ids, fn kanji_id ->
           # Add more detailed logging for debugging
-          result = initialize_progress(user_id, kanji_id)
+          result = initialize_progress(user_id, kanji_id, actor)
           Logger.debug("[SRS.Logic] Initialized kanji #{kanji_id}: #{inspect(result)}")
           result
         end)

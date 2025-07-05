@@ -207,7 +207,7 @@ defmodule KumaSanKanjiWeb.QuizLive do
       # Add detailed error handling with try/rescue
       try do
         # Use enhanced reset options - 15 kanji that are all due immediately
-        case Logic.reset_user_progress(user.id, limit: 15, immediate: true) do
+        case Logic.reset_user_progress(user.id, limit: 15, immediate: true, actor: user) do
           {:ok, result} ->
             Logger.debug(
               "[QuizLive] Reset progress: cleared #{result.cleared} records, initialized #{result.initialized} kanji"

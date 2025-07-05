@@ -8,7 +8,8 @@ defmodule KumaSanKanji.SRS.UserKanjiProgress do
 
   use Ash.Resource,
     domain: KumaSanKanji.Domain,
-    data_layer: AshPostgres.DataLayer
+    data_layer: AshPostgres.DataLayer,
+    authorizers: [Ash.Policy.Authorizer]
 
   attributes do
     uuid_primary_key(:id)
@@ -145,6 +146,17 @@ defmodule KumaSanKanji.SRS.UserKanjiProgress do
         user_id = Ash.Query.get_argument(query, :user_id)
         Ash.Query.do_filter(query, user_id: user_id)
       end)
+    end
+  end
+
+  policies do
+    # Users can only access/modify their own progress records
+    policy action_type(:read) do
+      authorize_if expr(user_id == ^actor(:id))
+    end
+
+    policy action_type([:create, :update, :destroy]) do
+      authorize_if expr(user_id == ^actor(:id))
     end
   end
 
