@@ -318,15 +318,10 @@ defmodule KumaSanKanjiWeb.QuizLive do
     require Logger
 
     try do
-      # Get the user for actor authorization
-      case KumaSanKanji.Accounts.User 
-           |> Ash.Query.filter(id == ^user_id) 
-           |> Ash.read() do
-        {:ok, [user]} ->
-          case Session.restore_for_user(user_id, session_id) do
-            {:ok, session_data} ->
-              # Get user stats to include with restored session
-              case Logic.get_user_stats(user_id, user) do
+      case Session.restore_for_user(user_id, session_id) do
+        {:ok, session_data} ->
+          # Get user stats to include with restored session
+          case Logic.get_user_stats(user_id) do
             # Get progress for the current kanji if available
             {:ok, stats} ->
               current_progress =
@@ -336,7 +331,7 @@ defmodule KumaSanKanjiWeb.QuizLive do
 
                   kanji ->
                     # Try to get the progress for this kanji
-                    case Logic.get_due_kanji(user_id, 1, user) do
+                    case Logic.get_due_kanji(user_id, 1) do
                       {:ok, [progress | _]} when progress.kanji.id == kanji.id -> progress
                       {:ok, _} -> nil
                       {:error, _} -> nil
@@ -360,13 +355,6 @@ defmodule KumaSanKanjiWeb.QuizLive do
         {:error, _reason} ->
           {:error, :session_not_found}
       end
-
-      {:ok, []} ->
-        {:error, :user_not_found}
-
-      {:error, reason} ->
-        {:error, reason}
-    end
     rescue
       e ->
         Logger.error(
