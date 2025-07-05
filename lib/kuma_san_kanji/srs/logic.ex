@@ -25,20 +25,21 @@ defmodule KumaSanKanji.SRS.Logic do
   ## Parameters
   - user_id: UUID of the user
   - limit: Maximum number of kanji to return (default: 10, max: 50)
+  - actor: The user performing the action (for authorization)
 
   ## Returns
   {:ok, [%UserKanjiProgress{}]} | {:error, reason}
   """
-  def get_due_kanji(user_id, limit \\ 10) when is_binary(user_id) do
+  def get_due_kanji(user_id, limit \\ 10, actor \\ nil) when is_binary(user_id) do
     # Validate and sanitize limit parameter
     sanitized_limit = sanitize_limit(limit)
 
     case UserKanjiProgress
          |> Ash.Query.for_read(:due_for_review, %{user_id: user_id, limit: sanitized_limit})
-         |> Ash.read() do
+         |> Ash.read(actor: actor) do
       {:ok, progress_records} ->
         # Load kanji data for each progress record
-        load_kanji_data(progress_records)
+        load_kanji_data(progress_records, actor)
 
       {:error, reason} ->
         {:error, reason}
@@ -52,21 +53,22 @@ defmodule KumaSanKanji.SRS.Logic do
   - progress_id: UUID of the UserKanjiProgress record
   - result: :correct | :incorrect | :skip
   - user_id: UUID of the user (for authorization)
+  - actor: The user performing the action (for authorization)
 
   ## Returns
   {:ok, %UserKanjiProgress{}} | {:error, reason}
   """
-  def record_review(progress_id, result, user_id)
+  def record_review(progress_id, result, user_id, actor \\ nil)
       when is_binary(progress_id) and result in [:correct, :incorrect, :skip] and
              is_binary(user_id) do
     # First, get the progress record and verify it belongs to the user
     case UserKanjiProgress
          |> Ash.Query.filter(id == ^progress_id)
-         |> Ash.read() do
+         |> Ash.read(actor: actor) do
       {:ok, [progress]} ->
         if progress.user_id == user_id do
           # Update with concurrency protection
-          update_progress_with_retry(progress, result, 3)
+          update_progress_with_retry(progress, result, 3, actor)
         else
           {:error, :unauthorized}
         end
@@ -152,14 +154,15 @@ defmodule KumaSanKanji.SRS.Logic do
 
   ## Parameters
   - user_id: UUID of the user
+  - actor: The user performing the action (for authorization)
 
   ## Returns
   {:ok, %{total_kanji: integer, due_today: integer, accuracy: float}} | {:error, reason}
   """
-  def get_user_stats(user_id) when is_binary(user_id) do
+  def get_user_stats(user_id, actor \\ nil) when is_binary(user_id) do
     case UserKanjiProgress
          |> Ash.Query.for_read(:user_stats, %{user_id: user_id})
-         |> Ash.read() do
+         |> Ash.read(actor: actor) do
       {:ok, progress_records} ->
         stats = calculate_user_stats(progress_records)
         {:ok, stats}
@@ -399,7 +402,7 @@ defmodule KumaSanKanji.SRS.Logic do
   defp sanitize_limit(limit) when is_integer(limit) and limit > 50, do: 50
   defp sanitize_limit(_), do: 10
 
-  defp load_kanji_data(progress_records) do
+  defp load_kanji_data(progress_records, actor \\ nil) do
     # Extract kanji IDs and load them efficiently
     kanji_ids = Enum.map(progress_records, & &1.kanji_id)
 
@@ -407,7 +410,7 @@ defmodule KumaSanKanji.SRS.Logic do
          |> Ash.Query.filter(id in ^kanji_ids)
          |> Ash.Query.load([:meanings, :pronunciations])
          |> Ash.Query.select([:id, :character, :grade, :stroke_count, :jlpt_level])
-         |> Ash.read() do
+         |> Ash.read(actor: actor) do
       {:ok, kanji_list} ->
         # Combine progress records with kanji data
         combined = combine_progress_with_kanji(progress_records, kanji_list)
@@ -427,10 +430,10 @@ defmodule KumaSanKanji.SRS.Logic do
     end)
   end
 
-  defp update_progress_with_retry(progress, result, retries_left) when retries_left > 0 do
+  defp update_progress_with_retry(progress, result, retries_left, actor \\ nil) when retries_left > 0 do
     case progress
          |> Ash.Changeset.for_update(:record_review, %{last_result: result})
-         |> Ash.update() do
+         |> Ash.update(actor: actor) do
       {:ok, updated_progress} ->
         {:ok, updated_progress}
 
@@ -439,7 +442,7 @@ defmodule KumaSanKanji.SRS.Logic do
         if is_concurrency_error?(error) and retries_left > 1 do
           # Short delay before retry
           :timer.sleep(50)
-          update_progress_with_retry(progress, result, retries_left - 1)
+          update_progress_with_retry(progress, result, retries_left - 1, actor)
         else
           {:error, error}
         end
@@ -449,7 +452,7 @@ defmodule KumaSanKanji.SRS.Logic do
     end
   end
 
-  defp update_progress_with_retry(_progress, _result, 0) do
+  defp update_progress_with_retry(_progress, _result, 0, _actor) do
     {:error, :max_retries_exceeded}
   end
 
@@ -568,13 +571,13 @@ defmodule KumaSanKanji.SRS.Logic do
   ## Returns
   {:ok, %{removed: integer, updated: integer}} | {:error, reason}
   """
-  def migrate_user_progress(user_id, options \\ []) when is_binary(user_id) do
+  def migrate_user_progress(user_id, actor, options \\ []) when is_binary(user_id) do
     remove_orphaned = Keyword.get(options, :remove_orphaned, true)
     notify_user = Keyword.get(options, :notify_user, false)
 
     case UserKanjiProgress
          |> Ash.Query.for_read(:user_stats, %{user_id: user_id})
-         |> Ash.read() do
+         |> Ash.read(actor: actor) do
       {:ok, progress_records} ->
         # Get all current kanji IDs
         current_kanji_ids = get_all_kanji_ids()

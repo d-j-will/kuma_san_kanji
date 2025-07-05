@@ -37,7 +37,7 @@ defmodule KumaSanKanjiWeb.QuizLive do
         {:error, :no_session_id} ->
           # No session_id provided - this is normal for new sessions, not an error
           # Initialize new session
-          case initialize_quiz_session(user.id) do
+          case initialize_quiz_session(user.id, user) do
             {:ok, new_state} ->
               new_state
 
@@ -56,7 +56,7 @@ defmodule KumaSanKanjiWeb.QuizLive do
           )
 
           # Initialize new session as fallback
-          case initialize_quiz_session(user.id) do
+          case initialize_quiz_session(user.id, user) do
             {:ok, new_state} ->
               new_state
 
@@ -173,7 +173,7 @@ defmodule KumaSanKanjiWeb.QuizLive do
   def handle_event("restart_quiz", _params, socket) do
     user = socket.assigns.current_user
 
-    case initialize_quiz_session(user.id) do
+    case initialize_quiz_session(user.id, user) do
       {:ok, quiz_state} ->
         socket =
           socket
@@ -214,7 +214,7 @@ defmodule KumaSanKanjiWeb.QuizLive do
             )
 
             # Re-initialize the quiz session after reset
-            case initialize_quiz_session(user.id) do
+            case initialize_quiz_session(user.id, user) do
               {:ok, quiz_state} ->
                 socket =
                   socket
@@ -398,12 +398,12 @@ defmodule KumaSanKanjiWeb.QuizLive do
   end
 
   # Private helper functions
-  defp initialize_quiz_session(user_id) do
+  defp initialize_quiz_session(user_id, actor \\ nil) do
     require Logger
 
     try do
       # For new users, stats may not exist yet - that's expected
-      stats_result = Logic.get_user_stats(user_id)
+      stats_result = Logic.get_user_stats(user_id, actor)
 
       stats =
         case stats_result do
@@ -413,7 +413,7 @@ defmodule KumaSanKanjiWeb.QuizLive do
         end
 
       # Check for due kanji
-      case Logic.get_due_kanji(user_id, 1) do
+      case Logic.get_due_kanji(user_id, 1, actor) do
         {:ok, [progress | _]} ->
           # Keep both the progress record and extract kanji for easy access
           kanji = progress.kanji
