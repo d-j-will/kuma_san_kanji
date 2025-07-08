@@ -63,7 +63,14 @@ if config_env() == :prod do
   config :kuma_san_kanji, KumaSanKanji.Repo,
     url: database_url,
     pool_size: String.to_integer(System.get_env("POOL_SIZE") || "10"),
-    socket_options: maybe_ipv6
+    socket_options: maybe_ipv6,
+    # Add connection pool settings for better reliability
+    queue_target: 5000,
+    queue_interval: 5000,
+    # Allow connections to be idle for up to 10 minutes
+    timeout: 60_000,
+    # Disconnect idle connections after 5 minutes  
+    idle_interval: 300_000
 
   config :kuma_san_kanji,
     token_signing_secret:
