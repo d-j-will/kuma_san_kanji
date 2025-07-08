@@ -268,9 +268,9 @@ defmodule KumaSanKanjiWeb.QuizLive do
     if socket.assigns.show_feedback do
       handle_event("next_kanji", %{}, socket)
     else
-      # Submit current answer
-      answer = socket.assigns.user_answer
-      handle_event("submit_answer", %{"answer" => answer}, socket)
+      # Let the form's phx-submit handle the submission to avoid duplicate processing
+      # The browser will handle the Enter key submission via the form's phx-submit
+      {:noreply, socket}
     end
   end
 
