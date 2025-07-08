@@ -1,5 +1,5 @@
 # Make user admin script
-admin_email = "davewil1973@gmail.com"
+admin_email = System.get_env?("ADMIN_EMAIL") || raise "Missing environment variable `ADMIN_EMAIL`!"
 
 case KumaSanKanji.Accounts.get_user_by_email(admin_email, authorize?: false) do
   {:ok, user} ->

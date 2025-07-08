@@ -2,7 +2,7 @@
 # Usage: .\scripts\verify_admin.ps1 [-AdminEmail "email@example.com"]
 
 param(
-    [string]$AdminEmail = "davewil1973@gmail.com"
+    [string]$AdminEmail
 )
 
 Write-Host "🔍 Checking admin user status..." -ForegroundColor Green

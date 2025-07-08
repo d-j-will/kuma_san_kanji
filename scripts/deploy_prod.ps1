@@ -2,7 +2,7 @@
 # Usage: .\scripts\deploy_prod.ps1 [-AdminEmail "email@example.com"] [-SetSecret]
 
 param(
-    [string]$AdminEmail = "davewil1973@gmail.com",
+    [string]$AdminEmail,
     [switch]$SetSecret = $false
 )
 

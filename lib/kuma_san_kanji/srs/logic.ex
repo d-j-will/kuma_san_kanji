@@ -237,9 +237,7 @@ defmodule KumaSanKanji.SRS.Logic do
   end
 
   defp do_reset_user_progress(user_id, actor, options) when is_binary(user_id) do
-    # Allow admin users or dev mode enabled users to reset progress
-    if (actor && actor.admin == true) || 
-       KumaSanKanjiWeb.LiveHelpers.dev_mode_enabled?(actor) do
+    if Application.get_env(:kuma_san_kanji, :env) == :dev do
       require Logger
       import Ash.Query
 

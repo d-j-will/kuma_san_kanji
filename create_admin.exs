@@ -1,5 +1,5 @@
 # Simple admin user creation script for production
-admin_email = System.get_env("ADMIN_EMAIL", "davewil1973@gmail.com")
+admin_email = System.get_env?("ADMIN_EMAIL") || raise "Missing environment variable `ADMIN_EMAIL`!"
 username = admin_email |> String.split("@") |> List.first()
 
 IO.puts("Creating admin user with email: #{admin_email}")

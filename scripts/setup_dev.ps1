@@ -2,7 +2,7 @@
 # Usage: .\scripts\setup_dev.ps1 [-AdminEmail "email@example.com"]
 
 param(
-    [string]$AdminEmail = "davewil1973@gmail.com"
+    [string]$AdminEmail
 )
 
 Write-Host "🚀 Setting up development environment..." -ForegroundColor Green

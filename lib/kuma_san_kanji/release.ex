@@ -82,7 +82,7 @@ defmodule KumaSanKanji.Release do
     load_app()
     start_seed_dependencies()
 
-    admin_email = System.get_env("ADMIN_EMAIL") || "davewil1973@gmail.com"
+    admin_email = System.get_env("ADMIN_EMAIL") || raise "Missing environment variable `ADMIN_EMAIL`!"
     IO.puts("Setting up admin user with email: #{admin_email}")
 
     try do

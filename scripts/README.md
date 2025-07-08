@@ -5,14 +5,13 @@ This directory contains PowerShell scripts for development and deployment tasks.
 ## Development Scripts
 
 ### `setup_dev.ps1`
+
 Complete development environment setup including admin user configuration.
 
-```powershell
-# Default setup (uses davewil1973@gmail.com as admin)
-.\scripts\setup_dev.ps1
-
 # Custom admin email
-.\scripts\setup_dev.ps1 -AdminEmail "your@email.com"
+
+.\scripts\setup_dev.ps1 -AdminEmail "<your@email.com>"
+
 ```
 
 **What it does:**
@@ -32,12 +31,14 @@ Quick admin user seeding for existing development environments.
 ```
 
 **What it does:**
+
 - Sets `ADMIN_EMAIL` environment variable
 - Runs seeds to create/update admin user
 
 ## Production Scripts
 
 ### `deploy_prod.ps1`
+
 Production deployment with admin user configuration.
 
 ```powershell
@@ -52,6 +53,7 @@ Production deployment with admin user configuration.
 ```
 
 **What it does:**
+
 - Optionally sets `ADMIN_EMAIL` as a Fly.io secret
 - Deploys the application
 - Runs production seeds to create admin user
@@ -59,12 +61,14 @@ Production deployment with admin user configuration.
 ## Environment Variables
 
 ### `ADMIN_EMAIL`
+
 The email address of the user who should have admin privileges.
 
 **Local Development:**
 Set automatically by the scripts above.
 
 **Production (Fly.io):**
+
 ```powershell
 # Set once using Fly CLI
 fly secrets set ADMIN_EMAIL=your@email.com
@@ -83,6 +87,7 @@ fly secrets set ADMIN_EMAIL=your@email.com
 ## Manual Operations
 
 ### Local Development
+
 ```powershell
 # Set admin email and run seeds manually
 $env:ADMIN_EMAIL = "your@email.com"
@@ -90,6 +95,7 @@ mix run priv/repo/seeds.exs
 ```
 
 ### Production
+
 ```powershell
 # Run seeds manually in production
 fly ssh console -C "/app/bin/kuma_san_kanji eval 'Code.eval_file(\"/app/priv/repo/seeds.exs\")'"

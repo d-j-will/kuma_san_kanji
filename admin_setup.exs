@@ -7,7 +7,7 @@ require Logger
 Code.ensure_loaded?(KumaSanKanji.Accounts)
 Code.ensure_loaded?(Ash.Error.Invalid)
 
-admin_email = System.get_env("ADMIN_EMAIL") || "davewil1973@gmail.com"
+admin_email = System.get_env("ADMIN_EMAIL") || raise "Missing ADMIN_EMAIL environment variable"
 
 Logger.info("Setting up admin user with email: #{admin_email}")
 
