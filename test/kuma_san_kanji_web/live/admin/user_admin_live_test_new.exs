@@ -103,24 +103,21 @@ defmodule KumaSanKanjiWeb.Admin.UserAdminLiveTest do
     test "button text and styling changes after dev mode toggle", %{conn: conn, regular_user: regular_user} do
       {:ok, view, _html} = live(conn, ~p"/admin/users")
 
-      # The test user should have dev mode disabled initially
-      # Since tests run in isolation, we should find this user in the table
-      # Check if we can find a button with the user's email in the text content instead
-      assert has_element?(view, "td", to_string(regular_user.email))
+      # Initially, user should have dev mode disabled
+      assert has_element?(view, "button[phx-value-user_id='#{regular_user.id}']", "Disabled")
 
       # Button should have gray styling for disabled state
-      button_selector = "button[phx-value-user_id='#{regular_user.id}']"
-      assert has_element?(view, button_selector)
-
-      # Check if button has the correct classes (simplified test)
-      button_html = view |> element(button_selector) |> render()
-      assert button_html =~ "bg-gray-100"
-      assert button_html =~ "text-gray-800"
+      assert has_element?(view, "button[class*='bg-gray-100'][class*='text-gray-800'][phx-value_user_id='#{regular_user.id}']")
 
       # Click to enable dev mode
       view
       |> element("button[phx-click='toggle_dev_mode'][phx-value-user_id='#{regular_user.id}']")
       |> render_click()
+
+      # Debug: Print the actual rendered HTML
+      IO.puts("=== RENDERED HTML AFTER CLICK ===")
+      IO.puts(render(view))
+      IO.puts("=== END HTML ===")
 
       # After toggle, button should show "Enabled"
       assert has_element?(view, "button[phx-value-user_id='#{regular_user.id}']", "Enabled")
@@ -145,9 +142,7 @@ defmodule KumaSanKanjiWeb.Admin.UserAdminLiveTest do
       assert has_element?(view, "button[phx-value-user_id='#{regular_user.id}']", "Disabled")
 
       # Button should be back to gray styling
-      button_html_after = view |> element("button[phx-value-user_id='#{regular_user.id}']") |> render()
-      assert button_html_after =~ "bg-gray-100"
-      assert button_html_after =~ "text-gray-800"
+      assert has_element?(view, "button[class*='bg-gray-100'][class*='text-gray-800'][phx-value_user_id='#{regular_user.id}']")
 
       # The phx-value-enabled should now be "true" (to allow enabling)
       assert has_element?(view, "button[phx-value-user_id='#{regular_user.id}'][phx-value-enabled='true']")
@@ -209,7 +204,7 @@ defmodule KumaSanKanjiWeb.Admin.UserAdminLiveTest do
 
       # Non-admin user should not be able to toggle dev mode
       assert_raise Ash.Error.Forbidden, fn ->
-        KumaSanKanji.Accounts.toggle_user_dev_mode!(
+        KumaSanKanji.Accounts.toggle_user_dev_mode(
           another_user,
           %{enabled: true},
           actor: regular_user
@@ -220,7 +215,7 @@ defmodule KumaSanKanjiWeb.Admin.UserAdminLiveTest do
     test "user cannot toggle their own dev mode", %{regular_user: regular_user} do
       # User should not be able to toggle their own dev mode
       assert_raise Ash.Error.Forbidden, fn ->
-        KumaSanKanji.Accounts.toggle_user_dev_mode!(
+        KumaSanKanji.Accounts.toggle_user_dev_mode(
           regular_user,
           %{enabled: true},
           actor: regular_user
@@ -231,7 +226,7 @@ defmodule KumaSanKanjiWeb.Admin.UserAdminLiveTest do
     test "toggle_user_dev_mode requires enabled argument", %{admin_user: admin_user, regular_user: regular_user} do
       # Should raise error when enabled argument is missing
       assert_raise Ash.Error.Invalid, fn ->
-        KumaSanKanji.Accounts.toggle_user_dev_mode!(
+        KumaSanKanji.Accounts.toggle_user_dev_mode(
           regular_user,
           %{},
           actor: admin_user
@@ -242,7 +237,7 @@ defmodule KumaSanKanjiWeb.Admin.UserAdminLiveTest do
     test "toggle_user_dev_mode validates enabled argument type", %{admin_user: admin_user, regular_user: regular_user} do
       # Should raise error when enabled argument is not a boolean
       assert_raise Ash.Error.Invalid, fn ->
-        KumaSanKanji.Accounts.toggle_user_dev_mode!(
+        KumaSanKanji.Accounts.toggle_user_dev_mode(
           regular_user,
           %{enabled: "invalid"},
           actor: admin_user

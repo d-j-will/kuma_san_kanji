@@ -265,7 +265,8 @@ defmodule KumaSanKanji.SRS.Logic do
                 Enum.map(progress_records, fn record ->
                   # Create a proper destroy changeset using the record itself
                   Logger.debug("[SRS.Logic] Deleting record ID: #{record.id}")
-                  Ash.Changeset.for_destroy(record, :destroy) |> Ash.destroy(actor: actor)
+                  Ash.Changeset.for_destroy(record, :destroy)
+                  |> Ash.destroy(actor: actor)
                 end)
 
               errors = Enum.filter(results, &match?({:error, _}, &1))
@@ -402,7 +403,7 @@ defmodule KumaSanKanji.SRS.Logic do
   defp sanitize_limit(limit) when is_integer(limit) and limit > 50, do: 50
   defp sanitize_limit(_), do: 10
 
-  defp load_kanji_data(progress_records, actor \\ nil) do
+  defp load_kanji_data(progress_records, actor) do
     # Extract kanji IDs and load them efficiently
     kanji_ids = Enum.map(progress_records, & &1.kanji_id)
 
@@ -430,7 +431,7 @@ defmodule KumaSanKanji.SRS.Logic do
     end)
   end
 
-  defp update_progress_with_retry(progress, result, retries_left, actor \\ nil) when retries_left > 0 do
+  defp update_progress_with_retry(progress, result, retries_left, actor) when retries_left > 0 do
     case progress
          |> Ash.Changeset.for_update(:record_review, %{last_result: result})
          |> Ash.update(actor: actor) do

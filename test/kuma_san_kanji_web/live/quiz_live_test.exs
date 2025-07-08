@@ -41,7 +41,7 @@ defmodule KumaSanKanjiWeb.QuizLiveTest do
     })
 
     # Initialize SRS progress
-    {:ok, progress} = Logic.initialize_progress(user.id, kanji.id)
+    {:ok, progress} = Logic.initialize_progress(user.id, kanji.id, user)
 
     # Create authenticated connection
     conn = log_in_user(build_conn(), user)

@@ -30,7 +30,7 @@ defmodule KumaSanKanjiWeb.QuizLive do
 
     # Check for existing session to resume
     quiz_state =
-      case restore_session_if_exists(user.id, params["session_id"]) do
+      case restore_session_if_exists(user.id, params["session_id"], user) do
         {:ok, restored_state} ->
           restored_state
 
@@ -312,16 +312,16 @@ defmodule KumaSanKanjiWeb.QuizLive do
 
   # Private helper functions
 
-  defp restore_session_if_exists(_user_id, nil), do: {:error, :no_session_id}
+  defp restore_session_if_exists(_user_id, nil, _actor), do: {:error, :no_session_id}
 
-  defp restore_session_if_exists(user_id, session_id) do
+  defp restore_session_if_exists(user_id, session_id, actor) do
     require Logger
 
     try do
       case Session.restore_for_user(user_id, session_id) do
         {:ok, session_data} ->
           # Get user stats to include with restored session
-          case Logic.get_user_stats(user_id) do
+          case Logic.get_user_stats(user_id, actor) do
             # Get progress for the current kanji if available
             {:ok, stats} ->
               current_progress =
@@ -331,7 +331,7 @@ defmodule KumaSanKanjiWeb.QuizLive do
 
                   kanji ->
                     # Try to get the progress for this kanji
-                    case Logic.get_due_kanji(user_id, 1) do
+                    case Logic.get_due_kanji(user_id, 1, actor) do
                       {:ok, [progress | _]} when progress.kanji.id == kanji.id -> progress
                       {:ok, _} -> nil
                       {:error, _} -> nil
@@ -398,7 +398,7 @@ defmodule KumaSanKanjiWeb.QuizLive do
   end
 
   # Private helper functions
-  defp initialize_quiz_session(user_id, actor \\ nil) do
+  defp initialize_quiz_session(user_id, actor) do
     require Logger
 
     try do

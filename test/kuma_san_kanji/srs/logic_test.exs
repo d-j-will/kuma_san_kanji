@@ -4,7 +4,6 @@ defmodule KumaSanKanji.SRS.LogicTest do
   import KumaSanKanji.TestHelpers
 
   alias KumaSanKanji.SRS.Logic
-  alias KumaSanKanji.SRS.UserKanjiProgress
   alias KumaSanKanji.Kanji
 
   describe "get_due_kanji/2" do
@@ -16,10 +15,10 @@ defmodule KumaSanKanji.SRS.LogicTest do
 
     test "returns due kanji for a user", %{user: user, kanji: kanji} do
       # Initialize progress for the kanji
-      {:ok, _progress} = Logic.initialize_progress(user.id, kanji.id)
+      {:ok, _progress} = Logic.initialize_progress(user.id, kanji.id, user)
 
       # Get due kanji
-      {:ok, due_kanji} = Logic.get_due_kanji(user.id, 10)
+      {:ok, due_kanji} = Logic.get_due_kanji(user.id, 10, user)
 
       assert length(due_kanji) == 1
       assert hd(due_kanji).kanji_id == kanji.id
@@ -31,28 +30,28 @@ defmodule KumaSanKanji.SRS.LogicTest do
       kanji_list = Enum.map(1..15, fn _i -> create_kanji() end)
 
       for kanji <- kanji_list do
-        {:ok, _progress} = Logic.initialize_progress(user.id, kanji.id)
+        {:ok, _progress} = Logic.initialize_progress(user.id, kanji.id, user)
       end
 
       # Test limit enforcement
-      {:ok, due_kanji} = Logic.get_due_kanji(user.id, 5)
+      {:ok, due_kanji} = Logic.get_due_kanji(user.id, 5, user)
       assert length(due_kanji) == 5
     end
 
     test "returns empty list when no kanji are due", %{user: user, kanji: kanji} do
-      # Initialize progress with future review date
-      # 1 hour from now
+      # Initialize progress first
+      {:ok, progress} = Logic.initialize_progress(user.id, kanji.id, user)
+      
+      # Update to have a future review date (1 hour from now)
       future_date = DateTime.add(DateTime.utc_now(), 3600, :second)
-
-      UserKanjiProgress
-      |> Ash.Changeset.for_create(:create, %{
-        user_id: user.id,
-        kanji_id: kanji.id,
+      
+      progress
+      |> Ash.Changeset.for_update(:update, %{
         next_review_date: future_date
       })
-      |> Ash.create!()
+      |> Ash.update!(actor: user)
 
-      {:ok, due_kanji} = Logic.get_due_kanji(user.id, 10)
+      {:ok, due_kanji} = Logic.get_due_kanji(user.id, 10, user)
       assert due_kanji == []
     end
   end
@@ -61,12 +60,12 @@ defmodule KumaSanKanji.SRS.LogicTest do
     setup do
       user = create_user()
       kanji = create_kanji()
-      {:ok, progress} = Logic.initialize_progress(user.id, kanji.id)
+      {:ok, progress} = Logic.initialize_progress(user.id, kanji.id, user)
       {:ok, user: user, kanji: kanji, progress: progress}
     end
 
     test "successfully records a correct review", %{user: user, progress: progress} do
-      {:ok, updated_progress} = Logic.record_review(progress.id, :correct, user.id)
+      {:ok, updated_progress} = Logic.record_review(progress.id, :correct, user.id, user)
 
       assert updated_progress.last_result == :correct
       assert updated_progress.total_reviews == 1
@@ -75,7 +74,7 @@ defmodule KumaSanKanji.SRS.LogicTest do
     end
 
     test "successfully records an incorrect review", %{user: user, progress: progress} do
-      {:ok, updated_progress} = Logic.record_review(progress.id, :incorrect, user.id)
+      {:ok, updated_progress} = Logic.record_review(progress.id, :incorrect, user.id, user)
 
       assert updated_progress.last_result == :incorrect
       assert updated_progress.total_reviews == 1
@@ -83,17 +82,17 @@ defmodule KumaSanKanji.SRS.LogicTest do
       assert updated_progress.repetitions == 0
     end
 
-    test "returns unauthorized for wrong user", %{kanji: _kanji, progress: progress} do
+    test "returns not_found for wrong user (security)", %{kanji: _kanji, progress: progress} do
       other_user = create_user()
 
-      {:error, :unauthorized} = Logic.record_review(progress.id, :correct, other_user.id)
+      {:error, :not_found} = Logic.record_review(progress.id, :correct, other_user.id, other_user)
     end
 
     test "returns not_found for non-existent progress" do
       user = create_user()
       fake_id = Ash.UUID.generate()
 
-      {:error, :not_found} = Logic.record_review(fake_id, :correct, user.id)
+      {:error, :not_found} = Logic.record_review(fake_id, :correct, user.id, user)
     end
   end
 
@@ -105,7 +104,7 @@ defmodule KumaSanKanji.SRS.LogicTest do
     end
 
     test "creates new progress record", %{user: user, kanji: kanji} do
-      {:ok, progress} = Logic.initialize_progress(user.id, kanji.id)
+      {:ok, progress} = Logic.initialize_progress(user.id, kanji.id, user)
 
       assert progress.user_id == user.id
       assert progress.kanji_id == kanji.id
@@ -115,8 +114,8 @@ defmodule KumaSanKanji.SRS.LogicTest do
     end
 
     test "returns existing progress if already initialized", %{user: user, kanji: kanji} do
-      {:ok, progress1} = Logic.initialize_progress(user.id, kanji.id)
-      {:ok, progress2} = Logic.initialize_progress(user.id, kanji.id)
+      {:ok, progress1} = Logic.initialize_progress(user.id, kanji.id, user)
+      {:ok, progress2} = Logic.initialize_progress(user.id, kanji.id, user)
 
       assert progress1.id == progress2.id
     end
@@ -124,7 +123,7 @@ defmodule KumaSanKanji.SRS.LogicTest do
     test "returns error for non-existent kanji", %{user: user} do
       fake_kanji_id = Ash.UUID.generate()
 
-      {:error, :kanji_not_found} = Logic.initialize_progress(user.id, fake_kanji_id)
+      {:error, :kanji_not_found} = Logic.initialize_progress(user.id, fake_kanji_id, user)
     end
   end
 
@@ -135,7 +134,7 @@ defmodule KumaSanKanji.SRS.LogicTest do
     end
 
     test "returns correct stats for user with no progress", %{user: user} do
-      {:ok, stats} = Logic.get_user_stats(user.id)
+      {:ok, stats} = Logic.get_user_stats(user.id, user)
 
       assert stats.total_kanji == 0
       assert stats.due_today == 0
@@ -149,14 +148,14 @@ defmodule KumaSanKanji.SRS.LogicTest do
       kanji1 = create_kanji()
       kanji2 = create_kanji()
 
-      {:ok, progress1} = Logic.initialize_progress(user.id, kanji1.id)
-      {:ok, progress2} = Logic.initialize_progress(user.id, kanji2.id)
+      {:ok, progress1} = Logic.initialize_progress(user.id, kanji1.id, user)
+      {:ok, progress2} = Logic.initialize_progress(user.id, kanji2.id, user)
 
       # Record some reviews
-      {:ok, _} = Logic.record_review(progress1.id, :correct, user.id)
-      {:ok, _} = Logic.record_review(progress2.id, :incorrect, user.id)
+      {:ok, _} = Logic.record_review(progress1.id, :correct, user.id, user)
+      {:ok, _} = Logic.record_review(progress2.id, :incorrect, user.id, user)
 
-      {:ok, stats} = Logic.get_user_stats(user.id)
+      {:ok, stats} = Logic.get_user_stats(user.id, user)
 
       assert stats.total_kanji == 2
       assert stats.total_reviews == 2
@@ -175,7 +174,7 @@ defmodule KumaSanKanji.SRS.LogicTest do
       kanji_list = Enum.map(1..5, fn _i -> create_kanji() end)
       kanji_ids = Enum.map(kanji_list, & &1.id)
 
-      {:ok, progress_list} = Logic.bulk_initialize_progress(user.id, kanji_ids)
+      {:ok, progress_list} = Logic.bulk_initialize_progress(user.id, kanji_ids, user)
 
       assert length(progress_list) == 5
 
@@ -189,7 +188,7 @@ defmodule KumaSanKanji.SRS.LogicTest do
       # Create 101 fake kanji IDs
       kanji_ids = Enum.map(1..101, fn _i -> Ash.UUID.generate() end)
 
-      {:error, :too_many_kanji} = Logic.bulk_initialize_progress(user.id, kanji_ids)
+      {:error, :too_many_kanji} = Logic.bulk_initialize_progress(user.id, kanji_ids, user)
     end
   end
 

@@ -74,7 +74,7 @@ defmodule KumaSanKanji.SRS.IntegrationTest do
   end
 
   defp initialize_srs_progress(%{user: user, kanji: kanji}) do
-    {:ok, progress} = Logic.initialize_progress(user.id, kanji.id)
+    {:ok, progress} = Logic.initialize_progress(user.id, kanji.id, user)
     %{progress: progress}
   end
 
@@ -85,7 +85,7 @@ defmodule KumaSanKanji.SRS.IntegrationTest do
     test "end-to-end quiz flow - submission to progression", %{
       conn: conn,
       progress: progress,
-      user: _user,
+      user: user,
       kanji: kanji
     } do
       # Start the quiz LiveView
@@ -119,7 +119,7 @@ defmodule KumaSanKanji.SRS.IntegrationTest do
       {:ok, [updated_progress]} =
         UserKanjiProgress
         |> Ash.Query.filter(id == ^progress.id)
-        |> Ash.read()
+        |> Ash.read(actor: user)
 
       assert updated_progress.repetitions == 1
       assert updated_progress.correct_reviews == 1
@@ -130,7 +130,8 @@ defmodule KumaSanKanji.SRS.IntegrationTest do
     @tag :integration
     test "quiz handles incorrect answers properly", %{
       conn: conn,
-      progress: progress
+      progress: progress,
+      user: user
     } do
       # Start the quiz LiveView
       {:ok, view, _html} = live(conn, ~p"/quiz")
@@ -149,7 +150,7 @@ defmodule KumaSanKanji.SRS.IntegrationTest do
       {:ok, [updated_progress]} =
         UserKanjiProgress
         |> Ash.Query.filter(id == ^progress.id)
-        |> Ash.read()
+        |> Ash.read(actor: user)
 
       # Reset to 0 for incorrect answers
       assert updated_progress.repetitions == 0
@@ -161,7 +162,8 @@ defmodule KumaSanKanji.SRS.IntegrationTest do
     @tag :integration
     test "skipping a kanji works correctly", %{
       conn: conn,
-      progress: progress
+      progress: progress,
+      user: user
     } do
       # Start the quiz LiveView
       # Skip the kanji
@@ -172,7 +174,7 @@ defmodule KumaSanKanji.SRS.IntegrationTest do
       {:ok, [updated_progress]} =
         UserKanjiProgress
         |> Ash.Query.filter(id == ^progress.id)
-        |> Ash.read()
+        |> Ash.read(actor: user)
 
       assert updated_progress.last_result == :skip
       assert updated_progress.total_reviews == 1
@@ -182,7 +184,7 @@ defmodule KumaSanKanji.SRS.IntegrationTest do
     test "quiz completion screen is shown when no more kanji are due", %{
       conn: conn,
       progress: progress,
-      user: _user
+      user: user
     } do
       # First, update the progress so the kanji is not due for review
       # 1 day in the future
@@ -192,7 +194,7 @@ defmodule KumaSanKanji.SRS.IntegrationTest do
       |> Ash.Changeset.for_update(:update, %{
         next_review_date: future_date
       })
-      |> Ash.update!()
+      |> Ash.update!(actor: user)
 
       # Start the quiz LiveView
       {:ok, view, _html} = live(conn, ~p"/quiz")
@@ -211,15 +213,15 @@ defmodule KumaSanKanji.SRS.IntegrationTest do
 
     @tag :security
     # Create another user who shouldn't have access
-    test "unauthorized access is prevented", %{
+    test "unauthorized access returns not_found (security)", %{
       progress: progress
     } do
       # Create another user using the test helper
       other_user = create_simple_test_user("other-#{System.system_time(:millisecond)}@example.com")
 
-      # Try to access first user's progress
-      result = Logic.record_review(progress.id, :correct, other_user.id)
-      assert result == {:error, :unauthorized}
+      # Try to access first user's progress - should return not_found to prevent info leakage
+      result = Logic.record_review(progress.id, :correct, other_user.id, other_user)
+      assert result == {:error, :not_found}
     end
 
     @tag :security
@@ -268,7 +270,7 @@ defmodule KumaSanKanji.SRS.IntegrationTest do
       tasks =
         for _ <- 1..5 do
           Task.async(fn ->
-            Logic.record_review(progress.id, :correct, user.id)
+            Logic.record_review(progress.id, :correct, user.id, user)
           end)
         end
 
@@ -288,7 +290,7 @@ defmodule KumaSanKanji.SRS.IntegrationTest do
       {:ok, [final_progress]} =
         UserKanjiProgress
         |> Ash.Query.filter(id == ^progress.id)
-        |> Ash.read()
+        |> Ash.read(actor: user)
 
       # Total reviews should be between 1 and 5
       assert final_progress.total_reviews > 0

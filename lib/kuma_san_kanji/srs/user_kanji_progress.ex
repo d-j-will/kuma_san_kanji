@@ -78,10 +78,16 @@ defmodule KumaSanKanji.SRS.UserKanjiProgress do
 
     # Custom action to initialize progress for a user-kanji pair
     create :initialize do
-      accept([:user_id, :kanji_id])
+      argument(:user_id, :uuid, allow_nil?: false)
+      argument(:kanji_id, :uuid, allow_nil?: false)
 
       change(fn changeset, _context ->
+        user_id = Ash.Changeset.get_argument(changeset, :user_id)
+        kanji_id = Ash.Changeset.get_argument(changeset, :kanji_id)
+
         changeset
+        |> Ash.Changeset.change_attribute(:user_id, user_id)
+        |> Ash.Changeset.change_attribute(:kanji_id, kanji_id)
         |> Ash.Changeset.change_attribute(:next_review_date, DateTime.utc_now())
         |> Ash.Changeset.change_attribute(:interval, 1)
         |> Ash.Changeset.change_attribute(:ease_factor, Decimal.new("2.5"))
@@ -150,18 +156,21 @@ defmodule KumaSanKanji.SRS.UserKanjiProgress do
   end
 
   policies do
-    # Users can only access/modify their own progress records
-    policy action_type(:read) do
-      authorize_if expr(user_id == ^actor(:id))
+    # Allow admin bypass for all actions
+    bypass action_type([:read, :create, :update, :destroy]) do
+      authorize_if actor_attribute_equals(:admin, true)
     end
 
-    policy action_type([:create, :update, :destroy]) do
-      authorize_if expr(user_id == ^actor(:id))
+    # For authenticated users, they can only access their own progress records
+    policy action_type([:read, :update, :destroy]) do
+      authorize_if relates_to_actor_via(:user)
+    end
+
+    # For create actions, check that the user_id argument matches the actor
+    policy action_type(:create) do
+      authorize_if expr(^actor(:id) == ^arg(:user_id))
     end
   end
-
-  # Note: Authorization will be handled at the application level
-  # since the base User resource doesn't use Ash policies
 
   code_interface do
     define(:create, action: :create)
