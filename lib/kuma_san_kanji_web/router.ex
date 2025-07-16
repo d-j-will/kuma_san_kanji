@@ -15,6 +15,7 @@ defmodule KumaSanKanjiWeb.Router do
     plug :load_from_session
   end
 
+
   pipeline :api do
     plug :accepts, ["json"]
     plug :load_from_bearer
@@ -24,7 +25,8 @@ defmodule KumaSanKanjiWeb.Router do
   scope "/", KumaSanKanjiWeb do
     pipe_through :browser
 
-    ash_authentication_live_session :default do
+    ash_authentication_live_session :public_routes,
+      on_mount: {KumaSanKanjiWeb.UserLiveAuth, :live_user_optional} do
       live "/", PageLive
       live "/explore", ExploreLive
     end

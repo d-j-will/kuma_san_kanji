@@ -20,7 +20,7 @@ defmodule KumaSanKanji.MixProject do
   def application do
     [
       mod: {KumaSanKanji.Application, []},
-      extra_applications: [:logger, :runtime_tools, :ash]
+      extra_applications: [:logger, :runtime_tools, :ash, :wx, :observer]
     ]
   end
 

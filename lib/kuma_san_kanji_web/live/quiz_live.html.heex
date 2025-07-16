@@ -20,7 +20,7 @@
       
       <!-- User statistics -->
       <%= if assigns[:user_stats] do %>
-        <div class="mt-4 flex flex-wrap gap-4 text-sm font-wabi text-wabi-charcoal/70">
+        <div class="mt-4 flex flex-wrap gap-4 text-sm font-wabi text-wabi-charcoal/70" aria-label="Quiz statistics">
           <div class="flex items-center space-x-1">
             <span class="w-2 h-2 bg-green-500 rounded-full" aria-hidden="true"></span>
             <span>Total: {@user_stats.total_kanji}</span>
@@ -206,7 +206,7 @@
                   </div>
                 </div>
                 <div class="mt-2 text-xs font-wabi text-wabi-charcoal/60">
-                  Repetitions: {@current_progress.repetitions}
+                  Rep: {@current_progress.repetitions}
                 </div>
               </div>
             </div>
