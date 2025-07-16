@@ -39,10 +39,11 @@
       <!-- Navigation and help -->
       <div class="mt-4 flex justify-between items-center">
         <div></div>
+        <!-- Desktop keyboard shortcuts toggle -->
         <button
           type="button"
           phx-click="toggle_keyboard_shortcuts"
-          class="btn-wabi p-2 text-wabi-charcoal/60 hover:text-wabi-rust hover:bg-wabi-cream/20 rounded-lg transition-colors font-wabi"
+          class="hidden md:block btn-wabi p-2 text-wabi-charcoal/60 hover:text-wabi-rust hover:bg-wabi-cream/20 rounded-lg transition-colors font-wabi"
           aria-label="Toggle keyboard shortcuts help"
           aria-expanded={@keyboard_shortcuts_visible}>
         >
@@ -61,12 +62,36 @@
             />
           </svg>
         </button>
+        
+        <!-- Mobile help toggle -->
+        <button
+          type="button"
+          phx-click="toggle_mobile_help"
+          class="md:hidden btn-wabi p-3 text-wabi-charcoal/60 hover:text-wabi-rust hover:bg-wabi-cream/20 rounded-lg transition-colors font-wabi touch-manipulation"
+          aria-label="Toggle mobile help"
+          aria-expanded={@mobile_help_visible}>
+        >
+          <svg
+            class="w-6 h-6"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            aria-hidden="true"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+            />
+          </svg>
+        </button>
       </div>
       
-      <!-- Keyboard shortcuts help panel -->
+      <!-- Keyboard shortcuts help panel (Desktop only) -->
       <%= if @keyboard_shortcuts_visible do %>
         <div
-          class="mt-4 bg-wabi-paper/90 backdrop-blur-sm rounded-xl p-6 shadow-sm border border-wabi-border_light"
+          class="hidden md:block mt-4 bg-wabi-paper/90 backdrop-blur-sm rounded-xl p-6 shadow-sm border border-wabi-border_light"
           role="region"
           aria-label="Keyboard shortcuts"
         >
@@ -99,6 +124,61 @@
               <kbd class="px-2 py-1 bg-wabi-cream/20 text-wabi-rust rounded border">
                 Enter
               </kbd>
+            </div>
+          </div>
+        </div>
+      <% end %>
+      
+      <!-- Mobile help panel -->
+      <%= if @mobile_help_visible do %>
+        <div
+          class="md:hidden mt-4 bg-wabi-paper/90 backdrop-blur-sm rounded-xl p-6 shadow-sm border border-wabi-border_light"
+          role="region"
+          aria-label="Mobile quiz controls"
+        >
+          <h2 class="text-lg font-wabi-display font-semibold text-wabi-rust mb-4">How to Use</h2>
+          
+          <div class="space-y-3 text-sm font-wabi">
+            <div class="flex items-start space-x-3">
+              <div class="w-6 h-6 bg-wabi-hok_blue rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                <span class="text-white text-xs font-bold">1</span>
+              </div>
+              <span class="text-wabi-charcoal/70">Type your answer in the text field below</span>
+            </div>
+            
+            <div class="flex items-start space-x-3">
+              <div class="w-6 h-6 bg-wabi-hok_blue rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                <span class="text-white text-xs font-bold">2</span>
+              </div>
+              <span class="text-wabi-charcoal/70">Tap "Submit Answer" to check your response</span>
+            </div>
+            
+            <div class="flex items-start space-x-3">
+              <div class="w-6 h-6 bg-wabi-hok_blue rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                <span class="text-white text-xs font-bold">3</span>
+              </div>
+              <span class="text-wabi-charcoal/70">Use "Skip" or swipe right to skip kanji</span>
+            </div>
+            
+            <div class="flex items-start space-x-3">
+              <div class="w-6 h-6 bg-wabi-hok_blue rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                <span class="text-white text-xs font-bold">4</span>
+              </div>
+              <span class="text-wabi-charcoal/70">After feedback, tap "Next" or swipe horizontally to continue</span>
+            </div>
+            
+            <div class="mt-4 pt-3 border-t border-wabi-border_light">
+              <h3 class="text-sm font-wabi-display font-semibold text-wabi-rust mb-2">Touch Gestures</h3>
+              <div class="space-y-2 text-xs">
+                <div class="flex justify-between">
+                  <span class="text-wabi-charcoal/60">Swipe right</span>
+                  <span class="text-wabi-rust">Skip kanji</span>
+                </div>
+                <div class="flex justify-between">
+                  <span class="text-wabi-charcoal/60">Swipe left/right (feedback)</span>
+                  <span class="text-wabi-rust">Next kanji</span>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -150,7 +230,7 @@
           </div>
         </div>
       <% else %>
-        <div class="space-y-6">
+        <div id="quiz-content" class="space-y-6" phx-hook="MobileSwipeGestures" data-show-feedback={@show_feedback}>
           <!-- Kanji card -->
           <div
             class="wabi-paper wabi-texture overflow-hidden border border-wabi-border"
@@ -291,6 +371,7 @@
                   aria-label="Continue to next kanji"
                   disabled={not @show_feedback}
                   autofocus
+                  class="w-full sm:w-auto touch-manipulation min-h-[3rem] px-8"
                 >
                   Next
                 </.button>
@@ -319,7 +400,7 @@
                     phx-change="update_answer"
                     phx-keydown="key_down"
                     phx-hook="FocusInput"
-                    class="w-full px-4 py-3 border border-wabi-border rounded-lg focus:outline-none focus:ring-2 focus:ring-wabi-hok_blue focus:border-transparent text-lg font-wabi"
+                    class="w-full px-4 py-4 border border-wabi-border rounded-lg focus:outline-none focus:ring-2 focus:ring-wabi-hok_blue focus:border-transparent text-lg font-wabi touch-manipulation"
                     placeholder="Your answer..."
                     autocomplete="off"
                     autocapitalize="off"
@@ -333,13 +414,14 @@
                   </p>
                 </div>
                 
-                <div class="flex justify-center space-x-4">
+                <div class="flex flex-col sm:flex-row justify-center space-y-3 sm:space-y-0 sm:space-x-4 mobile-button-stack">
                   <.button
                     type="submit"
                     variant="primary"
                     size="lg"
                     disabled={String.trim(@user_answer) == ""}
                     aria-label="Submit your answer"
+                    class="w-full sm:w-auto touch-manipulation min-h-[3rem]"
                   >
                     Submit Answer
                   </.button>
@@ -348,8 +430,9 @@
                     type="button"
                     phx-click="skip_kanji"
                     variant="secondary"
-                    size="md"
+                    size="lg"
                     aria-label="Skip this kanji"
+                    class="w-full sm:w-auto touch-manipulation min-h-[3rem]"
                   >
                     Skip
                   </.button>
@@ -403,9 +486,7 @@
           </div>
         </div>
       <% end %>
-    </main>
-    
-<!-- Global keyboard event listener -->
-    <div phx-window-keydown="key_down" class="hidden" aria-hidden="true"></div>
+    </main>    <!-- Global keyboard event listener (desktop only) -->
+    <div phx-window-keydown="key_down" class="hidden md:block" aria-hidden="true"></div>
   </div>
 </div>

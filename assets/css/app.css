@@ -418,4 +418,88 @@
   .gentle-rotate {
     transform: rotate(0.3deg);
   }
+
+  /* Mobile-specific styles for better touch interaction */
+  @media (max-width: 768px) {
+    .touch-manipulation {
+      touch-action: manipulation;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    /* Larger buttons on mobile for better touch targets */
+    .btn-wabi {
+      @apply px-8 py-4 text-lg;
+      min-height: 3rem;
+      touch-action: manipulation;
+    }
+
+    /* Enhanced input field for mobile */
+    input[type="text"] {
+      @apply py-4;
+      font-size: 16px; /* Prevents zoom on iOS */
+      touch-action: manipulation;
+    }
+
+    /* Better kanji display on smaller screens */
+    .kanji-display {
+      @apply text-6xl sm:text-8xl;
+    }
+
+    .kanji-container {
+      @apply w-24 h-24 sm:w-32 sm:h-32;
+    }
+
+    /* Improve mobile layout spacing */
+    .wabi-paper {
+      @apply mx-2;
+    }
+
+    /* Add visual feedback for swipe areas */
+    #quiz-content {
+      position: relative;
+    }
+
+    #quiz-content::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      pointer-events: none;
+      border: 2px dashed transparent;
+      border-radius: 8px;
+      transition: border-color 0.2s ease;
+    }
+
+    #quiz-content:active::before {
+      border-color: oklch(50% 0.1 230 / 0.3);
+    }
+  }
+
+  /* Improved touch targets for very small screens */
+  @media (max-width: 480px) {
+    .kanji-display {
+      @apply text-5xl;
+    }
+
+    .kanji-container {
+      @apply w-20 h-20;
+    }
+
+    /* Ensure buttons stack properly on small screens */
+    .mobile-button-stack {
+      @apply flex-col space-y-3;
+    }
+
+    .mobile-button-stack > * {
+      @apply w-full;
+    }
+
+    /* Larger touch targets for help buttons */
+    .touch-manipulation {
+      min-height: 48px;
+      min-width: 48px;
+    }
+  }
 }

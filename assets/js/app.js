@@ -43,6 +43,50 @@ const Hooks = {
     updated() {
       this.el.focus();
     }
+  },
+  MobileSwipeGestures: {
+    mounted() {
+      let startX = 0;
+      let startY = 0;
+      let threshold = 50; // minimum swipe distance
+      
+      this.el.addEventListener('touchstart', (e) => {
+        startX = e.touches[0].clientX;
+        startY = e.touches[0].clientY;
+      });
+      
+      this.el.addEventListener('touchend', (e) => {
+        if (!startX || !startY) return;
+        
+        let endX = e.changedTouches[0].clientX;
+        let endY = e.changedTouches[0].clientY;
+        
+        let diffX = startX - endX;
+        let diffY = startY - endY;
+        
+        // Check if horizontal swipe is longer than vertical (to avoid interference with scrolling)
+        if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > threshold) {
+          // Check if we're in feedback mode or answer mode
+          const showFeedback = this.el.dataset.showFeedback === 'true';
+          
+          if (showFeedback) {
+            // In feedback mode, any horizontal swipe goes to next kanji
+            if (Math.abs(diffX) > threshold) {
+              this.pushEvent("next_kanji", {});
+            }
+          } else {
+            // In answer mode, right swipe skips kanji
+            if (diffX > threshold) {
+              this.pushEvent("skip_kanji", {});
+            }
+          }
+        }
+        
+        // Reset values
+        startX = 0;
+        startY = 0;
+      });
+    }
   }
 }
 

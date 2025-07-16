@@ -78,6 +78,7 @@ defmodule KumaSanKanjiWeb.QuizLive do
           |> put_flash(:error, get_error_message(reason, user) <> " (debug: #{inspect(reason)})")
           |> assign(:quiz_error, true)
           |> assign(:keyboard_shortcuts_visible, false)
+          |> assign(:mobile_help_visible, false)
           |> assign(:dev_mode, dev_mode_enabled?(user))
 
         {:ok, socket}
@@ -95,6 +96,7 @@ defmodule KumaSanKanjiWeb.QuizLive do
           |> assign(:last_answer_times, quiz_state[:last_answer_times] || [])
           |> assign(:quiz_complete, false)
           |> assign(:keyboard_shortcuts_visible, false)
+          |> assign(:mobile_help_visible, false)
           |> assign(:dev_mode, dev_mode_enabled?(user))
 
         {:ok, socket}
@@ -167,6 +169,12 @@ defmodule KumaSanKanjiWeb.QuizLive do
   def handle_event("toggle_keyboard_shortcuts", _params, socket) do
     {:noreply,
      assign(socket, :keyboard_shortcuts_visible, !socket.assigns.keyboard_shortcuts_visible)}
+  end
+
+  @impl true
+  def handle_event("toggle_mobile_help", _params, socket) do
+    {:noreply,
+     assign(socket, :mobile_help_visible, !socket.assigns.mobile_help_visible)}
   end
 
   @impl true
