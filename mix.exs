@@ -20,8 +20,17 @@ defmodule KumaSanKanji.MixProject do
   def application do
     [
       mod: {KumaSanKanji.Application, []},
-      extra_applications: [:logger, :runtime_tools, :ash, :wx, :observer]
+      extra_applications: [:logger, :runtime_tools, :ash] ++ dev_applications()
     ]
+  end
+
+  # Development-only applications that aren't available in production Docker images
+  defp dev_applications do
+    if Mix.env() == :dev do
+      [:wx, :observer]
+    else
+      []
+    end
   end
 
   # Specifies which paths to compile per environment.
