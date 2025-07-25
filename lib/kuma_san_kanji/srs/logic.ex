@@ -237,7 +237,8 @@ defmodule KumaSanKanji.SRS.Logic do
   end
 
   defp do_reset_user_progress(user_id, actor, options) when is_binary(user_id) do
-    if Application.get_env(:kuma_san_kanji, :env) == :dev do
+    # Check if user has permission to reset progress
+    if can_reset_progress?(actor) do
       require Logger
       import Ash.Query
 
@@ -395,6 +396,21 @@ defmodule KumaSanKanji.SRS.Logic do
     else
       {:error, :not_allowed}
     end
+  end
+
+  # Permission check for reset operations
+  defp can_reset_progress?(user) do
+    # Allow reset if:
+    # 1. Running in development environment, OR
+    # 2. User is an admin, OR  
+    # 3. User has dev_mode_enabled flag set
+    development_env?() or 
+    (user && user.admin == true) or 
+    (user && Map.get(user, :dev_mode_enabled) == true)
+  end
+
+  defp development_env? do
+    Code.ensure_loaded?(Mix) and function_exported?(Mix, :env, 0) and Mix.env() == :dev
   end
 
   # Private helper functions
