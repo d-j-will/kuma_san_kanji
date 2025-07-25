@@ -402,10 +402,10 @@ defmodule KumaSanKanji.SRS.Logic do
   defp can_reset_progress?(user) do
     # Allow reset if:
     # 1. Running in development environment, OR
-    # 2. User is an admin, OR  
+    # 2. User is an admin, OR
     # 3. User has dev_mode_enabled flag set
-    development_env?() or 
-    (user && user.admin == true) or 
+    development_env?() or
+    (user && user.admin == true) or
     (user && Map.get(user, :dev_mode_enabled) == true)
   end
 
