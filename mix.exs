@@ -73,7 +73,7 @@ defmodule KumaSanKanji.MixProject do
       {:ash, "~> 3.5"},
       {:ash_phoenix, "~> 2.3"},
       {:ash_authentication, "~> 4.1"},
-      {:igniter, "~> 0.6", only: [:dev, :test]},
+      {:igniter, "~> 0.6"},
       {:ash_postgres, "~> 2.4"},
       {:usage_rules, "~> 0.1"},
 
