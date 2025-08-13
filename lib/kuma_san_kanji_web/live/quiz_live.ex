@@ -173,8 +173,7 @@ defmodule KumaSanKanjiWeb.QuizLive do
 
   @impl true
   def handle_event("toggle_mobile_help", _params, socket) do
-    {:noreply,
-     assign(socket, :mobile_help_visible, !socket.assigns.mobile_help_visible)}
+    {:noreply, assign(socket, :mobile_help_visible, !socket.assigns.mobile_help_visible)}
   end
 
   @impl true
@@ -211,7 +210,6 @@ defmodule KumaSanKanjiWeb.QuizLive do
     user = socket.assigns.current_user
 
     if dev_mode_enabled?(user) do
-
       # Add detailed error handling with try/rescue
       try do
         # Use enhanced reset options - 15 kanji that are all due immediately
@@ -592,26 +590,43 @@ defmodule KumaSanKanjiWeb.QuizLive do
 
   defp check_answer_correctness(kanji, user_answer) do
     # Check if user answer matches any of the kanji's readings or meanings
-    # The kanji may be the direct structure or nested within a progress record
     kanji_data = kanji
 
-    normalized_answer = String.downcase(String.trim(user_answer))
+    normalized_meaning_answer = user_answer |> String.trim() |> String.downcase()
+    normalized_reading_answer = user_answer |> String.trim() |> normalize_kana()
 
     # Check meanings (from meanings relationship)
     meanings_match =
       kanji_data.meanings
       |> Enum.any?(fn meaning_record ->
-        String.downcase(String.trim(meaning_record.value)) == normalized_answer
+        String.downcase(String.trim(meaning_record.value)) == normalized_meaning_answer
       end)
 
-    # Check readings (from pronunciations relationship)
+    # Check readings (from pronunciations relationship) — normalize katakana/hiragana
     readings_match =
       kanji_data.pronunciations
       |> Enum.any?(fn pronunciation_record ->
-        String.downcase(String.trim(pronunciation_record.value)) == normalized_answer
+        pronunciation_record.value
+        |> String.trim()
+        |> normalize_kana()
+        |> Kernel.==(normalized_reading_answer)
       end)
 
     meanings_match || readings_match
+  end
+
+  defp normalize_kana(str) when is_binary(str) do
+    str
+    |> String.graphemes()
+    |> Enum.map(&katakana_to_hiragana/1)
+    |> Enum.join()
+  end
+
+  defp katakana_to_hiragana(grapheme) when is_binary(grapheme) do
+    case String.to_charlist(grapheme) do
+      [cp] when cp >= 0x30A1 and cp <= 0x30F6 -> <<cp - 0x60::utf8>>
+      _ -> grapheme
+    end
   end
 
   defp get_feedback_message(:correct, kanji) do

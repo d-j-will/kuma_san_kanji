@@ -7,7 +7,6 @@
     >
       Skip to main content
     </a>
-    
     <!-- Header -->
     <div class="mb-8">
       <h1 class="text-3xl font-wabi-display tracking-tight text-wabi-hok_blue_dark sm:text-4xl">
@@ -17,25 +16,28 @@
       <p class="mt-3 text-lg wabi-text">
         Review and strengthen your kanji knowledge with spaced repetition learning.
       </p>
-      
       <!-- User statistics -->
       <%= if assigns[:user_stats] do %>
-        <div class="mt-4 flex flex-wrap gap-4 text-sm font-wabi text-wabi-charcoal/70" aria-label="Quiz statistics">
+        <div
+          class="mt-4 flex flex-wrap gap-4 text-sm font-wabi text-wabi-charcoal/70"
+          aria-label="Quiz statistics"
+        >
           <div class="flex items-center space-x-1">
             <span class="w-2 h-2 bg-green-500 rounded-full" aria-hidden="true"></span>
             <span>Total: {@user_stats.total_kanji}</span>
           </div>
+          
           <div class="flex items-center space-x-1">
             <span class="w-2 h-2 bg-orange-500 rounded-full" aria-hidden="true"></span>
             <span>Due: {@user_stats.due_today}</span>
           </div>
+          
           <div class="flex items-center space-x-1">
             <span class="w-2 h-2 bg-blue-500 rounded-full" aria-hidden="true"></span>
-            <span>Accuracy: {Float.round(@user_stats.accuracy * 100, 1)}%</span>
+            <span>Accuracy: {@user_stats.accuracy}%</span>
           </div>
         </div>
       <% end %>
-      
       <!-- Navigation and help -->
       <div class="mt-4 flex justify-between items-center">
         <div></div>
@@ -45,7 +47,8 @@
           phx-click="toggle_keyboard_shortcuts"
           class="hidden md:block btn-wabi p-2 text-wabi-charcoal/60 hover:text-wabi-rust hover:bg-wabi-cream/20 rounded-lg transition-colors font-wabi"
           aria-label="Toggle keyboard shortcuts help"
-          aria-expanded={@keyboard_shortcuts_visible}>
+          aria-expanded={@keyboard_shortcuts_visible}
+          aria-controls="keyboard-shortcuts-panel"
         >
           <svg
             class="w-5 h-5"
@@ -62,14 +65,14 @@
             />
           </svg>
         </button>
-        
         <!-- Mobile help toggle -->
         <button
           type="button"
           phx-click="toggle_mobile_help"
           class="md:hidden btn-wabi p-3 text-wabi-charcoal/60 hover:text-wabi-rust hover:bg-wabi-cream/20 rounded-lg transition-colors font-wabi touch-manipulation"
           aria-label="Toggle mobile help"
-          aria-expanded={@mobile_help_visible}>
+          aria-expanded={@mobile_help_visible}
+          aria-controls="mobile-help-panel"
         >
           <svg
             class="w-6 h-6"
@@ -87,51 +90,45 @@
           </svg>
         </button>
       </div>
-      
       <!-- Keyboard shortcuts help panel (Desktop only) -->
       <%= if @keyboard_shortcuts_visible do %>
         <div
+          id="keyboard-shortcuts-panel"
           class="hidden md:block mt-4 bg-wabi-paper/90 backdrop-blur-sm rounded-xl p-6 shadow-sm border border-wabi-border_light"
           role="region"
           aria-label="Keyboard shortcuts"
         >
-          <h2 class="text-lg font-wabi-display font-semibold text-wabi-rust mb-4">Keyboard Shortcuts</h2>
+          <h2 class="text-lg font-wabi-display font-semibold text-wabi-rust mb-4">
+            Keyboard Shortcuts
+          </h2>
           
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm font-wabi">
             <div class="flex justify-between">
               <span class="text-wabi-charcoal/70">Submit answer</span>
-              <kbd class="px-2 py-1 bg-wabi-cream/20 text-wabi-rust rounded border">
-                Enter
-              </kbd>
+              <kbd class="px-2 py-1 bg-wabi-cream/20 text-wabi-rust rounded border">Enter</kbd>
             </div>
             
             <div class="flex justify-between">
               <span class="text-wabi-charcoal/70">Skip kanji</span>
-              <kbd class="px-2 py-1 bg-wabi-cream/20 text-wabi-rust rounded border">
-                Esc
-              </kbd>
+              <kbd class="px-2 py-1 bg-wabi-cream/20 text-wabi-rust rounded border">Esc</kbd>
             </div>
             
             <div class="flex justify-between">
               <span class="text-wabi-charcoal/70">Toggle help</span>
-              <kbd class="px-2 py-1 bg-wabi-cream/20 text-wabi-rust rounded border">
-                ?
-              </kbd>
+              <kbd class="px-2 py-1 bg-wabi-cream/20 text-wabi-rust rounded border">?</kbd>
             </div>
             
             <div class="flex justify-between">
               <span class="text-wabi-charcoal/70">Continue after feedback</span>
-              <kbd class="px-2 py-1 bg-wabi-cream/20 text-wabi-rust rounded border">
-                Enter
-              </kbd>
+              <kbd class="px-2 py-1 bg-wabi-cream/20 text-wabi-rust rounded border">Enter</kbd>
             </div>
           </div>
         </div>
       <% end %>
-      
       <!-- Mobile help panel -->
       <%= if @mobile_help_visible do %>
         <div
+          id="mobile-help-panel"
           class="md:hidden mt-4 bg-wabi-paper/90 backdrop-blur-sm rounded-xl p-6 shadow-sm border border-wabi-border_light"
           role="region"
           aria-label="Mobile quiz controls"
@@ -143,37 +140,47 @@
               <div class="w-6 h-6 bg-wabi-hok_blue rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
                 <span class="text-white text-xs font-bold">1</span>
               </div>
-              <span class="text-wabi-charcoal/70">Type your answer in the text field below</span>
+               <span class="text-wabi-charcoal/70">Type your answer in the text field below</span>
             </div>
             
             <div class="flex items-start space-x-3">
               <div class="w-6 h-6 bg-wabi-hok_blue rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
                 <span class="text-white text-xs font-bold">2</span>
               </div>
-              <span class="text-wabi-charcoal/70">Tap "Submit Answer" to check your response</span>
+              
+              <span class="text-wabi-charcoal/70">
+                Tap "Submit Answer" to check your response
+              </span>
             </div>
             
             <div class="flex items-start space-x-3">
               <div class="w-6 h-6 bg-wabi-hok_blue rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
                 <span class="text-white text-xs font-bold">3</span>
               </div>
-              <span class="text-wabi-charcoal/70">Use "Skip" or swipe right to skip kanji</span>
+               <span class="text-wabi-charcoal/70">Use "Skip" or swipe right to skip kanji</span>
             </div>
             
             <div class="flex items-start space-x-3">
               <div class="w-6 h-6 bg-wabi-hok_blue rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
                 <span class="text-white text-xs font-bold">4</span>
               </div>
-              <span class="text-wabi-charcoal/70">After feedback, tap "Next" or swipe horizontally to continue</span>
+              
+              <span class="text-wabi-charcoal/70">
+                After feedback, tap "Next" or swipe horizontally to continue
+              </span>
             </div>
             
             <div class="mt-4 pt-3 border-t border-wabi-border_light">
-              <h3 class="text-sm font-wabi-display font-semibold text-wabi-rust mb-2">Touch Gestures</h3>
+              <h3 class="text-sm font-wabi-display font-semibold text-wabi-rust mb-2">
+                Touch Gestures
+              </h3>
+              
               <div class="space-y-2 text-xs">
                 <div class="flex justify-between">
                   <span class="text-wabi-charcoal/60">Swipe right</span>
                   <span class="text-wabi-rust">Skip kanji</span>
                 </div>
+                
                 <div class="flex justify-between">
                   <span class="text-wabi-charcoal/60">Swipe left/right (feedback)</span>
                   <span class="text-wabi-rust">Next kanji</span>
@@ -184,7 +191,6 @@
         </div>
       <% end %>
     </div>
-    
     <!-- Main content area -->
     <main id="main-content" role="main">
       <%= if @quiz_error or is_nil(@current_kanji) do %>
@@ -230,7 +236,12 @@
           </div>
         </div>
       <% else %>
-        <div id="quiz-content" class="space-y-6" phx-hook="MobileSwipeGestures" data-show-feedback={@show_feedback}>
+        <div
+          id="quiz-content"
+          class="space-y-6"
+          phx-hook="MobileSwipeGestures"
+          data-show-feedback={@show_feedback}
+        >
           <!-- Kanji card -->
           <div
             class="wabi-paper wabi-texture overflow-hidden border border-wabi-border"
@@ -241,9 +252,7 @@
               <!-- Wabi-sabi kanji display container -->
               <div class="relative z-10">
                 <div class="kanji-container inline-flex items-center justify-center w-32 h-32 rounded-lg">
-                  <span class="kanji-display select-none">
-                    {@current_kanji.character}
-                  </span>
+                  <span class="kanji-display select-none">{@current_kanji.character}</span>
                 </div>
               </div>
             </div>
@@ -253,22 +262,37 @@
               <div class="grid grid-cols-3 gap-4 mb-6">
                 <div>
                   <h3 class="text-sm font-semibold wabi-accent-text font-wabi-display">Grade</h3>
+                  
                   <p class="mt-1 text-lg font-wabi">{@current_kanji.grade || "N/A"}</p>
                 </div>
+                
                 <div>
-                  <h3 class="text-sm font-semibold wabi-accent-text font-wabi-display">Stroke Count</h3>
+                  <h3 class="text-sm font-semibold wabi-accent-text font-wabi-display">
+                    Stroke Count
+                  </h3>
+                  
                   <p class="mt-1 text-lg font-wabi">{@current_kanji.stroke_count}</p>
                 </div>
+                
                 <div>
-                  <h3 class="text-sm font-semibold wabi-accent-text font-wabi-display">JLPT Level</h3>
-                  <p class="mt-1 text-lg font-wabi">N{@current_kanji.jlpt_level || "N/A"}</p>
+                  <h3 class="text-sm font-semibold wabi-accent-text font-wabi-display">
+                    JLPT Level
+                  </h3>
+                  
+                  <p class="mt-1 text-lg font-wabi">
+                    {if(@current_kanji.jlpt_level,
+                      do: "N#{@current_kanji.jlpt_level}",
+                      else: "N/A"
+                    )}
+                  </p>
                 </div>
               </div>
-              
               <!-- Progress indicator -->
               <div class="mb-6 bg-wabi-paper-aged rounded-md p-4 border border-wabi-border">
                 <div class="flex justify-between items-center">
-                  <span class="text-sm font-semibold wabi-accent-text font-wabi-display">Progress</span>
+                  <span class="text-sm font-semibold wabi-accent-text font-wabi-display">
+                    Progress
+                  </span>
                   <div class="flex items-center space-x-1">
                     <%= for i <- 1..5 do %>
                       <div
@@ -285,13 +309,13 @@
                     <% end %>
                   </div>
                 </div>
+                
                 <div class="mt-2 text-xs font-wabi text-wabi-charcoal/60">
                   Rep: {@current_progress.repetitions}
                 </div>
               </div>
             </div>
           </div>
-          
           <!-- Answer section -->
           <div class="wabi-paper wabi-texture overflow-hidden border border-wabi-border p-6">
             <%= if @show_feedback do %>
@@ -359,9 +383,7 @@
                   <% end %>
                 </div>
                 
-                <p class="text-wabi-rust font-wabi mb-6 leading-relaxed">
-                  {@feedback_message}
-                </p>
+                <p class="text-wabi-rust font-wabi mb-6 leading-relaxed">{@feedback_message}</p>
                 
                 <.button
                   type="button"
@@ -391,7 +413,6 @@
                   >
                     Enter the meaning or reading:
                   </label>
-                  
                   <input
                     id="answer-input"
                     name="answer"
@@ -410,7 +431,7 @@
                     required
                   />
                   <p id="answer-help" class="mt-2 text-sm text-wabi-charcoal/70 font-wabi">
-                    Enter either the English meaning or Japanese reading (hiragana/katakana/romaji)
+                    Enter either the English meaning or Japanese reading (hiragana/katakana)
                   </p>
                 </div>
                 
@@ -425,7 +446,6 @@
                   >
                     Submit Answer
                   </.button>
-                  
                   <.button
                     type="button"
                     phx-click="skip_kanji"
@@ -440,15 +460,15 @@
               </form>
             <% end %>
           </div>
-          
           <!-- Session progress -->
           <div class="wabi-paper wabi-texture border border-wabi-border p-4 text-center">
-            <p class="text-sm font-wabi text-wabi-charcoal/70">Session: {@answers_count} answers submitted</p>
+            <p class="text-sm font-wabi text-wabi-charcoal/70">
+              Session: {@answers_count} answers submitted
+            </p>
           </div>
         </div>
       <% end %>
-      
-<!-- Reset Quiz Progress button (Dev Only) -->
+      <!-- Reset Quiz Progress button (Dev Only) -->
       <%= if @dev_mode do %>
         <div class="mt-12 mb-8 text-center">
           <div class="py-6 px-6 bg-yellow-100 border-4 border-dashed border-yellow-600 rounded-lg inline-block max-w-lg shadow-lg">
@@ -467,7 +487,6 @@
             >
               🔄 Reset & Initialize Quiz Data
             </.button>
-            
             <div class="mt-4 p-3 bg-wabi-cream/50 rounded-lg border border-wabi-border">
               <p class="font-mono text-sm text-wabi-charcoal">This will:</p>
               
@@ -486,7 +505,8 @@
           </div>
         </div>
       <% end %>
-    </main>    <!-- Global keyboard event listener (desktop only) -->
+    </main>
+    <!-- Global keyboard event listener (desktop only) -->
     <div phx-window-keydown="key_down" class="hidden md:block" aria-hidden="true"></div>
   </div>
 </div>

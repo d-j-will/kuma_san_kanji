@@ -76,7 +76,8 @@ const Hooks = {
             }
           } else {
             // In answer mode, right swipe skips kanji
-            if (diffX > threshold) {
+            // diffX = startX - endX, so a right swipe makes diffX negative
+            if (diffX < -threshold) {
               this.pushEvent("skip_kanji", {});
             }
           }
