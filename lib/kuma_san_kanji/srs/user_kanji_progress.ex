@@ -248,13 +248,10 @@ defmodule KumaSanKanji.SRS.UserKanjiProgress do
            current_correct_reviews}
       end
 
-    # Calculate next review date and format for SQLite
+    # Calculate next review date
     next_review_date =
       current_time
       |> DateTime.add(new_interval * 24 * 60 * 60, :second)
-      |> DateTime.to_naive()
-      |> NaiveDateTime.to_string()
-      |> String.replace(" ", "T")
 
     changeset
     |> Ash.Changeset.change_attribute(:last_result, result)
