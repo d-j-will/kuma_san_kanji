@@ -12,7 +12,7 @@
       <h1 class="text-3xl font-wabi-display tracking-tight text-wabi-hok_blue_dark sm:text-4xl">
         Kanji Review Quiz <span class="kanji-highlight">漢字</span>
       </h1>
-      
+
       <p class="mt-3 text-lg wabi-text">
         Review and strengthen your kanji knowledge with spaced repetition learning.
       </p>
@@ -26,12 +26,12 @@
             <span class="w-2 h-2 bg-green-500 rounded-full" aria-hidden="true"></span>
             <span>Total: {@user_stats.total_kanji}</span>
           </div>
-          
+
           <div class="flex items-center space-x-1">
             <span class="w-2 h-2 bg-orange-500 rounded-full" aria-hidden="true"></span>
             <span>Due: {@user_stats.due_today}</span>
           </div>
-          
+
           <div class="flex items-center space-x-1">
             <span class="w-2 h-2 bg-blue-500 rounded-full" aria-hidden="true"></span>
             <span>Accuracy: {@user_stats.accuracy}%</span>
@@ -101,23 +101,23 @@
           <h2 class="text-lg font-wabi-display font-semibold text-wabi-rust mb-4">
             Keyboard Shortcuts
           </h2>
-          
+
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm font-wabi">
             <div class="flex justify-between">
               <span class="text-wabi-charcoal/70">Submit answer</span>
               <kbd class="px-2 py-1 bg-wabi-cream/20 text-wabi-rust rounded border">Enter</kbd>
             </div>
-            
+
             <div class="flex justify-between">
               <span class="text-wabi-charcoal/70">Skip kanji</span>
               <kbd class="px-2 py-1 bg-wabi-cream/20 text-wabi-rust rounded border">Esc</kbd>
             </div>
-            
+
             <div class="flex justify-between">
               <span class="text-wabi-charcoal/70">Toggle help</span>
               <kbd class="px-2 py-1 bg-wabi-cream/20 text-wabi-rust rounded border">?</kbd>
             </div>
-            
+
             <div class="flex justify-between">
               <span class="text-wabi-charcoal/70">Continue after feedback</span>
               <kbd class="px-2 py-1 bg-wabi-cream/20 text-wabi-rust rounded border">Enter</kbd>
@@ -134,53 +134,53 @@
           aria-label="Mobile quiz controls"
         >
           <h2 class="text-lg font-wabi-display font-semibold text-wabi-rust mb-4">How to Use</h2>
-          
+
           <div class="space-y-3 text-sm font-wabi">
             <div class="flex items-start space-x-3">
               <div class="w-6 h-6 bg-wabi-hok_blue rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
                 <span class="text-white text-xs font-bold">1</span>
               </div>
-               <span class="text-wabi-charcoal/70">Type your answer in the text field below</span>
+              <span class="text-wabi-charcoal/70">Type your answer in the text field below</span>
             </div>
-            
+
             <div class="flex items-start space-x-3">
               <div class="w-6 h-6 bg-wabi-hok_blue rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
                 <span class="text-white text-xs font-bold">2</span>
               </div>
-              
+
               <span class="text-wabi-charcoal/70">
                 Tap "Submit Answer" to check your response
               </span>
             </div>
-            
+
             <div class="flex items-start space-x-3">
               <div class="w-6 h-6 bg-wabi-hok_blue rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
                 <span class="text-white text-xs font-bold">3</span>
               </div>
-               <span class="text-wabi-charcoal/70">Use "Skip" or swipe right to skip kanji</span>
+              <span class="text-wabi-charcoal/70">Use "Skip" or swipe right to skip kanji</span>
             </div>
-            
+
             <div class="flex items-start space-x-3">
               <div class="w-6 h-6 bg-wabi-hok_blue rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
                 <span class="text-white text-xs font-bold">4</span>
               </div>
-              
+
               <span class="text-wabi-charcoal/70">
                 After feedback, tap "Next" or swipe horizontally to continue
               </span>
             </div>
-            
+
             <div class="mt-4 pt-3 border-t border-wabi-border_light">
               <h3 class="text-sm font-wabi-display font-semibold text-wabi-rust mb-2">
                 Touch Gestures
               </h3>
-              
+
               <div class="space-y-2 text-xs">
                 <div class="flex justify-between">
                   <span class="text-wabi-charcoal/60">Swipe right</span>
                   <span class="text-wabi-rust">Skip kanji</span>
                 </div>
-                
+
                 <div class="flex justify-between">
                   <span class="text-wabi-charcoal/60">Swipe left/right (feedback)</span>
                   <span class="text-wabi-rust">Next kanji</span>
@@ -213,16 +213,41 @@
                 />
               </svg>
             </div>
-            
+
             <h2 class="text-xl font-wabi-display font-semibold text-wabi-rust mb-2">
               No Reviews Available
             </h2>
-            
+
             <p class="text-wabi-charcoal/70 font-wabi mb-6">
               You don't have any kanji due for review right now. Start exploring to add kanji to your study set!
             </p>
-            
-            <div class="flex justify-center">
+
+            <div class="grid sm:grid-cols-3 gap-4 max-w-xl mx-auto text-left">
+              <div class="p-3 rounded border border-wabi-border bg-wabi-paper-aged">
+                <p class="text-sm font-wabi text-wabi-charcoal/70">Correct</p>
+                <p class="mt-1 text-2xl font-wabi-display text-green-600">
+                  {@results[:correct] || 0}
+                </p>
+              </div>
+              <div class="p-3 rounded border border-wabi-border bg-wabi-paper-aged">
+                <p class="text-sm font-wabi text-wabi-charcoal/70">Incorrect</p>
+                <p class="mt-1 text-2xl font-wabi-display text-red-600">
+                  {@results[:incorrect] || 0}
+                </p>
+              </div>
+              <div class="p-3 rounded border border-wabi-border bg-wabi-paper-aged">
+                <p class="text-sm font-wabi text-wabi-charcoal/70">Next Review</p>
+                <p class="mt-1 text-lg font-wabi-display text-wabi-indigo">
+                  <%= if @next_review_at do %>
+                    {format_relative_time(@next_review_at)}
+                  <% else %>
+                    N/A
+                  <% end %>
+                </p>
+              </div>
+            </div>
+
+            <div class="mt-6 flex justify-center gap-3">
               <.button
                 type="button"
                 phx-click="restart_quiz"
@@ -232,6 +257,9 @@
               >
                 Check Again
               </.button>
+              <.link navigate={~p"/explore"}>
+                <.button variant="secondary" size="md">Explore</.button>
+              </.link>
             </div>
           </div>
         </div>
@@ -256,29 +284,29 @@
                 </div>
               </div>
             </div>
-            
+
             <div class="p-6 wabi-text">
               <!-- Kanji metadata -->
               <div class="grid grid-cols-3 gap-4 mb-6">
                 <div>
                   <h3 class="text-sm font-semibold wabi-accent-text font-wabi-display">Grade</h3>
-                  
+
                   <p class="mt-1 text-lg font-wabi">{@current_kanji.grade || "N/A"}</p>
                 </div>
-                
+
                 <div>
                   <h3 class="text-sm font-semibold wabi-accent-text font-wabi-display">
                     Stroke Count
                   </h3>
-                  
+
                   <p class="mt-1 text-lg font-wabi">{@current_kanji.stroke_count}</p>
                 </div>
-                
+
                 <div>
                   <h3 class="text-sm font-semibold wabi-accent-text font-wabi-display">
                     JLPT Level
                   </h3>
-                  
+
                   <p class="mt-1 text-lg font-wabi">
                     {if(@current_kanji.jlpt_level,
                       do: "N#{@current_kanji.jlpt_level}",
@@ -309,7 +337,7 @@
                     <% end %>
                   </div>
                 </div>
-                
+
                 <div class="mt-2 text-xs font-wabi text-wabi-charcoal/60">
                   Rep: {@current_progress.repetitions}
                 </div>
@@ -382,9 +410,9 @@
                       </svg>
                   <% end %>
                 </div>
-                
+
                 <p class="text-wabi-rust font-wabi mb-6 leading-relaxed">{@feedback_message}</p>
-                
+
                 <.button
                   type="button"
                   phx-click="next_kanji"
@@ -434,7 +462,7 @@
                     Enter either the English meaning or Japanese reading (hiragana/katakana)
                   </p>
                 </div>
-                
+
                 <div class="flex flex-col sm:flex-row justify-center space-y-3 sm:space-y-0 sm:space-x-4 mobile-button-stack">
                   <.button
                     type="submit"
@@ -474,10 +502,10 @@
           <div class="py-6 px-6 bg-yellow-100 border-4 border-dashed border-yellow-600 rounded-lg inline-block max-w-lg shadow-lg">
             <div class="bg-red-100 px-4 py-2 rounded-t-lg mb-3">
               <p class="text-red-800 font-bold text-lg">⚠️ DEVELOPMENT MODE TOOLS ONLY ⚠️</p>
-              
+
               <p class="text-red-700 text-xs">These controls are not visible in production</p>
             </div>
-            
+
             <.button
               phx-click="reset_progress"
               variant="danger"
@@ -489,16 +517,16 @@
             </.button>
             <div class="mt-4 p-3 bg-wabi-cream/50 rounded-lg border border-wabi-border">
               <p class="font-mono text-sm text-wabi-charcoal">This will:</p>
-              
+
               <ul class="text-left list-disc pl-5 mt-1 font-mono text-xs text-wabi-charcoal/70">
                 <li>Delete all existing SRS progress records</li>
-                
+
                 <li>Create 15 new kanji review entries</li>
-                
+
                 <li>Set all new entries to be immediately due</li>
               </ul>
             </div>
-            
+
             <p class="text-red-600 text-xs mt-4 font-bold uppercase tracking-wider">
               For debug & testing purposes only
             </p>

@@ -47,6 +47,25 @@ defmodule KumaSanKanji.SRS.Logic do
   end
 
   @doc """
+  Returns the next upcoming review datetime for the user (soonest next_review_date in the future).
+
+  {:ok, %DateTime{} | nil} | {:error, reason}
+  """
+  def get_next_review_datetime(user_id, actor \\ nil) when is_binary(user_id) do
+    now = DateTime.utc_now()
+
+    case UserKanjiProgress
+         |> Ash.Query.filter(user_id == ^user_id and next_review_date > ^now)
+         |> Ash.Query.sort(next_review_date: :asc)
+         |> Ash.Query.limit(1)
+         |> Ash.read(actor: actor) do
+      {:ok, [rec | _]} -> {:ok, rec.next_review_date}
+      {:ok, []} -> {:ok, nil}
+      {:error, reason} -> {:error, reason}
+    end
+  end
+
+  @doc """
   Records a review result and updates the SRS state.
 
   ## Parameters
@@ -266,6 +285,7 @@ defmodule KumaSanKanji.SRS.Logic do
                 Enum.map(progress_records, fn record ->
                   # Create a proper destroy changeset using the record itself
                   Logger.debug("[SRS.Logic] Deleting record ID: #{record.id}")
+
                   Ash.Changeset.for_destroy(record, :destroy)
                   |> Ash.destroy(actor: actor)
                 end)
@@ -405,8 +425,8 @@ defmodule KumaSanKanji.SRS.Logic do
     # 2. User is an admin, OR
     # 3. User has dev_mode_enabled flag set
     development_env?() or
-    (user && user.admin == true) or
-    (user && Map.get(user, :dev_mode_enabled) == true)
+      (user && user.admin == true) or
+      (user && Map.get(user, :dev_mode_enabled) == true)
   end
 
   defp development_env? do

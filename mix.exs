@@ -80,7 +80,8 @@ defmodule KumaSanKanji.MixProject do
       # Password hashing
       {:pbkdf2_elixir, "~> 2.0"},
       # MCP Integration
-      {:tidewave, "~> 0.3", only: [:dev]}
+      {:tidewave, "~> 0.3", only: [:dev]},
+      {:lazy_html, ">= 0.1.0", only: :test}
     ]
   end
 
@@ -100,9 +101,9 @@ defmodule KumaSanKanji.MixProject do
         "esbuild kuma_san_kanji --minify",
         "phx.digest"
       ],
-  # Run full Phoenix endpoint (which already plugs Tidewave in endpoint.ex)
-  # instead of starting Tidewave standalone (which caused: "no Phoenix endpoint found")
-  tidewave: "phx.server"
+      # Run full Phoenix endpoint (which already plugs Tidewave in endpoint.ex)
+      # instead of starting Tidewave standalone (which caused: "no Phoenix endpoint found")
+      tidewave: "phx.server"
     ]
   end
 end

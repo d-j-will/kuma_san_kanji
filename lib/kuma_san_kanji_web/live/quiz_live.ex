@@ -28,15 +28,12 @@ defmodule KumaSanKanjiWeb.QuizLive do
     require Logger
     user = socket.assigns.current_user
 
-    # Check for existing session to resume
     quiz_state =
       case restore_session_if_exists(user.id, params["session_id"], user) do
         {:ok, restored_state} ->
           restored_state
 
         {:error, :no_session_id} ->
-          # No session_id provided - this is normal for new sessions, not an error
-          # Initialize new session
           case initialize_quiz_session(user.id, user) do
             {:ok, new_state} ->
               new_state
@@ -50,12 +47,10 @@ defmodule KumaSanKanjiWeb.QuizLive do
           end
 
         {:error, reason} ->
-          # Log actual session restoration errors
           Logger.error(
             "[QuizLive] Failed to restore session for user #{user.id} with session_id #{params["session_id"]}: #{inspect(reason)}"
           )
 
-          # Initialize new session as fallback
           case initialize_quiz_session(user.id, user) do
             {:ok, new_state} ->
               new_state
@@ -84,6 +79,12 @@ defmodule KumaSanKanjiWeb.QuizLive do
         {:ok, socket}
 
       quiz_state when is_map(quiz_state) ->
+        next_dt =
+          case Logic.get_next_review_datetime(user.id, user) do
+            {:ok, dt} -> dt
+            _ -> nil
+          end
+
         socket =
           socket
           |> assign(quiz_state)
@@ -98,6 +99,8 @@ defmodule KumaSanKanjiWeb.QuizLive do
           |> assign(:keyboard_shortcuts_visible, false)
           |> assign(:mobile_help_visible, false)
           |> assign(:dev_mode, dev_mode_enabled?(user))
+          |> assign(:results, %{correct: 0, incorrect: 0})
+          |> assign(:next_review_at, next_dt)
 
         {:ok, socket}
     end
@@ -163,6 +166,10 @@ defmodule KumaSanKanjiWeb.QuizLive do
   @impl true
   def handle_event("next_kanji", _params, socket) do
     load_next_kanji(socket)
+  end
+
+  def handle_event("show_results", _params, socket) do
+    {:noreply, assign(socket, :show_results, true)}
   end
 
   @impl true
@@ -501,15 +508,27 @@ defmodule KumaSanKanjiWeb.QuizLive do
   end
 
   defp process_answer(socket, user, current_kanji, current_progress, sanitized_answer) do
-    # Determine if answer is correct
     is_correct = check_answer_correctness(current_kanji, sanitized_answer)
     result = if is_correct, do: :correct, else: :incorrect
 
     case Logic.record_review(current_progress.id, result, user.id, user) do
-      {:ok, _updated_progress} ->
-        # Update rate limiting tracking
+      {:ok, updated_progress} ->
         current_time = System.system_time(:millisecond)
         updated_times = [current_time | socket.assigns.last_answer_times]
+
+        results = socket.assigns[:results] || %{correct: 0, incorrect: 0}
+
+        results =
+          case result do
+            :correct -> %{results | correct: results.correct + 1}
+            :incorrect -> %{results | incorrect: results.incorrect + 1}
+          end
+
+        next_review_dt =
+          case Logic.get_next_review_datetime(user.id, user) do
+            {:ok, dt} -> dt
+            _ -> nil
+          end
 
         socket =
           socket
@@ -519,12 +538,11 @@ defmodule KumaSanKanjiWeb.QuizLive do
           |> assign(:user_answer, "")
           |> assign(:answers_count, socket.assigns.answers_count + 1)
           |> assign(:last_answer_times, updated_times)
-          # Ensure current_kanji is still available for the "Next" button
           |> assign(:current_kanji, current_kanji)
+          |> assign(:results, results)
+          |> assign(:next_review_at, next_review_dt)
 
-        # Save session state after successful answer
         save_session_state(socket, user.id)
-
         {:noreply, socket}
 
       {:error, reason} ->
@@ -562,18 +580,22 @@ defmodule KumaSanKanjiWeb.QuizLive do
         {:noreply, socket}
 
       {:ok, []} ->
-        # No more kanji due for review
         socket =
           socket
           |> assign(:current_kanji, nil)
-          # Clear the progress record
           |> assign(:current_progress, nil)
           |> assign(:quiz_complete, true)
           |> assign(:show_feedback, false)
           |> assign(:feedback_message, "")
           |> assign(:feedback_type, :info)
+          |> assign(
+            :next_review_at,
+            case Logic.get_next_review_datetime(user.id, user) do
+              {:ok, dt} -> dt
+              _ -> nil
+            end
+          )
 
-        # Save completion state
         save_session_state(socket, user.id)
 
         {:noreply, socket}
@@ -662,4 +684,34 @@ defmodule KumaSanKanjiWeb.QuizLive do
 
   defp get_validation_error_message(:invalid_characters), do: "Answer contains invalid characters"
   defp get_validation_error_message(:invalid_format), do: "Invalid answer format"
+
+  defp format_relative_time(nil), do: "N/A"
+
+  defp format_relative_time(%DateTime{} = dt) do
+    now = DateTime.utc_now()
+
+    if DateTime.compare(dt, now) in [:lt, :eq] do
+      "Now"
+    else
+      diff = DateTime.diff(dt, now, :second)
+
+      cond do
+        diff < 60 ->
+          "in #{diff}s"
+
+        diff < 3600 ->
+          m = div(diff, 60)
+          "in #{m}m"
+
+        diff < 86_400 ->
+          h = div(diff, 3600)
+          m = div(rem(diff, 3600), 60)
+          if m > 0, do: "in #{h}h #{m}m", else: "in #{h}h"
+
+        true ->
+          d = div(diff, 86_400)
+          "in #{d}d"
+      end
+    end
+  end
 end
