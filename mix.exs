@@ -81,7 +81,9 @@ defmodule KumaSanKanji.MixProject do
       {:pbkdf2_elixir, "~> 2.0"},
       # MCP Integration
       {:tidewave, "~> 0.3", only: [:dev]},
-      {:lazy_html, ">= 0.1.0", only: :test}
+  {:lazy_html, ">= 0.1.0", only: :test},
+  # Property-based testing (Ash already depends on stream_data ~> 1.0)
+  {:stream_data, "~> 1.0"}
     ]
   end
 
@@ -93,6 +95,14 @@ defmodule KumaSanKanji.MixProject do
   # See the documentation for `Mix` for more info on aliases.
   defp aliases do
     [
+      "usage_rules.update": [
+        """
+        usage_rules.sync AGENTS.md --all \
+          --inline usage_rules:all \
+          --link-to-folder deps
+        """
+        |> String.trim()
+      ],
       setup: ["deps.get", "assets.setup", "assets.build"],
       "assets.setup": ["tailwind.install --if-missing", "esbuild.install --if-missing"],
       "assets.build": ["tailwind kuma_san_kanji", "esbuild kuma_san_kanji"],
