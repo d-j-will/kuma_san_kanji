@@ -100,9 +100,8 @@ defmodule KumaSanKanji.SRS.UserKanjiProgress do
       accept([:last_result])
       require_atomic? false
 
-      change(fn changeset, _context ->
-        KumaSanKanji.SRS.UserKanjiProgress.update_srs_state(changeset)
-      end)
+      # Use extracted change module for SM-2 logic
+      change KumaSanKanji.SRS.Changes.ApplySm2
     end
 
     # Read action to get progress for a specific user-kanji pair
@@ -199,72 +198,13 @@ defmodule KumaSanKanji.SRS.UserKanjiProgress do
   - Incorrect answers reset interval to 1 and decrease ease factor
   - Ease factor is clamped to minimum of 1.3
   """
+  @deprecated "Use KumaSanKanji.SRS.Changes.ApplySm2 as an action change instead"
   def update_srs_state(changeset) do
-    current_time = DateTime.utc_now()
-    result = Ash.Changeset.get_attribute(changeset, :last_result)
-
-    # Get current values from the changeset data
-    current_interval = Ash.Changeset.get_attribute(changeset, :interval) || 1
-
-    current_ease_factor =
-      Ash.Changeset.get_attribute(changeset, :ease_factor) || Decimal.new("2.5")
-
-    current_repetitions = Ash.Changeset.get_attribute(changeset, :repetitions) || 0
-    current_total_reviews = Ash.Changeset.get_attribute(changeset, :total_reviews) || 0
-    current_correct_reviews = Ash.Changeset.get_attribute(changeset, :correct_reviews) || 0
-
-    # Calculate new values based on result
-    {new_interval, new_ease_factor, new_repetitions, new_correct_count} =
-      case result do
-        :correct ->
-          new_repetitions = current_repetitions + 1
-          new_correct_count = current_correct_reviews + 1
-
-          # SM-2 algorithm for correct answers
-          {new_interval, new_ease_factor} =
-            calculate_sm2_interval(
-              current_interval,
-              current_ease_factor,
-              new_repetitions,
-              # Quality of response (5 = perfect)
-              5
-            )
-
-          {new_interval, new_ease_factor, new_repetitions, new_correct_count}
-
-        :incorrect ->
-          # Reset on incorrect answer
-          new_ease_factor =
-            Decimal.max(
-              Decimal.sub(current_ease_factor, Decimal.new("0.2")),
-              Decimal.new("1.3")
-            )
-
-          {1, new_ease_factor, 0, current_correct_reviews}
-
-        :skip ->
-          # Skip doesn't affect SRS state much, just updates review date slightly
-          {max(1, div(current_interval, 2)), current_ease_factor, current_repetitions,
-           current_correct_reviews}
-      end
-
-    # Calculate next review date
-    next_review_date =
-      current_time
-      |> DateTime.add(new_interval * 24 * 60 * 60, :second)
-
-    changeset
-    |> Ash.Changeset.change_attribute(:last_result, result)
-    |> Ash.Changeset.change_attribute(:interval, new_interval)
-    |> Ash.Changeset.change_attribute(:ease_factor, new_ease_factor)
-    |> Ash.Changeset.change_attribute(:repetitions, new_repetitions)
-    |> Ash.Changeset.change_attribute(:next_review_date, next_review_date)
-    |> Ash.Changeset.change_attribute(:last_reviewed_at, current_time)
-    |> Ash.Changeset.change_attribute(:total_reviews, current_total_reviews + 1)
-    |> Ash.Changeset.change_attribute(:correct_reviews, new_correct_count)
-    |> maybe_set_first_reviewed_at(current_time)
+    # Keep compatibility for tests calling this directly
+    KumaSanKanji.SRS.Changes.ApplySm2.change(changeset, %{}, %{})
   end
 
+  # Retained for backward compatibility; now handled inside the change module.
   defp maybe_set_first_reviewed_at(changeset, current_time) do
     case Ash.Changeset.get_attribute(changeset, :first_reviewed_at) do
       nil -> Ash.Changeset.change_attribute(changeset, :first_reviewed_at, current_time)
