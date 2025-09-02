@@ -92,6 +92,29 @@ defmodule KumaSanKanji.Accounts.User do
     end
   end
 
+  relationships do
+    # Link to spaced repetition progress records
+    has_many :kanji_progress, KumaSanKanji.SRS.UserKanjiProgress
+  end
+
+  aggregates do
+    # Total number of tracked kanji for this user
+    count :kanji_progress_count, :kanji_progress
+    # Sum review counters
+    sum :total_reviews_sum, :kanji_progress, :total_reviews
+    sum :correct_reviews_sum, :kanji_progress, :correct_reviews
+  end
+
+  calculations do
+    # Accuracy % derived from aggregates; 0 if none
+    calculate :accuracy, :decimal, expr(
+      cond do
+        total_reviews_sum == 0 -> 0
+        true -> correct_reviews_sum * 100 / total_reviews_sum
+      end
+    )
+  end
+
   policies do
     bypass AshAuthentication.Checks.AshAuthenticationInteraction do
       authorize_if always()
