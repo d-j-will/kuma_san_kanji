@@ -12,7 +12,10 @@
     </script>
   </head>
   
-  <body class="wabi-container">
-    {@inner_content}
+  <body class="wabi-container min-h-screen flex flex-col pb-32">
+    <div class="flex-1 flex flex-col">
+      {@inner_content}
+    </div>
+    <KumaSanKanjiWeb.Components.Footer.footer />
   </body>
 </html>

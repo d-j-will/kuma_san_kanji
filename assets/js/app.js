@@ -26,6 +26,25 @@ import { KanjiStrokeOrderAnimate } from "./hooks/kanji_stroke_order"
 // Define JS hooks for UI components
 const Hooks = {
   KanjiStrokeOrderAnimate: KanjiStrokeOrderAnimate,
+  StrokeOrderToggle: {
+    mounted() {
+      const scope = this.el.dataset.scope || "global";
+      const key = `stroke_order_${scope}`;
+      try {
+        const stored = localStorage.getItem(key);
+        if (stored === 'true' && this.el.dataset.initial !== 'true') {
+          // Ask server to toggle on if not already
+          this.pushEvent("toggle_stroke_order", {});
+        }
+      } catch (_) {}
+    },
+    updated() {
+      const scope = this.el.dataset.scope || "global";
+      const key = `stroke_order_${scope}`;
+      const current = this.el.dataset.current === 'true';
+      try { localStorage.setItem(key, current); } catch (_) {}
+    }
+  },
   MobileMenu: {
     mounted() {
       this.el.addEventListener("toggle-mobile-menu", () => {

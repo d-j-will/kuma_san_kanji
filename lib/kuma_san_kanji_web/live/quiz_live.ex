@@ -318,7 +318,15 @@ defmodule KumaSanKanjiWeb.QuizLive do
   end
 
   def handle_event("toggle_stroke_order", _params, socket) do
-    {:noreply, assign(socket, :show_stroke_order, !socket.assigns.show_stroke_order)}
+  new_val = !socket.assigns.show_stroke_order
+  socket = StrokeOrderEvents.toggle(socket)
+    socket =
+      if new_val && socket.assigns.current_kanji && socket.assigns.current_kanji.character do
+        Phoenix.LiveView.push_event(socket, "stroke_order_restart", %{kanji: socket.assigns.current_kanji.character, mode: "brush"})
+      else
+        socket
+      end
+    {:noreply, socket}
   end
 
   def handle_event(event, params = %{"kanji" => _}, socket) when event in ["stroke_order_restart", "stroke_order_step", "stroke_order_toggle_style"] do
@@ -585,6 +593,14 @@ defmodule KumaSanKanjiWeb.QuizLive do
           |> assign(:feedback_type, :info)
           |> assign(:user_answer, "")
           |> assign(:quiz_complete, false)
+
+        # If stroke order panel is visible, trigger a restart of animation for the new kanji
+        socket =
+          if socket.assigns.show_stroke_order && next_kanji && next_kanji.character do
+            Phoenix.LiveView.push_event(socket, "stroke_order_restart", %{kanji: next_kanji.character, mode: "brush"})
+          else
+            socket
+          end
 
         # Save session state for the new kanji
         save_session_state(socket, user.id)

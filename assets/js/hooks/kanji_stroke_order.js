@@ -11,7 +11,17 @@ export const KanjiStrokeOrderAnimate = {
     this.clearTimers()
     this.svg = this.el.querySelector('svg')
     if (!this.svg) return
-    this.strokes = Array.from(this.svg.querySelectorAll('path[id*="-s"], path')).filter(p => p.getTotalLength)
+    
+    // Immediately force all paths to hidden state before any setup
+    const allPaths = Array.from(this.svg.querySelectorAll('path[id*="-s"], path')).filter(p => p.getTotalLength)
+    allPaths.forEach(p => {
+      const len = p.getTotalLength()
+      p.style.transition = 'none'
+      p.style.strokeDasharray = len
+      p.style.strokeDashoffset = len
+    })
+    
+    this.strokes = allPaths
     this.strokes.forEach((p, i) => {
       const len = p.getTotalLength()
       p.dataset.strokeIndex = i
@@ -21,7 +31,10 @@ export const KanjiStrokeOrderAnimate = {
       p.style.strokeLinejoin = 'round'
       p.style.stroke = 'var(--stroke-base, #222)'
       p.style.strokeDasharray = len
+      // Keep strokes hidden with no transition during initial setup
+      p.style.transition = 'none'
       p.style.strokeDashoffset = len
+      void p.offsetWidth // Force repaint
       p.style.transition = 'stroke-dashoffset 0.45s ease, stroke 0.25s ease, filter 0.3s ease'
       p.style.filter = 'drop-shadow(1px 1px 2px oklch(12% 0.025 250 / 0.35))'
     })
@@ -60,7 +73,9 @@ export const KanjiStrokeOrderAnimate = {
     if (!this.strokes || this.animating) return
     this.reset()
     this.animating = true
-    let delay = 0
+  // Introduce an initial delay so the user briefly sees the blank (no strokes drawn) state
+  const initialDelay = 400 // ms; adjust as desired for UX
+  let delay = initialDelay
     this.strokes.forEach((p, idx) => {
       const len = p.getTotalLength()
       const dur = Math.min(1200, Math.max(250, len * 6))
