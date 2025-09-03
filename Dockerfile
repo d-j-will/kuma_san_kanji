@@ -85,6 +85,7 @@ ENV LANGUAGE=en_US:en
 ENV LC_ALL=en_US.UTF-8
 
 WORKDIR "/app"
+# Ensure app directory exists & set ownership (will be re-applied after copying release)
 RUN chown nobody /app
 
 # set runner ENV
@@ -100,6 +101,9 @@ COPY --from=builder --chown=nobody:root /app/scripts ./scripts
 
 # Copy admin setup script
 COPY --from=builder --chown=nobody:root /app/admin_setup.exs ./admin_setup.exs
+
+ # Reinforce execute bits on release scripts (some environments lose them, causing Permission denied)
+RUN chmod 755 /app/bin/* || true
 
 USER nobody
 
