@@ -59,6 +59,14 @@ jobs:
         env:
           MIX_ENV: dev
 
+      - name: Setup test database
+        run: |
+          mix ecto.create
+          mix ecto.migrate
+        env:
+          MIX_ENV: test
+          DATABASE_URL: postgres://postgres:postgres@localhost/kuma_san_kanji_test
+
       - name: Run tests
         run: mix test
         env:
