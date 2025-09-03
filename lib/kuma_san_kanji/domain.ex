@@ -18,6 +18,13 @@ defmodule KumaSanKanji.Domain do
       define(:count_all_kanjis, action: :count_all)
     end
 
+    resource(KumaSanKanji.Kanji.Radical) do
+      define :create_radical, action: :create
+      define :get_radical_by_glyph, action: :get_by_glyph, args: [:glyph], get?: true
+      define :get_radical_by_kangxi_index, action: :get_by_kangxi_index, args: [:kangxi_index], get?: true
+      define :list_radicals, action: :read
+    end
+
     resource(KumaSanKanji.Kanji.Meaning) do
       define(:create_meaning, action: :create)
       define(:list_meanings_by_kanji, action: :read)

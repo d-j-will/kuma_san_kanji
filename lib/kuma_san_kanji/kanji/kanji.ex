@@ -15,6 +15,10 @@ defmodule KumaSanKanji.Kanji.Kanji do
   end
 
   relationships do
+    belongs_to :radical, KumaSanKanji.Kanji.Radical,
+      allow_nil?: true,
+      define_attribute?: true
+
     has_many(:meanings, KumaSanKanji.Kanji.Meaning, destination_attribute: :kanji_id)
     has_many(:pronunciations, KumaSanKanji.Kanji.Pronunciation, destination_attribute: :kanji_id)
 
@@ -32,7 +36,7 @@ defmodule KumaSanKanji.Kanji.Kanji do
     end
 
     create :create do
-      accept([:character, :grade, :stroke_count, :jlpt_level])
+      accept([:character, :grade, :stroke_count, :jlpt_level, :radical_id])
     end
 
     # List all kanji with relationships loaded
