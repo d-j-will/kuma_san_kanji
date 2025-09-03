@@ -37,13 +37,13 @@ defmodule KumaSanKanji.KanjiVG.Ingestion do
 
     Logger.info("[KanjiVG] Ingesting #{length(chars)} kanji (force?=#{force?} concurrency=#{concurrency})")
     File.mkdir_p!(dest_dir())
-    
+
     # Initialize failure tracking
     failure_log_path = Path.join(dest_dir(), "ingestion_failures.log")
     timestamp = DateTime.utc_now() |> DateTime.to_iso8601()
     log_header = "# KanjiVG Ingestion Failures - #{timestamp}\n# Format: kanji_char,hex_code,error_type,error_details,attempted_url\n"
     File.write!(failure_log_path, log_header)
-    
+
     initial = %{written: 0, skipped: 0, errors: 0, failures: []}
 
     result =
@@ -57,23 +57,23 @@ defmodule KumaSanKanji.KanjiVG.Ingestion do
       |> Enum.reduce(initial, fn
         {:ok, :written}, acc -> %{acc | written: acc.written + 1}
         {:ok, :skipped}, acc -> %{acc | skipped: acc.skipped + 1}
-        {:ok, {:error, failure_info}}, acc -> 
+        {:ok, {:error, failure_info}}, acc ->
           %{acc | errors: acc.errors + 1, failures: [failure_info | acc.failures]}
-        {:exit, reason}, acc -> 
+        {:exit, reason}, acc ->
           failure_info = %{char: "unknown", hex: "unknown", error_type: "timeout", details: inspect(reason), url: "unknown"}
           %{acc | errors: acc.errors + 1, failures: [failure_info | acc.failures]}
       end)
 
     # Write all failures to log file
     unless Enum.empty?(result.failures) do
-      failure_lines = 
+      failure_lines =
         result.failures
         |> Enum.reverse()
         |> Enum.map(fn failure ->
           "#{failure.char},#{failure.hex},#{failure.error_type},\"#{failure.details}\",#{failure.url}"
         end)
         |> Enum.join("\n")
-      
+
       File.write!(failure_log_path, log_header <> failure_lines <> "\n", [:append])
       Logger.info("[KanjiVG] Failure log written to: #{failure_log_path}")
     end

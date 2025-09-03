@@ -1,5 +1,5 @@
 defmodule KumaSanKanji.KanjiVG.Cache do
-  @moduledoc "In-memory ETS cache for sanitized KanjiVG SVG markup." 
+  @moduledoc "In-memory ETS cache for sanitized KanjiVG SVG markup."
   use GenServer
 
   @table :kanjivg_svg_cache
