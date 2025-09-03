@@ -1,13 +1,14 @@
 defmodule KumaSanKanjiWeb.ExploreLive do
   use KumaSanKanjiWeb, :live_view
   alias KumaSanKanji.Domain
+  alias KumaSanKanjiWeb.StrokeOrderEvents
+  alias KumaSanKanjiWeb.StrokeOrderEvents
 
   @impl true
   def mount(_params, _session, socket) do
     count = Domain.count_all_kanjis!()
-
-    # Determine if the user is logged in
     is_authenticated = socket.assigns[:current_user] != nil
+    socket = assign(socket, :show_stroke_order, false)
 
     case count do
       total_kanji when total_kanji > 0 ->
@@ -23,7 +24,8 @@ defmodule KumaSanKanjiWeb.ExploreLive do
                is_authenticated: is_authenticated,
                thematic_info: thematic_info,
                learning_meta: learning_meta,
-               usage_examples: usage_examples
+               usage_examples: usage_examples,
+               show_stroke_order: false
              )}
 
           _ ->
@@ -36,7 +38,8 @@ defmodule KumaSanKanjiWeb.ExploreLive do
                is_authenticated: is_authenticated,
                thematic_info: nil,
                learning_meta: nil,
-               usage_examples: []
+               usage_examples: [],
+               show_stroke_order: false
              )}
         end
 
@@ -50,7 +53,8 @@ defmodule KumaSanKanjiWeb.ExploreLive do
            is_authenticated: is_authenticated,
            thematic_info: nil,
            learning_meta: nil,
-           usage_examples: []
+           usage_examples: [],
+           show_stroke_order: false
          )}
     end
   end
@@ -75,7 +79,8 @@ defmodule KumaSanKanjiWeb.ExploreLive do
            current_offset: new_offset,
            thematic_info: thematic_info,
            learning_meta: learning_meta,
-           usage_examples: usage_examples
+           usage_examples: usage_examples,
+           show_stroke_order: false
          )}
 
       _ ->
@@ -83,6 +88,22 @@ defmodule KumaSanKanjiWeb.ExploreLive do
         {:noreply, socket}
     end
   end
+
+  @impl true
+  def handle_event("toggle_stroke_order", _params, socket) do
+    {:noreply, StrokeOrderEvents.toggle(socket)}
+  end
+
+  def handle_event(event, params = %{"kanji" => _}, socket) when event in ["stroke_order_restart", "stroke_order_step", "stroke_order_toggle_style"] do
+    {:noreply, StrokeOrderEvents.handle(socket, event, params)}
+  end
+
+  @impl true
+  def handle_event(_event, _params, socket) do
+    {:noreply, socket}
+  end
+
+  defp self_topic(socket), do: "explore:#{socket.id}"
 
   defp get_kanji_by_offset(offset) do
     # Updated call to use Domain and pass offset as a direct argument

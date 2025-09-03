@@ -21,6 +21,8 @@ defmodule KumaSanKanji.Application do
       KumaSanKanji.Repo,
       # Start the Quiz Session manager
       KumaSanKanji.Quiz.Session,
+  # KanjiVG SVG cache
+  KumaSanKanji.KanjiVG.Cache,
       # Start to serve requests, typically the last entry
       KumaSanKanjiWeb.Endpoint
     ]

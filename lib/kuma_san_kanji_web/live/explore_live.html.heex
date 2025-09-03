@@ -22,15 +22,30 @@
       <div class="p-6 text-center border-b border-wabi-border_light relative overflow-hidden">
         <!-- Wabi-sabi kanji display container -->
         <div class="relative z-10">
-          <div class="kanji-container inline-flex items-center justify-center w-32 h-32 rounded-lg">
-            <span class="kanji-display select-none">
-              {@kanji.character}
-            </span>
+          <div class="flex flex-col items-center">
+            <div class="kanji-container flex items-center justify-center w-32 h-32 rounded-lg">
+              <span class="kanji-display select-none">
+                {@kanji.character}
+              </span>
+            </div>
+            <button type="button" class="mt-2 text-xs underline text-wabi-accent"
+                    phx-click="toggle_stroke_order" aria-expanded={@show_stroke_order || false}>
+              {if @show_stroke_order, do: "Hide Stroke Order", else: "Show Stroke Order"}
+            </button>
           </div>
         </div>
       </div>
 
       <div class="p-6 wabi-text">
+        <%= if @show_stroke_order do %>
+          <div class="mb-6 border border-wabi-border rounded-md p-3 bg-wabi-paper-aged">
+            <KumaSanKanjiWeb.KanjiStrokeOrderComponent.stroke_order
+              id="explore-stroke-order"
+              kanji={@kanji.character}
+              animate?={true} />
+            <p class="mt-2 text-[10px] text-wabi-stone/60">Stroke order data © KanjiVG (CC BY-SA 3.0)</p>
+          </div>
+        <% end %>
         <div class="grid grid-cols-2 gap-4 mb-6">
           <div>
             <h3 class="text-sm font-semibold wabi-accent-text font-wabi-display">Grade</h3>

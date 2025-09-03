@@ -84,6 +84,12 @@
 - **Server**: Bandit 1.7.0
 - **Runtime**: Elixir/Phoenix with Ash Framework
 
+### Added
+- Kanji stroke order component (KanjiVG-based) integrated into quiz view with toggle and placeholder animation hook.
+- KanjiVG ingestion module & mix task `mix kanjivg.ingest` for downloading & sanitizing stroke order SVG assets.
+ 
+- Kanji stroke order component (KanjiVG-based) integrated into quiz view with toggle and placeholder animation hook.
+
 ### Database Schema
 
 All migrations successfully applied:

@@ -185,5 +185,5 @@ A declarative, extensible framework for building Elixir applications.
 A code generation and project patching framework
 
 [igniter usage rules](deps/igniter/usage-rules.md)
-<!-- igniter-end -->
+!-- igniter-end -->
 <!-- usage-rules-end -->

@@ -281,11 +281,25 @@
               <div class="relative z-10">
                 <div class="kanji-container inline-flex items-center justify-center w-32 h-32 rounded-lg">
                   <span class="kanji-display select-none">{@current_kanji.character}</span>
+                  <!-- Stroke order toggle -->
+                  <button type="button" class="ml-4 text-xs underline text-wabi-accent"
+                          phx-click="toggle_stroke_order" aria-expanded={@show_stroke_order || false}>
+                    {if @show_stroke_order, do: "Hide Stroke Order", else: "Show Stroke Order"}
+                  </button>
                 </div>
               </div>
             </div>
 
             <div class="p-6 wabi-text">
+              <%= if @show_stroke_order do %>
+                <div class="mb-6 border border-wabi-border rounded-md p-3 bg-wabi-paper-aged">
+                  <KumaSanKanjiWeb.KanjiStrokeOrderComponent.stroke_order
+                    id="quiz-stroke-order"
+                    kanji={@current_kanji.character}
+                    animate?={true} />
+                  <p class="mt-2 text-[10px] text-wabi-stone/60">Stroke order data © KanjiVG (CC BY-SA 3.0)</p>
+                </div>
+              <% end %>
               <!-- Kanji metadata -->
               <div class="grid grid-cols-3 gap-4 mb-6">
                 <div>

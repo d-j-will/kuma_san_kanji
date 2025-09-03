@@ -51,6 +51,15 @@ defmodule KumaSanKanjiWeb.ExploreLiveTest do
       refute next_kanji == initial_kanji
     end
 
+    test "stroke order toggle shows component", %{conn: conn} do
+      {:ok, view, _html} = live(conn, "/explore")
+      refute has_element?(view, "#explore-stroke-order")
+      view |> element("button", "Show Stroke Order") |> render_click()
+      assert has_element?(view, "#explore-stroke-order")
+      view |> element("button", "Hide Stroke Order") |> render_click()
+      refute has_element?(view, "#explore-stroke-order")
+    end
+
     # Helper function to extract kanji character from HTML
     defp extract_kanji_character(html) do
       ~r/<span[^>]*>([^<]+)<\/span>/

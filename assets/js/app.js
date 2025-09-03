@@ -21,9 +21,11 @@ import "phoenix_html"
 import {Socket} from "phoenix"
 import {LiveSocket} from "phoenix_live_view"
 import topbar from "../vendor/topbar"
+import { KanjiStrokeOrderAnimate } from "./hooks/kanji_stroke_order"
 
 // Define JS hooks for UI components
 const Hooks = {
+  KanjiStrokeOrderAnimate: KanjiStrokeOrderAnimate,
   MobileMenu: {
     mounted() {
       this.el.addEventListener("toggle-mobile-menu", () => {
