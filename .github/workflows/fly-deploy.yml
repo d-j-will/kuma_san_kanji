@@ -89,6 +89,7 @@ jobs:
         env:
           MIX_ENV: dev
           DATABASE_URL: postgres://postgres:postgres@localhost/kuma_san_kanji_dev
+          DISABLE_LIVE_RELOAD: 1
 
   deploy:
     name: Deploy app

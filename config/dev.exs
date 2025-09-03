@@ -98,3 +98,10 @@ config :swoosh, :api_client, false
 if File.exists?(Path.join(__DIR__, "dev.secret.exs")) do
   import_config "dev.secret.exs"
 end
+
+# Optional: disable live reload & watchers (e.g. for mix kanjivg.ingest in CI or headless envs)
+if System.get_env("DISABLE_LIVE_RELOAD") == "1" do
+  config :kuma_san_kanji, KumaSanKanjiWeb.Endpoint,
+    live_reload: [patterns: []],
+    watchers: []
+end
