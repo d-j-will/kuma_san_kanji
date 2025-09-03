@@ -279,10 +279,11 @@
             <div class="p-6 text-center border-b border-wabi-border_light relative overflow-hidden">
               <!-- Wabi-sabi kanji display container -->
               <div class="relative z-10">
-                <div class="kanji-container inline-flex items-center justify-center w-32 h-32 rounded-lg">
-                  <span class="kanji-display select-none">{@current_kanji.character}</span>
-                  <!-- Stroke order toggle -->
-                  <button type="button" class="ml-4 text-xs underline text-wabi-accent"
+                <div class="flex flex-col items-center">
+                  <div class="kanji-container flex items-center justify-center w-32 h-32 rounded-lg">
+                    <span class="kanji-display select-none">{@current_kanji.character}</span>
+                  </div>
+                  <button type="button" class="mt-2 text-xs underline text-wabi-accent"
                           phx-click="toggle_stroke_order" aria-expanded={@show_stroke_order || false}>
                     {if @show_stroke_order, do: "Hide Stroke Order", else: "Show Stroke Order"}
                   </button>
