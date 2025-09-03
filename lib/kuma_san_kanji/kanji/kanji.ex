@@ -40,39 +40,39 @@ defmodule KumaSanKanji.Kanji.Kanji do
     end
 
     # List all kanji with relationships loaded
-    read :list_all do
+  read :list_all do
       prepare(fn query, _context ->
         query
-        |> Ash.Query.load([:meanings, :pronunciations, :example_sentences])
+    |> Ash.Query.load([:meanings, :pronunciations, :example_sentences, :radical])
         |> Ash.Query.sort(:inserted_at)
       end)
     end
 
     # Get kanji by character with relationships loaded
-    read :get_by_character do
+  read :get_by_character do
       argument(:character, :string, allow_nil?: false)
 
       prepare(fn query, _context ->
         character = Ash.Query.get_argument(query, :character)
 
-        query
-        |> Ash.Query.filter(character: character)
-        |> Ash.Query.load([:meanings, :pronunciations, :example_sentences])
-        |> Ash.Query.limit(1)
+  query
+  |> Ash.Query.filter(character: character)
+  |> Ash.Query.load([:meanings, :pronunciations, :example_sentences, :radical])
+  |> Ash.Query.limit(1)
       end)
     end
 
     # Custom read action for getting by ID with relationships
-    read :get_by_id do
+  read :get_by_id do
       argument(:id, :uuid, allow_nil?: false)
 
       prepare(fn query, _context ->
         id = Ash.Query.get_argument(query, :id)
 
-        query
-        |> Ash.Query.filter(id: id)
-        |> Ash.Query.load([:meanings, :pronunciations, :example_sentences])
-        |> Ash.Query.limit(1)
+  query
+  |> Ash.Query.filter(id: id)
+  |> Ash.Query.load([:meanings, :pronunciations, :example_sentences, :radical])
+  |> Ash.Query.limit(1)
       end)
     end
 

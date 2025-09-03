@@ -12,10 +12,11 @@ defmodule KumaSanKanjiWeb.ExploreLive do
 
     case count do
       total_kanji when total_kanji > 0 ->
-        current_offset = 0
+  current_offset = 0
 
         case get_kanji_by_offset(current_offset) do
           {:ok, kanji, thematic_info, learning_meta, usage_examples} ->
+            radical = kanji.radical || load_radical(kanji)
             {:ok,
              assign(socket,
                kanji: kanji,
@@ -25,6 +26,7 @@ defmodule KumaSanKanjiWeb.ExploreLive do
                thematic_info: thematic_info,
                learning_meta: learning_meta,
                usage_examples: usage_examples,
+                radical: radical,
                show_stroke_order: false
              )}
 
@@ -73,12 +75,14 @@ defmodule KumaSanKanjiWeb.ExploreLive do
 
     case get_kanji_by_offset(new_offset) do
       {:ok, kanji, thematic_info, learning_meta, usage_examples} ->
+        radical = kanji.radical || load_radical(kanji)
         socket = assign(socket,
           kanji: kanji,
           current_offset: new_offset,
           thematic_info: thematic_info,
           learning_meta: learning_meta,
-          usage_examples: usage_examples
+          usage_examples: usage_examples,
+          radical: radical
         )
 
         # If stroke order panel is currently visible, replay animation for new kanji
@@ -152,6 +156,7 @@ defmodule KumaSanKanjiWeb.ExploreLive do
               end
           }
 
+          loaded_kanji = Ash.load!(loaded_kanji, :radical)
           {:ok, loaded_kanji, thematic_info, learning_meta, usage_examples}
         else
           _error ->
@@ -173,4 +178,11 @@ defmodule KumaSanKanjiWeb.ExploreLive do
   end
 
   # Template is now in explore_live.html.heex
+
+  defp load_radical(kanji) do
+    case Ash.load(kanji, :radical) do
+      {:ok, with_radical} -> with_radical.radical
+      _ -> nil
+    end
+  end
 end

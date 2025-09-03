@@ -68,6 +68,33 @@
           </div>
         </div>
 
+        <!-- Radical Information -->
+  <div :if={@radical && !match?(%Ash.NotLoaded{}, @radical)} class="mb-6">
+          <h3 class="text-lg font-semibold text-wabi-indigo font-wabi-display mb-2">Radical</h3>
+          <div class="flex items-start gap-4 bg-wabi-paper-aged rounded-md p-4 border border-wabi-border">
+            <div class="flex items-center justify-center w-16 h-16 rounded bg-wabi-paper text-3xl font-wabi">
+              <.link navigate={~p"/radicals/#{@radical.kangxi_index}"} class="hover:underline" aria-label={"View radical #{@radical.glyph} details"}>
+                {@radical.glyph}
+              </.link>
+            </div>
+            <div class="flex-1">
+              <div class="font-medium wabi-text text-lg">{@radical.meaning}</div>
+              <div class="mt-1 text-sm wabi-text">
+                <span class="inline-block mr-4">Kangxi # {@radical.kangxi_index}</span>
+                <span class="inline-block mr-4">Strokes: {@radical.stroke_count}</span>
+                <span :if={@radical.japanese_name} class="inline-block">Ja: {@radical.japanese_name}</span>
+              </div>
+              <div :if={@radical.alt_forms != []} class="mt-2 text-xs wabi-text">
+                Alternate Forms:
+                <span class="ml-1">{Enum.join(@radical.alt_forms, ", ")}</span>
+              </div>
+              <div :if={@radical.mnemonic} class="mt-2 text-xs wabi-text italic">
+                {@radical.mnemonic}
+              </div>
+            </div>
+          </div>
+        </div>
+
 <!-- Thematic Groups Section -->
         <div :if={@thematic_info.groups != []}>
           <h3 class="text-lg font-semibold wabi-accent-text font-wabi-display mb-2">

@@ -29,6 +29,7 @@ defmodule KumaSanKanjiWeb.Router do
       on_mount: {KumaSanKanjiWeb.UserLiveAuth, :live_user_optional} do
       live "/", PageLive
       live "/explore", ExploreLive
+  live "/radicals/:id", RadicalLive
   live "/credits", CreditsLive
     end
 

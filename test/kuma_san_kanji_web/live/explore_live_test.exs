@@ -60,9 +60,58 @@ defmodule KumaSanKanjiWeb.ExploreLiveTest do
       refute has_element?(view, "#explore-stroke-order")
     end
 
+    test "radical information displays when kanji has radical", %{conn: conn} do
+      # Create radical
+      radical = KumaSanKanji.Domain.create_radical!(%{
+        glyph: "氵",
+        kangxi_index: 85,
+        stroke_count: 3,
+        meaning: "water",
+        japanese_name: "さんずい"
+      })
+
+      existing_count = KumaSanKanji.Domain.count_all_kanjis!()
+
+      created = KumaSanKanji.Domain.create_kanji!(%{
+        character: "河",
+        grade: 2,
+        stroke_count: 8,
+        jlpt_level: 4,
+        radical_id: radical.id
+      })
+
+      {:ok, view, _html} = live(conn, "/explore")
+
+      # New kanji should be last by inserted_at ordering used in by_offset
+      total = KumaSanKanji.Domain.count_all_kanjis!()
+      assert total == existing_count + 1
+
+      # Navigate through offsets until reaching the last one (newly created)
+      Enum.each(1..(total - 1), fn _ ->
+        view |> element("button", "Show New Kanji") |> render_click()
+      end)
+
+      html = render(view)
+      assert html =~ "Radical"
+      assert html =~ radical.glyph
+      assert html =~ "Kangxi # 85"
+      assert html =~ created.character
+    end
+
+    test "radical panel hidden when kanji has no radical", %{conn: conn} do
+      # In setup we created two kanji without radicals. Mount explore.
+      {:ok, view, _html} = live(conn, "/explore")
+
+      # Ensure the Radical heading is not present
+      refute has_element?(view, "h3", "Radical")
+
+      # Double check raw HTML to avoid false positives
+  refute render(view) =~ ~r/>Radical</
+    end
+
     # Helper function to extract kanji character from HTML
     defp extract_kanji_character(html) do
-      ~r/<span[^>]*>([^<]+)<\/span>/
+  ~r/<span[^>]*>([^<]+)<\/span>/
       |> Regex.run(html)
       |> case do
         [_, character] -> character
