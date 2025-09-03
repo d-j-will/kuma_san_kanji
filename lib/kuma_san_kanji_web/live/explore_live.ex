@@ -103,8 +103,6 @@ defmodule KumaSanKanjiWeb.ExploreLive do
     {:noreply, socket}
   end
 
-  defp self_topic(socket), do: "explore:#{socket.id}"
-
   defp get_kanji_by_offset(offset) do
     # Updated call to use Domain and pass offset as a direct argument
     case Domain.get_kanji_by_offset(offset) do
