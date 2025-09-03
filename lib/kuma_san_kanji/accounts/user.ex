@@ -90,6 +90,20 @@ defmodule KumaSanKanji.Accounts.User do
       get? true
       prepare AshAuthentication.Preparations.FilterBySubject
     end
+
+    # Return a single user with loaded SRS progress aggregates/calculation
+    read :progress_summary do
+      get? true
+      prepare fn query, _ctx ->
+        query
+        |> Ash.Query.load([
+          :kanji_progress_count,
+          :total_reviews_sum,
+          :correct_reviews_sum,
+          :accuracy
+        ])
+      end
+    end
   end
 
   relationships do
@@ -147,7 +161,7 @@ defmodule KumaSanKanji.Accounts.User do
   end
 
   attributes do
-    uuid_primary_key :id, writable?: true
+  uuid_primary_key :id, writable?: true, public?: true
 
     attribute :username, :ci_string, allow_nil?: false, public?: true
     attribute :email, :ci_string, allow_nil?: false
@@ -168,5 +182,12 @@ defmodule KumaSanKanji.Accounts.User do
 
   identities do
     identity :unique_email, [:email]
+  end
+
+  # Code interface for convenient access
+  code_interface do
+    define :get_by_id, action: :read, get_by: [:id]
+    define :get_by_subject, action: :get_by_subject, get_by: [:subject]
+    define :progress_summary, action: :progress_summary, get_by: [:id]
   end
 end

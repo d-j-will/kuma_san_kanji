@@ -5,6 +5,7 @@ defmodule KumaSanKanji.SRS.SM2PropertyTest do
 
   alias KumaSanKanji.SRS.UserKanjiProgress
   alias KumaSanKanji.SRS.UserKanjiProgress, as: Progress
+  alias KumaSanKanji.SRS.Changes.ApplySm2
 
 
   @moduledoc false
@@ -39,7 +40,7 @@ defmodule KumaSanKanji.SRS.SM2PropertyTest do
     end
   end
 
-  describe "update_srs_state/1 invariants" do
+  describe "ApplySm2 change invariants" do
     property "sequence of correct answers has non-decreasing intervals after second repetition" do
   check all len <- integer(2..8) do
         base = %UserKanjiProgress{interval: 1, ease_factor: Decimal.new("2.5"), repetitions: 0, last_result: :correct, total_reviews: 0, correct_reviews: 0}
@@ -47,7 +48,7 @@ defmodule KumaSanKanji.SRS.SM2PropertyTest do
 
         intervals =
           Enum.reduce(1..len, {changeset, []}, fn _n, {cs, acc} ->
-            cs = Progress.update_srs_state(cs)
+            cs = ApplySm2.change(cs, %{}, %{})
             i = Ash.Changeset.get_attribute(cs, :interval)
             # prepare for next iteration: set last_result to :correct again using updated data
             next = cs |> Ash.Changeset.change_attribute(:last_result, :correct)
@@ -72,7 +73,7 @@ defmodule KumaSanKanji.SRS.SM2PropertyTest do
                 ef <- float(min: 1.3, max: 3.0) do
         progress = %UserKanjiProgress{interval: interval, ease_factor: Decimal.from_float(ef), repetitions: reps, last_result: :incorrect, total_reviews: 5, correct_reviews: 3}
         cs = Ash.Changeset.new(progress)
-        updated = Progress.update_srs_state(cs)
+  updated = ApplySm2.change(cs, %{}, %{})
 
         new_interval = Ash.Changeset.get_attribute(updated, :interval)
         new_reps = Ash.Changeset.get_attribute(updated, :repetitions)
@@ -100,7 +101,7 @@ defmodule KumaSanKanji.SRS.SM2PropertyTest do
                 ef <- float(min: 1.3, max: 3.0) do
         progress = %UserKanjiProgress{interval: interval, ease_factor: Decimal.from_float(ef), repetitions: reps, last_result: :skip, total_reviews: 5, correct_reviews: 3}
         cs = Ash.Changeset.new(progress)
-        updated = Progress.update_srs_state(cs)
+  updated = ApplySm2.change(cs, %{}, %{})
 
         new_interval = Ash.Changeset.get_attribute(updated, :interval)
         new_reps = Ash.Changeset.get_attribute(updated, :repetitions)

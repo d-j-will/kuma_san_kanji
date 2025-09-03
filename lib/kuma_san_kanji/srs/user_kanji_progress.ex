@@ -190,27 +190,7 @@ defmodule KumaSanKanji.SRS.UserKanjiProgress do
     repo(KumaSanKanji.Repo)
   end
 
-  @doc """
-  Updates SRS state based on review result using the SM-2 algorithm.
-
-  This function implements the core SRS logic:
-  - Correct answers increase interval and may increase ease factor
-  - Incorrect answers reset interval to 1 and decrease ease factor
-  - Ease factor is clamped to minimum of 1.3
-  """
-  @deprecated "Use KumaSanKanji.SRS.Changes.ApplySm2 as an action change instead"
-  def update_srs_state(changeset) do
-    # Keep compatibility for tests calling this directly
-    KumaSanKanji.SRS.Changes.ApplySm2.change(changeset, %{}, %{})
-  end
-
-  # Retained for backward compatibility; now handled inside the change module.
-  defp maybe_set_first_reviewed_at(changeset, current_time) do
-    case Ash.Changeset.get_attribute(changeset, :first_reviewed_at) do
-      nil -> Ash.Changeset.change_attribute(changeset, :first_reviewed_at, current_time)
-      _ -> changeset
-    end
-  end
+  # (legacy update_srs_state/1 removed; SM-2 logic resides in KumaSanKanji.SRS.Changes.ApplySm2)
 
   @doc """
   Implements the SM-2 algorithm for calculating review intervals.

@@ -11,6 +11,7 @@ defmodule KumaSanKanji.Accounts do
       define :toggle_user_dev_mode, action: :toggle_dev_mode
       define :create_test_user, action: :create_for_test
       define :update_user, action: :update
+  define :progress_summary, action: :progress_summary, get_by: [:id]
     end
   end
 end
