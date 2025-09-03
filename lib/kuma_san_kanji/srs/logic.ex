@@ -35,7 +35,14 @@ defmodule KumaSanKanji.SRS.Logic do
     sanitized_limit = sanitize_limit(limit)
 
     case UserKanjiProgress
-         |> Ash.Query.for_read(:due_for_review, %{user_id: user_id, limit: sanitized_limit})
+         # Explicitly set horizon_seconds to 0 here so this logic function only returns
+         # kanji that are actually due "now". CLI tooling that wants look-ahead behavior
+         # passes a non-zero horizon explicitly at the resource/query layer.
+         |> Ash.Query.for_read(:due_for_review, %{
+           user_id: user_id,
+           limit: sanitized_limit,
+           horizon_seconds: 0
+         })
          |> Ash.read(actor: actor) do
       {:ok, progress_records} ->
         # Load kanji data for each progress record

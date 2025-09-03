@@ -124,15 +124,25 @@ defmodule KumaSanKanji.SRS.UserKanjiProgress do
     read :due_for_review do
       argument(:user_id, :uuid, allow_nil?: false)
       argument(:limit, :integer, default: 10)
+  # Horizon (in seconds) to look ahead; 0 means only items currently due
+  # Look-ahead horizon in seconds (default 1 hour) to prefetch near-due items
+  argument(:horizon_seconds, :integer, default: 3600)
 
       prepare(fn query, _context ->
         user_id = Ash.Query.get_argument(query, :user_id)
+        horizon_seconds =
+          case Ash.Query.get_argument(query, :horizon_seconds) do
+            nil -> 0
+            v when is_integer(v) and v > 0 -> v
+            _ -> 0
+          end
         now = DateTime.utc_now()
+        horizon_time = DateTime.add(now, horizon_seconds, :second)
 
         query
         |> Ash.Query.do_filter(
           user_id: user_id,
-          next_review_date: [lte: now]
+          next_review_date: [lte: horizon_time]
         )
       end)
 
