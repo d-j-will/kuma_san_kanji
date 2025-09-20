@@ -7,17 +7,13 @@ defmodule KumaSanKanji.Content.KanjiUsageExample do
   """
 
   use Ash.Resource,
-    domain: KumaSanKanji.Content.Domain,
+    domain: KumaSanKanji.Content,
     data_layer: AshPostgres.DataLayer
 
-  # Ensure Ash.Query is required
   require Ash.Query
 
   attributes do
     uuid_primary_key(:id)
-    # Changed from relationship to attribute
-    attribute(:kanji_id, :uuid, allow_nil?: false)
-    # Assuming this is the example sentence itself
     attribute(:context, :string, allow_nil?: false)
     attribute(:romaji, :string)
     attribute(:translation, :string)
@@ -27,7 +23,12 @@ defmodule KumaSanKanji.Content.KanjiUsageExample do
     timestamps()
   end
 
-  # Removed belongs_to :kanji relationship
+  relationships do
+    belongs_to :kanji, KumaSanKanji.Kanji.Kanji do
+      attribute_writable?(true)
+      allow_nil?(false)
+    end
+  end
 
   actions do
     defaults([:create, :read, :update, :destroy])

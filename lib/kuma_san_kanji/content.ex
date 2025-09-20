@@ -9,7 +9,6 @@ defmodule KumaSanKanji.Content do
     extensions: [
       Ash.Extensions.ChangeTracking
     ],
-    # Explicitly alias resources to ensure they're loaded
     validate_domain_config?: Application.get_env(:kuma_san_kanji, :env) != :test
 
   alias KumaSanKanji.Content.ThematicGroup
@@ -19,11 +18,31 @@ defmodule KumaSanKanji.Content do
   alias KumaSanKanji.Content.KanjiLearningMeta
 
   resources do
-    # Order resources based on dependency hierarchy
-    resource(ThematicGroup)
-    resource(EducationalContext)
-    resource(KanjiUsageExample)
-    resource(KanjiLearningMeta)
-    resource(KanjiThematicGroup)
+    resource ThematicGroup do
+      define(:get_thematic_groups, action: :read)
+      define(:get_ordered_groups, action: :ordered)
+      define(:create_thematic_group, action: :create)
+    end
+
+    resource KanjiThematicGroup do
+      define(:get_kanji_group_joins, action: :by_kanji)
+      define(:get_group_kanji_joins, action: :by_group)
+      define(:create_kanji_thematic_group, action: :create)
+    end
+
+    resource KanjiUsageExample do
+      define(:get_kanji_usage_examples, action: :by_kanji)
+      define(:create_kanji_usage_example, action: :create)
+    end
+
+    resource KanjiLearningMeta do
+      define(:get_kanji_learning_meta, action: :by_kanji, get?: true)
+      define(:create_kanji_learning_meta, action: :create)
+    end
+
+    resource EducationalContext do
+      define(:get_educational_context_by_grade, action: :by_grade_level, get?: true)
+      define(:create_educational_context, action: :create)
+    end
   end
 end

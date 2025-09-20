@@ -8,17 +8,14 @@ defmodule KumaSanKanji.Kanji do
 
   alias KumaSanKanji.Domain
 
-  @doc "Create a kanji (non-raising)."
   def create(attrs), do: Domain.create_kanji(attrs)
-
-  @doc "Create a kanji (raising)."
   def create!(attrs), do: Domain.create_kanji!(attrs)
 
-  @doc "Fetch a kanji by offset; returns {:ok, record} | {:error, reason}."
   def by_offset(offset) when is_integer(offset) and offset >= 0 do
     Domain.get_kanji_by_offset(offset)
   end
 
-  @doc "Count all kanji (raising)."
-  def count_all!(), do: Domain.count_all_kanjis!()
+  def count_all! do
+    Ash.count!(KumaSanKanji.Kanji.Kanji, action: :read)
+  end
 end

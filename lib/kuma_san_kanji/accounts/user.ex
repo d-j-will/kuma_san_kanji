@@ -46,17 +46,41 @@ defmodule KumaSanKanji.Accounts.User do
       change AshAuthentication.GenerateTokenChange
 
       change fn changeset, _ ->
-        user_info = Ash.Changeset.get_argument(changeset, :user_info)
+        user_info = Ash.Changeset.get_argument(changeset, :user_info) || %{}
         email = Map.get(user_info, "email")
+        sub = Map.get(user_info, "sub")
+        nickname = Map.get(user_info, "nickname")
+        preferred_username = Map.get(user_info, "preferred_username")
+
+        base_username =
+          cond do
+            is_binary(nickname) and nickname != "" -> nickname
+            is_binary(preferred_username) and preferred_username != "" -> preferred_username
+            is_binary(email) and email != "" ->
+              email
+              |> String.split("@")
+              |> List.first()
+            is_binary(sub) and sub != "" ->
+              sub
+              |> String.split("|")
+              |> List.last()
+            true ->
+              "user_" <> Base.url_encode64(:crypto.strong_rand_bytes(6), padding: false)
+          end
+
+        final_email =
+          if is_binary(email) and email != "" do
+            email
+          else
+            String.downcase(base_username) <> "@auth0.local"
+          end
 
         username =
-          email
-          |> String.split("@")
-          |> List.first()
+          base_username
           |> String.downcase()
 
         changeset
-        |> Ash.Changeset.change_attributes(%{email: email, username: username})
+        |> Ash.Changeset.change_attributes(%{email: final_email, username: username})
       end
     end
 

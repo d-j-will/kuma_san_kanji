@@ -7,7 +7,7 @@ defmodule KumaSanKanji.Content.EducationalContext do
   """
 
   use Ash.Resource,
-    domain: KumaSanKanji.Content.Domain,
+    domain: KumaSanKanji.Content,
     data_layer: AshPostgres.DataLayer
 
   require Ash.Query

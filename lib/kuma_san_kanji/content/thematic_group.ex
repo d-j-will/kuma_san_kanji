@@ -7,10 +7,9 @@ defmodule KumaSanKanji.Content.ThematicGroup do
   visual customization through colors and icons.
   """
   use Ash.Resource,
-    domain: KumaSanKanji.Content.Domain,
+    domain: KumaSanKanji.Content,
     data_layer: AshPostgres.DataLayer
 
-  # Ensure Ash.Query is required
   require Ash.Query
 
   attributes do

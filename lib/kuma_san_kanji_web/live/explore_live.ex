@@ -6,13 +6,13 @@ defmodule KumaSanKanjiWeb.ExploreLive do
 
   @impl true
   def mount(_params, _session, socket) do
-    count = Domain.count_all_kanjis!()
+    total_kanji = Ash.count!(KumaSanKanji.Kanji.Kanji, action: :read)
     is_authenticated = socket.assigns[:current_user] != nil
     socket = assign(socket, :show_stroke_order, false)
 
-    case count do
-      total_kanji when total_kanji > 0 ->
-  current_offset = 0
+    case total_kanji do
+      n when n > 0 ->
+        current_offset = 0
 
         case get_kanji_by_offset(current_offset) do
           {:ok, kanji, thematic_info, learning_meta, usage_examples} ->
@@ -26,12 +26,11 @@ defmodule KumaSanKanjiWeb.ExploreLive do
                thematic_info: thematic_info,
                learning_meta: learning_meta,
                usage_examples: usage_examples,
-                radical: radical,
+               radical: radical,
                show_stroke_order: false
              )}
 
           _ ->
-            # Should not happen if count > 0, but handle defensively
             {:ok,
              assign(socket,
                kanji: nil,
@@ -46,7 +45,6 @@ defmodule KumaSanKanjiWeb.ExploreLive do
         end
 
       _ ->
-        # No kanji in the database
         {:ok,
          assign(socket,
            kanji: nil,
@@ -85,7 +83,6 @@ defmodule KumaSanKanjiWeb.ExploreLive do
           radical: radical
         )
 
-        # If stroke order panel is currently visible, replay animation for new kanji
         socket =
           if socket.assigns.show_stroke_order && kanji && kanji.character do
             Phoenix.LiveView.push_event(socket, "stroke_order_restart", %{kanji: kanji.character, mode: "brush"})
@@ -96,7 +93,6 @@ defmodule KumaSanKanjiWeb.ExploreLive do
         {:noreply, socket}
 
       _ ->
-        # Error fetching, or no kanji, keep current state or show error
         {:noreply, socket}
     end
   end
@@ -124,12 +120,8 @@ defmodule KumaSanKanjiWeb.ExploreLive do
   end
 
   defp get_kanji_by_offset(offset) do
-    # Updated call to use Domain and pass offset as a direct argument
     case Domain.get_kanji_by_offset(offset) do
-      # Handle the case when a single kanji is returned
       {:ok, kanji} when not is_nil(kanji) ->
-        # Load relationships
-        # Ensure get_kanji_by_id! is used as per Ash guidelines for expected success
         loaded_kanji =
           Domain.get_kanji_by_id!(kanji.id,
             load: [:meanings, :pronunciations, :example_sentences]
@@ -160,15 +152,9 @@ defmodule KumaSanKanjiWeb.ExploreLive do
           {:ok, loaded_kanji, thematic_info, learning_meta, usage_examples}
         else
           _error ->
-            # Fallback: if related data fails, still return the main kanji
-            # This assumes loaded_kanji is available even if the 'with' block fails partway
-            # It's safer to re-fetch or ensure loaded_kanji is correctly scoped.
-            # For simplicity, assuming loaded_kanji from the initial successful fetch is sufficient.
             {:ok, loaded_kanji, %{groups: [], joins: [], edu_context: nil}, [], []}
         end
 
-      # Case where Domain.get_kanji_by_offset returns {:ok, nil} or an error
-      # Or handle as per specific return of get_kanji_by_offset
       {:ok, nil} ->
         {:error, :no_kanji_at_offset}
 
@@ -176,8 +162,6 @@ defmodule KumaSanKanjiWeb.ExploreLive do
         error
     end
   end
-
-  # Template is now in explore_live.html.heex
 
   defp load_radical(kanji) do
     case Ash.load(kanji, :radical) do

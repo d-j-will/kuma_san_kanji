@@ -28,62 +28,48 @@ defmodule KumaSanKanji.Kanji.Kanji do
   end
 
   actions do
-    defaults([:read, :update, :destroy])
-
-    # Simple read action to list all kanjis (for counting)
-    read :count_all do
-      # Will count results manually in domain
-    end
+    defaults([:read, :destroy])
 
     create :create do
       accept([:character, :grade, :stroke_count, :jlpt_level, :radical_id])
     end
 
-    # List all kanji with relationships loaded
-  read :list_all do
+    update :update do
+      accept([:character, :grade, :stroke_count, :jlpt_level, :radical_id])
+    end
+
+    read :list_all do
+      pagination offset?: true, keyset?: true, countable: :by_default
       prepare(fn query, _context ->
         query
-    |> Ash.Query.load([:meanings, :pronunciations, :example_sentences, :radical])
+        |> Ash.Query.load([:meanings, :pronunciations, :example_sentences, :radical])
         |> Ash.Query.sort(:inserted_at)
       end)
     end
 
-    # Get kanji by character with relationships loaded
-  read :get_by_character do
+    read :get_by_character do
+      get? true
       argument(:character, :string, allow_nil?: false)
-
+      filter expr(character == ^arg(:character))
       prepare(fn query, _context ->
-        character = Ash.Query.get_argument(query, :character)
-
-  query
-  |> Ash.Query.filter(character: character)
-  |> Ash.Query.load([:meanings, :pronunciations, :example_sentences, :radical])
-  |> Ash.Query.limit(1)
+        query |> Ash.Query.load([:meanings, :pronunciations, :example_sentences, :radical])
       end)
     end
 
-    # Custom read action for getting by ID with relationships
-  read :get_by_id do
+    read :get_by_id do
+      get? true
       argument(:id, :uuid, allow_nil?: false)
-
+      filter expr(id == ^arg(:id))
       prepare(fn query, _context ->
-        id = Ash.Query.get_argument(query, :id)
-
-  query
-  |> Ash.Query.filter(id: id)
-  |> Ash.Query.load([:meanings, :pronunciations, :example_sentences, :radical])
-  |> Ash.Query.limit(1)
+        query |> Ash.Query.load([:meanings, :pronunciations, :example_sentences, :radical])
       end)
     end
 
-    # New action to get a Kanji by its order/offset
     read :by_offset do
-      # Argument for the offset
       argument(:offset, :integer, allow_nil?: false)
       get? true
 
       prepare(fn query, _context ->
-        # Get offset from query arguments
         offset = Ash.Query.get_argument(query, :offset)
 
         query

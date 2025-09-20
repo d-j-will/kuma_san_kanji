@@ -47,9 +47,9 @@ defmodule KumaSanKanji.MixProject do
       {:phoenix, "~> 1.7.21"},
       {:phoenix_html, "~> 4.1"},
       {:phoenix_live_reload, "~> 1.2", only: :dev},
-  {:phoenix_live_view, "~> 1.0"},
-  # Floki needed at runtime for KanjiVG SVG sanitization (was test-only)
-  {:floki, ">= 0.36.0"},
+      {:phoenix_live_view, "~> 1.0"},
+      # Floki needed at runtime for KanjiVG SVG sanitization (was test-only)
+      {:floki, ">= 0.36.0"},
       {:mimic, "~> 1.7", only: :test},
       {:phoenix_live_dashboard, "~> 0.8.3"},
       {:esbuild, "~> 0.8", runtime: Mix.env() == :dev},
@@ -81,10 +81,10 @@ defmodule KumaSanKanji.MixProject do
       # Password hashing
       {:pbkdf2_elixir, "~> 2.0"},
       # MCP Integration
-      {:tidewave, "~> 0.3", only: [:dev]},
-  {:lazy_html, ">= 0.1.0", only: :test},
-  # Property-based testing (Ash already depends on stream_data ~> 1.0)
-  {:stream_data, "~> 1.0"}
+      # Property-based testing (Ash already depends on stream_data ~> 1.0)
+      {:stream_data, "~> 1.0"},
+      {:tidewave, "~> 0.5", only: [:dev]},
+      {:lazy_html, ">= 0.1.0", only: :test}
     ]
   end
 

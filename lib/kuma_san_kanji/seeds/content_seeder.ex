@@ -3,7 +3,7 @@ defmodule KumaSanKanji.Seeds.ContentSeeder do
   Seeds database with content-related data: thematic groups, educational context, etc.
   """
 
-  alias KumaSanKanji.Content.Domain, as: ContentDomain
+  alias KumaSanKanji.Content
   alias KumaSanKanji.Domain, as: RootDomain
   alias KumaSanKanji.Kanji.Kanji
 
@@ -78,7 +78,7 @@ defmodule KumaSanKanji.Seeds.ContentSeeder do
 
     # Create thematic groups
     Enum.each(groups, fn group ->
-      case ContentDomain.create_thematic_group(group) do
+      case Content.create_thematic_group(group) do
         {:ok, _created_group} ->
           IO.puts("Created thematic group: #{group.name}")
 
@@ -170,7 +170,7 @@ defmodule KumaSanKanji.Seeds.ContentSeeder do
     ]
 
     Enum.each(contexts, fn context ->
-      case ContentDomain.create_educational_context(context) do
+      case Content.create_educational_context(context) do
         {:ok, _created_context} ->
           IO.puts("Created educational context for Grade #{context.grade_level}")
 
@@ -195,9 +195,9 @@ defmodule KumaSanKanji.Seeds.ContentSeeder do
     Enum.each(usage_examples_data, fn {character, examples} ->
       with {:ok, [kanji]} <- RootDomain.read_kanji(Kanji, filter: [character: character]) do
         Enum.each(examples, fn example_text ->
-          params = %{kanji_id: kanji.id, example: example_text, source: "Default Seed"}
+          params = %{kanji_id: kanji.id, context: example_text, source: "Default Seed"}
 
-          case ContentDomain.create_kanji_usage_example(params) do
+          case Content.create_kanji_usage_example(params) do
             {:ok, _example} ->
               IO.puts("Created usage example for #{character}: #{example_text}")
 
@@ -267,7 +267,7 @@ defmodule KumaSanKanji.Seeds.ContentSeeder do
             |> Map.put(:kanji_id, kanji.id)
             |> Map.put(:educational_context_id, context_id)
 
-          case ContentDomain.create_kanji_learning_meta(params) do
+          case Content.create_kanji_learning_meta(params) do
             {:ok, _meta} ->
               IO.puts("Created learning meta for #{character} in context #{context_id}")
 
@@ -285,26 +285,26 @@ defmodule KumaSanKanji.Seeds.ContentSeeder do
   defp process_group_mapping(group_name, kanji_chars, subgroup) do
     # Find the thematic group
     # CHANGED
-    with {:ok, [group]} <- ContentDomain.get_thematic_groups(filter: [name: group_name]) do
+    with {:ok, [group]} <- Content.get_thematic_groups(filter: [name: group_name]) do
       # Find all the kanji
       kanji_chars_processed =
         Enum.map(kanji_chars, fn char ->
           # CHANGED
           case RootDomain.read_kanji(Kanji, filter: [character: char]) do
             {:ok, [kanji]} ->
-              position = Enum.find_index(kanji_chars, &(&1 == char)) || 0
+              _position = Enum.find_index(kanji_chars, &(&1 == char)) || 0
 
               params = %{
                 kanji_id: kanji.id,
                 thematic_group_id: group.id,
-                position: position
+                relevance_score: 1.0
               }
 
               # Add subgroup if present
               params = if subgroup, do: Map.put(params, :subgroup, subgroup), else: params
 
               # CHANGED
-              case ContentDomain.create_kanji_thematic_group(params) do
+              case Content.create_kanji_thematic_group(params) do
                 {:ok, created} ->
                   {:ok, created}
 
@@ -323,7 +323,7 @@ defmodule KumaSanKanji.Seeds.ContentSeeder do
         # Check if params is not nil
         if params do
           # CHANGED
-          case ContentDomain.create_kanji_thematic_group(params) do
+          case Content.create_kanji_thematic_group(params) do
             {:ok, _created} -> :ok
             {:error, error} -> IO.puts("Error creating kanji thematic group: #{inspect(error)}")
           end

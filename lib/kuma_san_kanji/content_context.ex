@@ -9,11 +9,11 @@ defmodule KumaSanKanji.ContentContext do
   Gets thematic group information for a kanji character.
   """
   def get_thematic_group_for_kanji(kanji_id) do
-    case KumaSanKanji.Content.Domain.get_kanji_group_joins(%{kanji_id: kanji_id}) do
+    case KumaSanKanji.Content.get_kanji_group_joins(%{kanji_id: kanji_id}) do
       {:ok, joins} when joins != [] ->
         thematic_group_ids = Enum.map(joins, & &1.thematic_group_id)
 
-        case KumaSanKanji.Content.Domain.get_thematic_groups(
+        case KumaSanKanji.Content.get_thematic_groups(
                filter: [id: [in: thematic_group_ids]]
              ) do
           {:ok, groups} -> {:ok, groups, joins}
@@ -32,35 +32,35 @@ defmodule KumaSanKanji.ContentContext do
   Gets educational context for a kanji based on its grade level.
   """
   def get_educational_context(grade) when is_integer(grade) do
-    KumaSanKanji.Content.Domain.get_educational_context_by_grade(%{grade_level: grade})
+    KumaSanKanji.Content.get_educational_context_by_grade(%{grade_level: grade})
   end
 
   @doc """
   Gets usage examples for a kanji.
   """
   def get_usage_examples(kanji_id) do
-    KumaSanKanji.Content.Domain.get_kanji_usage_examples(kanji_id)
+    KumaSanKanji.Content.get_kanji_usage_examples(%{kanji_id: kanji_id})
   end
 
   @doc """
   Gets learning metadata for a kanji.
   """
   def get_learning_meta(kanji_id) do
-    KumaSanKanji.Content.Domain.get_kanji_learning_meta(%{kanji_id: kanji_id})
+    KumaSanKanji.Content.get_kanji_learning_meta(%{kanji_id: kanji_id})
   end
 
   @doc """
   Returns all thematic groups in order.
   """
   def get_all_thematic_groups do
-    KumaSanKanji.Content.Domain.get_ordered_groups()
+    KumaSanKanji.Content.get_ordered_groups()
   end
 
   @doc """
   Returns all kanji in a specific thematic group, sorted by position.
   """
   def get_kanji_by_thematic_group(thematic_group_id) do
-    with {:ok, joins} <- KumaSanKanji.Content.Domain.get_group_kanji_joins(thematic_group_id),
+    with {:ok, joins} <- KumaSanKanji.Content.get_group_kanji_joins(%{thematic_group_id: thematic_group_id}),
          kanji_ids = Enum.map(joins, & &1.kanji_id),
          {:ok, kanji} <-
            KumaSanKanji.Domain.read_kanji(
@@ -71,7 +71,7 @@ defmodule KumaSanKanji.ContentContext do
         Enum.sort_by(kanji, fn k ->
           position =
             Enum.find_value(joins, 0, fn j ->
-              if j.kanji_id == k.id, do: j.position, else: nil
+              if j.kanji_id == k.id, do: Map.get(j, :position, 0), else: nil
             end)
 
           {position, k.character}

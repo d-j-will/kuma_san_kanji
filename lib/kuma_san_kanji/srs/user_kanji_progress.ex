@@ -78,6 +78,8 @@ defmodule KumaSanKanji.SRS.UserKanjiProgress do
 
     # Custom action to initialize progress for a user-kanji pair
     create :initialize do
+      upsert? true
+      upsert_identity :unique_user_kanji
       argument(:user_id, :uuid, allow_nil?: false)
       argument(:kanji_id, :uuid, allow_nil?: false)
 

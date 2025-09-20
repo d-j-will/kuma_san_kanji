@@ -7,7 +7,7 @@ defmodule KumaSanKanji.Content.KanjiThematicGroup do
   """
 
   use Ash.Resource,
-    domain: KumaSanKanji.Content.Domain,
+    domain: KumaSanKanji.Content,
     data_layer: AshPostgres.DataLayer
 
   require Ash.Query
@@ -25,6 +25,10 @@ defmodule KumaSanKanji.Content.KanjiThematicGroup do
       attribute_writable?(true)
       allow_nil?(false)
     end
+  end
+
+  identities do
+    identity :unique_kanji_in_group, [:kanji_id, :thematic_group_id]
   end
 
   actions do
