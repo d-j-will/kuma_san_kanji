@@ -2,7 +2,7 @@ defmodule KumaSanKanji.Repo.Migrations.CreateTokens do
   use Ecto.Migration
 
   def up do
-    create table(:tokens, primary_key: false) do
+    create_if_not_exists table(:tokens, primary_key: false) do
       add :jti, :text, primary_key: true
       add :subject, :text, null: false
       add :expires_at, :utc_datetime, null: false
@@ -12,8 +12,8 @@ defmodule KumaSanKanji.Repo.Migrations.CreateTokens do
       add :updated_at, :utc_datetime, null: false, default: fragment("(now() AT TIME ZONE 'utc')")
     end
 
-    create index(:tokens, [:subject])
-    create index(:tokens, [:purpose])
+    create_if_not_exists index(:tokens, [:subject])
+    create_if_not_exists index(:tokens, [:purpose])
   end
 
   def down do
