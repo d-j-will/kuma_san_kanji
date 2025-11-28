@@ -158,9 +158,13 @@ defmodule KumaSanKanji.Accounts.User do
       authorize_if always()
     end
 
-    # Temporarily allow all read operations for debugging
+    # Users can read their own data, admins can read all users
     policy action_type(:read) do
-      authorize_if always()
+      # Admins can read any user
+      authorize_if actor_attribute_equals(:admin, true)
+      
+      # Users can read their own user record
+      authorize_if expr(id == ^actor(:id))
     end
 
     # Only admins can toggle dev mode for users
