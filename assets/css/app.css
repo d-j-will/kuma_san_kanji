@@ -283,8 +283,23 @@
 }
 
 /* Additional styling for Japanese text and Wabi-Sabi elements */
+/* Styling for Furigana (ruby text) */
+.furigana-text ruby {
+  ruby-align: center;
+  white-space: nowrap;
+}
+
+.furigana-text rt {
+  font-size: 0.6em; /* Smaller font size for furigana */
+  line-height: 1;
+  color: oklch(30% 0.05 250); /* Slightly lighter color for furigana */
+  /* Hide furigana by default, show on hover/focus if desired, or always show */
+  -webkit-user-select: none; /* Prevent selection of furigana */
+  user-select: none;
+}
+
 @layer utilities {
-  .jp-text {
+  .furigana-text {
     font-family: "Zen Maru Gothic", "M PLUS 1p", "Hiragino Sans", "Hiragino Kaku Gothic ProN", Meiryo, sans-serif;
   }
 

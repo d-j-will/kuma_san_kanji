@@ -216,8 +216,8 @@
                 <%= for example <- @usage_examples do %>
                   <li class="p-4">
                     <div class="flex justify-between">
-                      <span class="font-medium jp-text wabi-text">
-                        {example.compound}
+                      <span class="font-medium furigana-text wabi-text">
+                        <%= raw(KumaSanKanji.NLP.Furigana.parse_sentence(example.compound)) %>
                         <span class="ml-1 text-sm font-wabi wabi-text">
                           {example.reading}
                         </span>                      </span>
@@ -231,7 +231,7 @@
 
                     <%= if example.example_sentence do %>
                       <div class="mt-2 text-sm bg-wabi-paper p-2 rounded border border-wabi-border_light">
-                        <p class="jp-text">{example.example_sentence}</p>
+                        <p class="furigana-text"><%= raw(KumaSanKanji.NLP.Furigana.parse_sentence(example.example_sentence)) %></p>
 
                         <p class="wabi-text mt-1">{example.translation}</p>
                       </div>
@@ -251,7 +251,7 @@
           <ul role="list" class="divide-y divide-wabi-border_light">
             <%= for sentence <- @kanji.example_sentences do %>
               <li class="p-4">
-                <p class="font-medium jp-text wabi-text">{sentence.japanese}</p>
+                <p class="font-medium furigana-text wabi-text"><%= raw(KumaSanKanji.NLP.Furigana.parse_sentence(sentence.japanese)) %></p>
 
                 <p class="wabi-text mt-1 font-wabi">{sentence.translation}</p>
               </li>
