@@ -54,9 +54,6 @@ COPY assets assets
 COPY scripts scripts
 RUN chmod +x scripts/seed.sh
 
-# Copy admin setup script
-COPY admin_setup.exs ./
-
 # compile assets
 RUN mix assets.deploy
 
@@ -98,9 +95,6 @@ COPY --from=builder --chown=nobody:root /app/_build/${MIX_ENV}/rel/kuma_san_kanj
 COPY --from=builder --chown=nobody:root /app/priv ./priv
 
 COPY --from=builder --chown=nobody:root /app/scripts ./scripts
-
-# Copy admin setup script
-COPY --from=builder --chown=nobody:root /app/admin_setup.exs ./admin_setup.exs
 
  # Reinforce execute bits on release scripts (some environments lose them, causing Permission denied)
 RUN chmod 755 /app/bin/* || true
