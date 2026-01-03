@@ -562,6 +562,13 @@ defmodule KumaSanKanjiWeb.QuizLive do
           |> assign(:results, results)
           |> assign(:next_review_at, next_review_dt)
 
+        socket =
+          if is_correct do
+            push_event(socket, "play_audio", %{text: current_kanji.character, lang: "ja-JP"})
+          else
+            socket
+          end
+
         save_session_state(socket, user.id)
         {:noreply, socket}
 

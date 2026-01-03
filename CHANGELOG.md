@@ -1,5 +1,13 @@
 # Changelog
 
+## [Unreleased]
+
+### Added
+- **Audio Feedback:** Implemented Text-to-Speech (TTS) for Kanji pronunciation.
+  - Added "Speak" button to `KanjiStrokeOrderComponent`.
+  - Added auto-play audio on correct answers in `QuizLive`.
+  - Created `AudioFeedback` JavaScript hook using the Web Speech API.
+
 ## [2025-06-24] - Database Migration to PostgreSQL
 
 ### ✅ MAJOR: Successfully Migrated from SQLite to PostgreSQL

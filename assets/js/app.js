@@ -22,9 +22,11 @@ import {Socket} from "phoenix"
 import {LiveSocket} from "phoenix_live_view"
 import topbar from "../vendor/topbar"
 import { KanjiStrokeOrderAnimate } from "./hooks/kanji_stroke_order"
+import AudioFeedback from "./hooks/audio_feedback"
 
 // Define JS hooks for UI components
 const Hooks = {
+  AudioFeedback: AudioFeedback,
   KanjiStrokeOrderAnimate: KanjiStrokeOrderAnimate,
   StrokeOrderToggle: {
     mounted() {

@@ -190,4 +190,19 @@ defmodule KumaSanKanjiWeb.QuizLiveTest do
       assert is_boolean(has_h2)
     end
   end
+
+  describe "Audio Feedback" do
+    test "pushes play_audio event on correct answer", %{conn: conn, kanji: kanji} do
+      {:ok, view, _} = live(conn, ~p"/quiz")
+      char = kanji.character
+
+      # Submit a correct answer
+      view
+      |> element("form")
+      |> render_submit(%{answer: "tree"})
+
+      # Assert that the play_audio event was pushed
+      assert_push_event(view, "play_audio", %{text: ^char, lang: "ja-JP"})
+    end
+  end
 end

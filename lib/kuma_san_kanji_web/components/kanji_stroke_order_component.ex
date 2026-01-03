@@ -51,7 +51,11 @@ defmodule KumaSanKanjiWeb.KanjiStrokeOrderComponent do
           </svg>
           <div class="sr-only">Stroke order diagram for kanji {@kanji}</div>
         </div>
-        <div class="mt-2 flex gap-2 items-center justify-center text-xs">
+        <div class="mt-2 flex gap-2 items-center justify-center text-xs" id={"controls-#{@kanji}"} phx-hook="AudioFeedback">
+          <button type="button" class="px-2 py-1 rounded bg-wabi-stone/20 hover:bg-wabi-stone/30"
+                  data-audio-text={@kanji} aria-label={"Pronounce #{@kanji}"}>
+            Speak
+          </button>
           <button type="button" class="px-2 py-1 rounded bg-wabi-stone/20 hover:bg-wabi-stone/30"
                   phx-click="stroke_order_restart" phx-value-kanji={@kanji} phx-value-mode={@style_mode} aria-label="Replay stroke order">
             Replay
