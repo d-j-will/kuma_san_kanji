@@ -432,6 +432,13 @@
 
                 <p class="text-wabi-rust font-wabi mb-6 leading-relaxed">{@feedback_message}</p>
 
+                <%= if @current_progress && @current_progress.notes do %>
+                  <div class="mb-6 p-4 bg-wabi-paper-aged rounded-md border border-wabi-border text-left">
+                    <span class="text-xs font-semibold text-wabi-charcoal/60 uppercase tracking-wider block mb-1">Your Notes</span>
+                    <p class="text-sm font-wabi text-wabi-charcoal whitespace-pre-wrap">{@current_progress.notes}</p>
+                  </div>
+                <% end %>
+
                 <.button
                   type="button"
                   phx-click="next_kanji"

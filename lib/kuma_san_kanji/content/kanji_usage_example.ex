@@ -15,7 +15,6 @@ defmodule KumaSanKanji.Content.KanjiUsageExample do
   attributes do
     uuid_primary_key(:id)
     attribute(:context, :string, allow_nil?: false)
-    attribute(:romaji, :string)
     attribute(:translation, :string)
     attribute(:difficulty_level, :integer)
     attribute(:source, :string)

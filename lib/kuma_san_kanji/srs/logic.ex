@@ -108,6 +108,41 @@ defmodule KumaSanKanji.SRS.Logic do
   end
 
   @doc """
+  Updates the user's notes for a specific kanji.
+
+  ## Parameters
+  - progress_id: UUID of the UserKanjiProgress record
+  - notes: The text content of the note
+  - user_id: UUID of the user (for authorization)
+  - actor: The user performing the action (for authorization)
+
+  ## Returns
+  {:ok, %UserKanjiProgress{}} | {:error, reason}
+  """
+  def update_user_notes(progress_id, notes, user_id, actor \\ nil)
+      when is_binary(progress_id) and is_binary(user_id) do
+    # First, get the progress record and verify it belongs to the user
+    case UserKanjiProgress
+         |> Ash.Query.filter(id == ^progress_id)
+         |> Ash.read(actor: actor) do
+      {:ok, [progress]} ->
+        if progress.user_id == user_id do
+          progress
+          |> Ash.Changeset.for_update(:update_notes, %{notes: notes})
+          |> Ash.update(actor: actor)
+        else
+          {:error, :unauthorized}
+        end
+
+      {:ok, []} ->
+        {:error, :not_found}
+
+      {:error, reason} ->
+        {:error, reason}
+    end
+  end
+
+  @doc """
   Initializes progress tracking for a user-kanji pair.
 
   ## Parameters

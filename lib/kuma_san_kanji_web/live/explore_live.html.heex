@@ -183,7 +183,6 @@
                   <div class="flex justify-between">
                     <span class="font-medium font-wabi">
                       {pronunciation.value}
-                      <span class="ml-1 text-sm wabi-text">({pronunciation.romaji})</span>
                     </span>
 
                     <span class={
@@ -220,7 +219,7 @@
                       <span class="font-medium jp-text wabi-text">
                         {example.compound}
                         <span class="ml-1 text-sm font-wabi wabi-text">
-                          {example.reading} ({example.romaji})
+                          {example.reading}
                         </span>                      </span>
 
                       <span class="rounded-full bg-wabi-clay/10 border border-wabi-clay px-2.5 py-0.5 text-xs font-medium text-wabi-clay">
@@ -258,6 +257,31 @@
               </li>
             <% end %>
           </ul>
+        </div>
+
+        <!-- User Notes Section -->
+        <div :if={@is_authenticated} class="mt-8">
+          <h3 class="text-lg font-semibold text-wabi-rust font-wabi-display mb-2">
+            My Notes
+          </h3>
+          <div class="bg-wabi-paper-aged rounded-md p-4 border border-wabi-border">
+            <.form for={@note_form} phx-change="validate_note" phx-submit="save_note" class="space-y-4">
+              <div>
+                <.input
+                  field={@note_form[:notes]}
+                  type="textarea"
+                  label="My Notes"
+                  placeholder="Add a mnemonic, custom reading, or note (e.g. Think of a tree...)"
+                  class="bg-wabi-paper font-wabi text-wabi-charcoal"
+                />
+              </div>
+              <div class="flex justify-end">
+                <.button type="submit" variant="secondary" size="sm">
+                  Save Note
+                </.button>
+              </div>
+            </.form>
+          </div>
         </div>
       </div>
     </div>

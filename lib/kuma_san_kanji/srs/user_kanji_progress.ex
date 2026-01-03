@@ -24,6 +24,8 @@ defmodule KumaSanKanji.SRS.UserKanjiProgress do
     attribute(:repetitions, :integer, default: 0, allow_nil?: false)
     # :correct, :incorrect, :skip
     attribute(:last_result, :atom, allow_nil?: true)
+    # User-specific notes for this kanji
+    attribute(:notes, :string, allow_nil?: true)
 
     # Tracking metadata
     attribute(:first_reviewed_at, :utc_datetime, allow_nil?: true)
@@ -104,6 +106,11 @@ defmodule KumaSanKanji.SRS.UserKanjiProgress do
 
       # Use extracted change module for SM-2 logic
       change KumaSanKanji.SRS.Changes.ApplySm2
+    end
+
+    # Action to update user notes
+    update :update_notes do
+      accept([:notes])
     end
 
     # Read action to get progress for a specific user-kanji pair
@@ -187,6 +194,7 @@ defmodule KumaSanKanji.SRS.UserKanjiProgress do
     define(:create, action: :create)
     define(:initialize, action: :initialize)
     define(:record_review, action: :record_review)
+    define(:update_notes, action: :update_notes)
     define(:get_user_kanji_progress, action: :get_user_kanji_progress)
     define(:due_for_review, action: :due_for_review)
     define(:user_stats, action: :user_stats)

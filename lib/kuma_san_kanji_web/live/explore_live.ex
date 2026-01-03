@@ -2,12 +2,13 @@ defmodule KumaSanKanjiWeb.ExploreLive do
   use KumaSanKanjiWeb, :live_view
   alias KumaSanKanji.Domain
   alias KumaSanKanjiWeb.StrokeOrderEvents
-  alias KumaSanKanjiWeb.StrokeOrderEvents
+  alias KumaSanKanji.SRS.Logic
 
   @impl true
   def mount(_params, _session, socket) do
     total_kanji = Ash.count!(KumaSanKanji.Kanji.Kanji, action: :read)
-    is_authenticated = socket.assigns[:current_user] != nil
+    user = socket.assigns[:current_user]
+    is_authenticated = user != nil
     socket = assign(socket, :show_stroke_order, false)
 
     case total_kanji do
@@ -17,6 +18,8 @@ defmodule KumaSanKanjiWeb.ExploreLive do
         case get_kanji_by_offset(current_offset) do
           {:ok, kanji, thematic_info, learning_meta, usage_examples} ->
             radical = kanji.radical || load_radical(kanji)
+            progress = if is_authenticated, do: load_user_progress(user.id, kanji.id), else: nil
+
             {:ok,
              assign(socket,
                kanji: kanji,
@@ -27,6 +30,8 @@ defmodule KumaSanKanjiWeb.ExploreLive do
                learning_meta: learning_meta,
                usage_examples: usage_examples,
                radical: radical,
+               progress: progress,
+               note_form: to_form(%{"notes" => if(progress, do: progress.notes, else: "")}),
                show_stroke_order: false
              )}
 
@@ -40,6 +45,7 @@ defmodule KumaSanKanjiWeb.ExploreLive do
                thematic_info: nil,
                learning_meta: nil,
                usage_examples: [],
+               progress: nil,
                show_stroke_order: false
              )}
         end
@@ -54,6 +60,7 @@ defmodule KumaSanKanjiWeb.ExploreLive do
            thematic_info: nil,
            learning_meta: nil,
            usage_examples: [],
+           progress: nil,
            show_stroke_order: false
          )}
     end
@@ -63,6 +70,7 @@ defmodule KumaSanKanjiWeb.ExploreLive do
   def handle_event("new_kanji", _params, socket) do
     current_offset = socket.assigns.current_offset + 1
     total_kanji = socket.assigns.total_kanji
+    user = socket.assigns[:current_user]
 
     new_offset =
       if total_kanji > 0 do
@@ -74,13 +82,17 @@ defmodule KumaSanKanjiWeb.ExploreLive do
     case get_kanji_by_offset(new_offset) do
       {:ok, kanji, thematic_info, learning_meta, usage_examples} ->
         radical = kanji.radical || load_radical(kanji)
+        progress = if user, do: load_user_progress(user.id, kanji.id), else: nil
+
         socket = assign(socket,
           kanji: kanji,
           current_offset: new_offset,
           thematic_info: thematic_info,
           learning_meta: learning_meta,
           usage_examples: usage_examples,
-          radical: radical
+          radical: radical,
+          progress: progress,
+          note_form: to_form(%{"notes" => if(progress, do: progress.notes, else: "")})
         )
 
         socket =
@@ -95,6 +107,55 @@ defmodule KumaSanKanjiWeb.ExploreLive do
       _ ->
         {:noreply, socket}
     end
+  end
+
+  @impl true
+  def handle_event("save_note", %{"notes" => notes}, socket) do
+    user = socket.assigns.current_user
+    kanji = socket.assigns.kanji
+    progress = socket.assigns.progress
+
+    if user && kanji do
+      case progress do
+        nil ->
+          # Create new progress with note
+          # We use initialize_progress first, then update the note
+          # Or we could just use `create` if we wanted specific control, but initialize handles logic.
+          case Logic.initialize_progress(user.id, kanji.id, user) do
+            {:ok, new_progress} ->
+              # Now update the note
+              case Logic.update_user_notes(new_progress.id, notes, user.id, user) do
+                {:ok, updated} ->
+                  {:noreply,
+                   socket
+                   |> assign(:progress, updated)
+                   |> put_flash(:info, "Note saved!")}
+                {:error, _} ->
+                  {:noreply, put_flash(socket, :error, "Failed to save note.")}
+              end
+            {:error, _} ->
+              {:noreply, put_flash(socket, :error, "Failed to initialize progress.")}
+          end
+
+        existing ->
+          case Logic.update_user_notes(existing.id, notes, user.id, user) do
+            {:ok, updated} ->
+              {:noreply,
+               socket
+               |> assign(:progress, updated)
+               |> put_flash(:info, "Note saved!")}
+            {:error, _} ->
+              {:noreply, put_flash(socket, :error, "Failed to save note.")}
+          end
+      end
+    else
+      {:noreply, socket}
+    end
+  end
+
+  @impl true
+  def handle_event("validate_note", %{"notes" => notes}, socket) do
+    {:noreply, assign(socket, :note_form, to_form(%{"notes" => notes}))}
   end
 
   @impl true
@@ -166,6 +227,19 @@ defmodule KumaSanKanjiWeb.ExploreLive do
   defp load_radical(kanji) do
     case Ash.load(kanji, :radical) do
       {:ok, with_radical} -> with_radical.radical
+      _ -> nil
+    end
+  end
+
+  defp load_user_progress(user_id, kanji_id) do
+    # We can use Logic.get_user_kanji_progress if we exposed it, or just call the resource action.
+    # Logic doesn't expose a simple "get one" read, but the resource does.
+    # Actually, `Logic.initialize_progress` returns existing if found, but that's a write operation effectively (or feels like it).
+    # Better to use the resource read action directly.
+    case KumaSanKanji.SRS.UserKanjiProgress
+         |> Ash.Query.for_read(:get_user_kanji_progress, %{user_id: user_id, kanji_id: kanji_id})
+         |> Ash.read() do
+      {:ok, [progress]} -> progress
       _ -> nil
     end
   end
