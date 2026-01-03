@@ -88,6 +88,9 @@ defmodule KumaSanKanji.SRS.Logic do
       {:error, %Ash.Error.Query.NotFound{}} ->
         {:error, :not_found}
 
+      {:error, %Ash.Error.Invalid{errors: [%Ash.Error.Query.NotFound{} | _]}} ->
+        {:error, :not_found}
+
       {:error, reason} ->
         {:error, reason}
     end
@@ -95,15 +98,6 @@ defmodule KumaSanKanji.SRS.Logic do
 
   @doc """
   Updates the user's notes for a specific kanji.
-
-  ## Parameters
-  - progress_id: UUID of the UserKanjiProgress record
-  - notes: The text content of the note
-  - user_id: UUID of the user (for authorization)
-  - actor: The user performing the action (for authorization)
-
-  ## Returns
-  {:ok, %UserKanjiProgress{}} | {:error, reason}
   """
   def update_user_notes(progress_id, notes, user_id, actor \\ nil)
       when is_binary(progress_id) and is_binary(user_id) do
@@ -119,6 +113,9 @@ defmodule KumaSanKanji.SRS.Logic do
       {:error, %Ash.Error.Query.NotFound{}} ->
         {:error, :not_found}
 
+      {:error, %Ash.Error.Invalid{errors: [%Ash.Error.Query.NotFound{} | _]}} ->
+        {:error, :not_found}
+
       {:error, reason} ->
         {:error, reason}
     end
@@ -126,13 +123,6 @@ defmodule KumaSanKanji.SRS.Logic do
 
   @doc """
   Initializes progress tracking for a user-kanji pair.
-
-  ## Parameters
-  - user_id: UUID of the user
-  - kanji_id: UUID of the kanji
-
-  ## Returns
-  {:ok, %UserKanjiProgress{}} | {:error, reason}
   """
   def initialize_progress(user_id, kanji_id, actor \\ nil)
       when is_binary(user_id) and is_binary(kanji_id) do
@@ -149,6 +139,10 @@ defmodule KumaSanKanji.SRS.Logic do
           UserKanjiProgress.initialize(user_id, kanji_id, actor: actor)
 
         {:error, %Ash.Error.Query.NotFound{}} ->
+          Logger.error("[SRS.Logic] Kanji not found with ID: #{kanji_id}")
+          {:error, :kanji_not_found}
+
+        {:error, %Ash.Error.Invalid{errors: [%Ash.Error.Query.NotFound{} | _]}} ->
           Logger.error("[SRS.Logic] Kanji not found with ID: #{kanji_id}")
           {:error, :kanji_not_found}
 
