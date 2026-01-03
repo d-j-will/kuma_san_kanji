@@ -15,6 +15,7 @@ defmodule KumaSanKanji.Domain do
       define(:get_kanji_by_offset, args: [:offset], action: :by_offset, get?: true)
       define(:list_kanjis, action: :list_all)
       define(:get_kanji_by_character, args: [:character], action: :get_by_character, get?: true)
+      define(:list_kanji_for_init, args: [:limit], action: :list_for_init)
     end
 
     resource(KumaSanKanji.Kanji.Radical) do

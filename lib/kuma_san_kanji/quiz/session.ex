@@ -185,21 +185,10 @@ defmodule KumaSanKanji.Quiz.Session do
   end
 
   defp get_kanji_for_session(session) do
-    # Use the domain to get the kanji by ID
-    case Domain.get_kanji_by_id(%{id: session.current_kanji_id}) do
+    # Use the domain to get the kanji by ID - it already loads relationships
+    case Domain.get_kanji_by_id(session.current_kanji_id) do
       {:ok, kanji} when not is_nil(kanji) ->
-        # Load meanings and pronunciations to match quiz state format
-        try do
-          # Use Ash.Query to load the relationships
-          {:ok, kanji_with_relations} =
-            kanji
-            |> Ash.Query.load([:meanings, :pronunciations])
-            |> Ash.read_one()
-
-          {:ok, kanji_with_relations}
-        rescue
-          e -> {:error, Exception.message(e)}
-        end
+        {:ok, kanji}
 
       _ ->
         {:error, :kanji_not_found}

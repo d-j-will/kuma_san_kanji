@@ -14,11 +14,10 @@ defmodule KumaSanKanji.Auth do
   Returns `{:ok, user}` if found, otherwise `{:error, :not_found}`.
   """
   def get_user(user_id) do
-    require Ash.Query
-
-    case User |> Ash.Query.filter(id == ^user_id) |> Ash.read_one() do
-      {:ok, nil} -> {:error, :not_found}
+    # Use code interface for cleaner access and better error handling
+    case User.get_by_id(user_id) do
       {:ok, user} -> {:ok, user}
+      {:error, %Ash.Error.Query.NotFound{}} -> {:error, :not_found}
       {:error, _} = err -> err
     end
   end

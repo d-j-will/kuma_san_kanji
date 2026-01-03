@@ -34,16 +34,10 @@ defmodule KumaSanKanji.SRS.Logic do
     # Validate and sanitize limit parameter
     sanitized_limit = sanitize_limit(limit)
 
-    case UserKanjiProgress
-         # Explicitly set horizon_seconds to 0 here so this logic function only returns
-         # kanji that are actually due "now". CLI tooling that wants look-ahead behavior
-         # passes a non-zero horizon explicitly at the resource/query layer.
-         |> Ash.Query.for_read(:due_for_review, %{
-           user_id: user_id,
-           limit: sanitized_limit,
-           horizon_seconds: 0
-         })
-         |> Ash.read(actor: actor) do
+    case UserKanjiProgress.due_for_review(user_id,
+           %{limit: sanitized_limit, horizon_seconds: 0},
+           actor: actor
+         ) do
       {:ok, progress_records} ->
         # Load kanji data for each progress record
         load_kanji_data(progress_records, actor)
@@ -59,15 +53,9 @@ defmodule KumaSanKanji.SRS.Logic do
   {:ok, %DateTime{} | nil} | {:error, reason}
   """
   def get_next_review_datetime(user_id, actor \\ nil) when is_binary(user_id) do
-    now = DateTime.utc_now()
-
-    case UserKanjiProgress
-         |> Ash.Query.filter(user_id == ^user_id and next_review_date > ^now)
-         |> Ash.Query.sort(next_review_date: :asc)
-         |> Ash.Query.limit(1)
-         |> Ash.read(actor: actor) do
-      {:ok, [rec | _]} -> {:ok, rec.next_review_date}
-      {:ok, []} -> {:ok, nil}
+    case UserKanjiProgress.get_next_review(user_id, actor: actor) do
+      {:ok, rec} -> {:ok, rec.next_review_date}
+      {:error, %Ash.Error.Query.NotFound{}} -> {:ok, nil}
       {:error, reason} -> {:error, reason}
     end
   end
@@ -88,10 +76,8 @@ defmodule KumaSanKanji.SRS.Logic do
       when is_binary(progress_id) and result in [:correct, :incorrect, :skip] and
              is_binary(user_id) do
     # First, get the progress record and verify it belongs to the user
-    case UserKanjiProgress
-         |> Ash.Query.filter(id == ^progress_id)
-         |> Ash.read(actor: actor) do
-      {:ok, [progress]} ->
+    case UserKanjiProgress.get_by_id(progress_id, actor: actor) do
+      {:ok, progress} ->
         if progress.user_id == user_id do
           # Update with concurrency protection
           update_progress_with_retry(progress, result, 3, actor)
@@ -99,7 +85,7 @@ defmodule KumaSanKanji.SRS.Logic do
           {:error, :unauthorized}
         end
 
-      {:ok, []} ->
+      {:error, %Ash.Error.Query.NotFound{}} ->
         {:error, :not_found}
 
       {:error, reason} ->
@@ -122,19 +108,15 @@ defmodule KumaSanKanji.SRS.Logic do
   def update_user_notes(progress_id, notes, user_id, actor \\ nil)
       when is_binary(progress_id) and is_binary(user_id) do
     # First, get the progress record and verify it belongs to the user
-    case UserKanjiProgress
-         |> Ash.Query.filter(id == ^progress_id)
-         |> Ash.read(actor: actor) do
-      {:ok, [progress]} ->
+    case UserKanjiProgress.get_by_id(progress_id, actor: actor) do
+      {:ok, progress} ->
         if progress.user_id == user_id do
-          progress
-          |> Ash.Changeset.for_update(:update_notes, %{notes: notes})
-          |> Ash.update(actor: actor)
+          UserKanjiProgress.update_notes(progress, %{notes: notes}, actor: actor)
         else
           {:error, :unauthorized}
         end
 
-      {:ok, []} ->
+      {:error, %Ash.Error.Query.NotFound{}} ->
         {:error, :not_found}
 
       {:error, reason} ->
@@ -158,41 +140,15 @@ defmodule KumaSanKanji.SRS.Logic do
     Logger.debug("[SRS.Logic] Initializing progress for user #{user_id}, kanji #{kanji_id}")
 
     try do
-      # Validate that kanji exists
-      case Kanji
-           |> Ash.Query.filter(id == ^kanji_id)
-           |> Ash.read(actor: actor) do
-        {:ok, [kanji]} ->
+      # Validate that kanji exists using Kanji domain code interface
+      case KumaSanKanji.Domain.get_kanji_by_id(kanji_id, actor: actor) do
+        {:ok, kanji} ->
           Logger.debug("[SRS.Logic] Found kanji: #{kanji.character}")
 
-          # Check if progress already exists
-          case UserKanjiProgress
-               |> Ash.Query.for_read(:get_user_kanji_progress, %{
-                 user_id: user_id,
-                 kanji_id: kanji_id
-               })
-               |> Ash.read(actor: actor) do
-            {:ok, [existing]} ->
-              Logger.debug(
-                "[SRS.Logic] Progress already exists for this kanji, returning existing"
-              )
+          # Use initialize code interface which handles read/upsert logic
+          UserKanjiProgress.initialize(user_id, kanji_id, actor: actor)
 
-              {:ok, existing}
-
-            {:ok, []} ->
-              # Create new progress record using the initialize action
-              Logger.debug("[SRS.Logic] Creating new progress record")
-
-              UserKanjiProgress
-              |> Ash.Changeset.for_create(:initialize, %{user_id: user_id, kanji_id: kanji_id})
-              |> Ash.create(actor: actor)
-
-            {:error, reason} ->
-              Logger.error("[SRS.Logic] Error checking progress existence: #{inspect(reason)}")
-              {:error, reason}
-          end
-
-        {:ok, []} ->
+        {:error, %Ash.Error.Query.NotFound{}} ->
           Logger.error("[SRS.Logic] Kanji not found with ID: #{kanji_id}")
           {:error, :kanji_not_found}
 
@@ -221,9 +177,7 @@ defmodule KumaSanKanji.SRS.Logic do
   {:ok, %{total_kanji: integer, due_today: integer, accuracy: float}} | {:error, reason}
   """
   def get_user_stats(user_id, actor \\ nil) when is_binary(user_id) do
-    case UserKanjiProgress
-         |> Ash.Query.for_read(:user_stats, %{user_id: user_id})
-         |> Ash.read(actor: actor) do
+    case UserKanjiProgress.user_stats(user_id, actor: actor) do
       {:ok, progress_records} ->
         stats = calculate_user_stats(progress_records)
         {:ok, stats}
@@ -301,7 +255,6 @@ defmodule KumaSanKanji.SRS.Logic do
     # Check if user has permission to reset progress
     if can_reset_progress?(actor) do
       require Logger
-      import Ash.Query
 
       # Get the number of kanji to initialize
       limit = Keyword.get(options, :limit, 10)
@@ -316,7 +269,7 @@ defmodule KumaSanKanji.SRS.Logic do
       # Step 1: Delete all UserKanjiProgress records for this user - with detailed error handling
       delete_result =
         try do
-          case UserKanjiProgress |> filter(user_id == ^user_id) |> Ash.read(actor: actor) do
+          case UserKanjiProgress.user_stats(user_id, actor: actor) do
             {:ok, progress_records}
             when is_list(progress_records) and length(progress_records) > 0 ->
               Logger.debug(
@@ -328,8 +281,7 @@ defmodule KumaSanKanji.SRS.Logic do
                   # Create a proper destroy changeset using the record itself
                   Logger.debug("[SRS.Logic] Deleting record ID: #{record.id}")
 
-                  Ash.Changeset.for_destroy(record, :destroy)
-                  |> Ash.destroy(actor: actor)
+                  UserKanjiProgress.destroy(record, actor: actor)
                 end)
 
               errors = Enum.filter(results, &match?({:error, _}, &1))
@@ -374,15 +326,7 @@ defmodule KumaSanKanji.SRS.Logic do
           Logger.debug("[SRS.Logic] Finding #{limit} kanji for initialization...")
 
           try do
-            kanji_ids_result =
-              Kanji
-              |> Ash.Query.select([:id, :character, :grade])
-              # Start with easier kanji first
-              |> Ash.Query.sort(grade: :asc)
-              |> Ash.Query.limit(limit)
-              |> Ash.read(actor: actor)
-
-            case kanji_ids_result do
+            case KumaSanKanji.Domain.list_kanji_for_init(limit, actor: actor) do
               {:ok, kanji_list} when is_list(kanji_list) and length(kanji_list) > 0 ->
                 kanji_ids = Enum.map(kanji_list, & &1.id)
                 kanji_chars = Enum.map_join(kanji_list, ", ", & &1.character)
@@ -654,9 +598,7 @@ defmodule KumaSanKanji.SRS.Logic do
     remove_orphaned = Keyword.get(options, :remove_orphaned, true)
     notify_user = Keyword.get(options, :notify_user, false)
 
-    case UserKanjiProgress
-         |> Ash.Query.for_read(:user_stats, %{user_id: user_id})
-         |> Ash.read(actor: actor) do
+    case UserKanjiProgress.user_stats(user_id, actor: actor) do
       {:ok, progress_records} ->
         # Get all current kanji IDs
         current_kanji_ids = get_all_kanji_ids()
@@ -689,9 +631,7 @@ defmodule KumaSanKanji.SRS.Logic do
   end
 
   defp get_all_kanji_ids do
-    case Kanji
-         |> Ash.Query.select([:id])
-         |> Ash.read() do
+    case KumaSanKanji.Domain.read_kanji() do
       {:ok, kanji_list} -> Enum.map(kanji_list, & &1.id)
       {:error, _} -> []
     end
@@ -699,7 +639,7 @@ defmodule KumaSanKanji.SRS.Logic do
 
   defp remove_orphaned_progress(orphaned_records) do
     Enum.reduce(orphaned_records, 0, fn record, count ->
-      case Ash.destroy(record) do
+      case UserKanjiProgress.destroy(record) do
         :ok -> count + 1
         {:error, _} -> count
       end

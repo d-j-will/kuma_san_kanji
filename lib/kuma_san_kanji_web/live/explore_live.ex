@@ -6,7 +6,7 @@ defmodule KumaSanKanjiWeb.ExploreLive do
 
   @impl true
   def mount(_params, _session, socket) do
-    total_kanji = Ash.count!(KumaSanKanji.Kanji.Kanji, action: :read)
+    total_kanji = KumaSanKanji.Kanji.count_all!()
     user = socket.assigns[:current_user]
     is_authenticated = user != nil
     socket = assign(socket, :show_stroke_order, false)
@@ -232,14 +232,10 @@ defmodule KumaSanKanjiWeb.ExploreLive do
   end
 
   defp load_user_progress(user_id, kanji_id) do
-    # We can use Logic.get_user_kanji_progress if we exposed it, or just call the resource action.
-    # Logic doesn't expose a simple "get one" read, but the resource does.
-    # Actually, `Logic.initialize_progress` returns existing if found, but that's a write operation effectively (or feels like it).
-    # Better to use the resource read action directly.
-    case KumaSanKanji.SRS.UserKanjiProgress
-         |> Ash.Query.for_read(:get_user_kanji_progress, %{user_id: user_id, kanji_id: kanji_id})
-         |> Ash.read() do
+    # Use code interface for loading user progress
+    case KumaSanKanji.SRS.UserKanjiProgress.get_user_kanji_progress(user_id, kanji_id) do
       {:ok, [progress]} -> progress
+      {:ok, []} -> nil
       _ -> nil
     end
   end
