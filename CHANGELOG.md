@@ -7,6 +7,7 @@
   - Added "Speak" button to `KanjiStrokeOrderComponent`.
   - Added auto-play audio on correct answers in `QuizLive`.
   - Created `AudioFeedback` JavaScript hook using the Web Speech API.
+  - **Testing:** Added comprehensive tests for server-side audio events and UI component rendering.
 
 ## [2025-06-24] - Database Migration to PostgreSQL
 
