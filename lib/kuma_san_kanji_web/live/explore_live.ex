@@ -31,8 +31,7 @@ defmodule KumaSanKanjiWeb.ExploreLive do
                usage_examples: usage_examples,
                radical: radical,
                progress: progress,
-               note_form: to_form(%{"notes" => if(progress, do: progress.notes, else: "")}),
-               show_stroke_order: false
+               note_form: to_form(%{"notes" => if(progress, do: progress.notes, else: "")})
              )}
 
           _ ->

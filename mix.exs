@@ -104,7 +104,8 @@ defmodule KumaSanKanji.MixProject do
         """
         |> String.trim()
       ],
-      setup: ["deps.get", "assets.setup", "assets.build"],
+      "ecto.setup": ["ecto.create", "ecto.migrate"],
+      setup: ["deps.get", "assets.setup", "assets.build", "ecto.setup", "run priv/repo/seeds.exs"],
       "assets.setup": ["tailwind.install --if-missing", "esbuild.install --if-missing"],
       "assets.build": ["tailwind kuma_san_kanji", "esbuild kuma_san_kanji"],
       "assets.deploy": [

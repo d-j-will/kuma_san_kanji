@@ -3,6 +3,11 @@
 ## [Unreleased]
 
 ### Added
+- **Furigana Generation:** Implemented dynamic furigana display for Japanese text.
+  - Uses `System.cmd("mecab")` for morphological analysis.
+  - Updates `ExploreLive` to show furigana in example sentences and common words.
+  - Adds dedicated unit tests for `KumaSanKanji.NLP.Furigana` module.
+  - Configures `Dockerfile` and CI/CD to ensure `mecab` is installed.
 - **Audio Feedback:** Implemented Text-to-Speech (TTS) for Kanji pronunciation.
   - Added "Speak" button to `KanjiStrokeOrderComponent`.
   - Added auto-play audio on correct answers in `QuizLive`.

@@ -20,18 +20,28 @@ defmodule KumaSanKanji.NLP.Furigana do
 
   """
   def parse_sentence(text) when is_binary(text) do
+    # Create a temp file for input
+    tmp_path = Path.join(System.tmp_dir!(), "mecab_input_#{System.unique_integer([:positive])}.txt")
+    File.write!(tmp_path, text)
+
     # MeCab outputs in UTF-8
-    case System.cmd("mecab", ["-r", "/dev/null"], input: text, stderr_to_stdout: true) do
-      {:ok, output} ->
+    # Using temp file avoids pipe issues and shell escaping
+    result = case System.cmd("mecab", [tmp_path], stderr_to_stdout: true) do
+      {output, 0} ->
         output
         |> String.split("\n", trim: true)
         |> Enum.map(&parse_mecab_line/1)
         |> Enum.join()
 
-      {:error, reason} ->
-        Logger.error("Failed to execute MeCab command: #{inspect(reason)}")
+      {output, status} ->
+        Logger.error("Failed to execute MeCab command (exit #{status}): #{output}")
         text # Return original text on error
     end
+
+    # Cleanup
+    File.rm(tmp_path)
+    
+    result
   end
 
   # Parses a single line of MeCab output into a furigana HTML string
@@ -43,13 +53,13 @@ defmodule KumaSanKanji.NLP.Furigana do
         # Reading is the 8th field (index 7)
         case Enum.at(feature, 7) do
           reading when is_binary(reading) and reading != "*" ->
-            # If the surface is Kanji and reading is Katakana (implies Furigana)
-            # Check if surface contains Kanji (non-kana/ascii)
-            if Regex.match?(~r/[\p{Han}]/u, surface) && surface != to_hiragana(reading) do
+            # Only apply furigana if the surface is composed solely of Kanji characters
+            # and its reading is different from the surface (implies Kanji conversion)
+            if Regex.match?(~r/^[\p{Han}]+$/u, surface) && surface != to_hiragana(reading) do
               hiragana_reading = to_hiragana(reading)
               "<ruby>#{surface}<rt>#{hiragana_reading}</rt></ruby>"
             else
-              surface
+              surface # If mixed Kanji/Kana or pure Kana, just return surface
             end
           _ ->
             surface # No reading or other cases, just return surface
