@@ -175,6 +175,20 @@ defmodule KumaSanKanjiWeb.ExploreLive do
   end
 
   @impl true
+  def handle_event("japanese_voice_missing", _params, socket) do
+    if !Phoenix.Flash.get(socket.assigns.flash, :info) =~ "Japanese voice pack" do
+      {:noreply,
+       put_flash(
+         socket,
+         :info,
+         "Japanese voice pack not found. Please install a Japanese voice in your OS settings for audio pronunciation. (e.g., Windows: Settings > Time & Language > Speech; macOS: System Settings > Accessibility > Spoken Content)"
+       )}
+    else
+      {:noreply, socket}
+    end
+  end
+
+  @impl true
   def handle_event(_event, _params, socket) do
     {:noreply, socket}
   end

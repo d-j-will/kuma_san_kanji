@@ -333,6 +333,22 @@ defmodule KumaSanKanjiWeb.QuizLive do
     {:noreply, StrokeOrderEvents.handle(socket, event, params)}
   end
 
+  @impl true
+  def handle_event("japanese_voice_missing", _params, socket) do
+    # Only show the flash if it hasn't been shown recently (e.g., within the last minute)
+    # or if there's no existing flash about it.
+    if !Phoenix.Flash.get(socket.assigns.flash, :info) =~ "Japanese voice pack" do
+      {:noreply,
+       put_flash(
+         socket,
+         :info,
+         "Japanese voice pack not found. Please install a Japanese voice in your OS settings for audio pronunciation. (e.g., Windows: Settings > Time & Language > Speech; macOS: System Settings > Accessibility > Spoken Content)"
+       )}
+    else
+      {:noreply, socket}
+    end
+  end
+
   # Handle test messages
   @impl true
   def handle_info({:set_last_answer_times, times}, socket) do
