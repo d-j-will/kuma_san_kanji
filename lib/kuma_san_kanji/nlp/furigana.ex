@@ -53,13 +53,13 @@ defmodule KumaSanKanji.NLP.Furigana do
         # Reading is the 8th field (index 7)
         case Enum.at(feature, 7) do
           reading when is_binary(reading) and reading != "*" ->
-            # Only apply furigana if the surface is composed solely of Kanji characters
+            # Apply furigana if the surface contains ANY Kanji character (not just purely Kanji)
             # and its reading is different from the surface (implies Kanji conversion)
-            if Regex.match?(~r/^[\p{Han}]+$/u, surface) && surface != to_hiragana(reading) do
+            if Regex.match?(~r/[\p{Han}]/u, surface) && surface != to_hiragana(reading) do
               hiragana_reading = to_hiragana(reading)
               "<ruby>#{surface}<rt>#{hiragana_reading}</rt></ruby>"
             else
-              surface # If mixed Kanji/Kana or pure Kana, just return surface
+              surface # If pure Kana or reading is same as surface, just return surface
             end
           _ ->
             surface # No reading or other cases, just return surface
