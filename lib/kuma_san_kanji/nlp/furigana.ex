@@ -17,92 +17,95 @@ defmodule KumaSanKanji.NLP.Furigana do
 
       iex> Furigana.parse_sentence("これはペンです。")
       "これはペンです。"
-
   """
   def parse_sentence(text) when is_binary(text) do
-    # Create a temp file for input
     tmp_path = Path.join(System.tmp_dir!(), "mecab_input_#{System.unique_integer([:positive])}.txt")
     File.write!(tmp_path, text)
 
-    # MeCab outputs in UTF-8
-    # Using temp file avoids pipe issues and shell escaping
     result = case System.cmd("mecab", [tmp_path], stderr_to_stdout: true) do
       {output, 0} ->
         output
         |> String.split("\n", trim: true)
         |> Enum.map(&parse_mecab_line/1)
         |> Enum.join()
-
       {output, status} ->
         Logger.error("Failed to execute MeCab command (exit #{status}): #{output}")
-        text # Return original text on error
+        text
     end
 
-    # Cleanup
     File.rm(tmp_path)
-    
     result
   end
 
-  # Parses a single line of MeCab output into a furigana HTML string
+  # Processes a single line of MeCab output into a furigana HTML string
   defp parse_mecab_line("EOS"), do: ""
   defp parse_mecab_line(line) do
     case String.split(line, "\t") do
       [surface, feature_str] ->
         feature = String.split(feature_str, ",")
-        # Reading is the 8th field (index 7)
-        case Enum.at(feature, 7) do
-          reading when is_binary(reading) and reading != "*" ->
-            hiragana_full_reading = to_hiragana(reading)
-
-            # If the surface is pure Kana or reading is identical to surface, return surface
-            if hiragana_full_reading == surface do
-              surface
-            else
-              # Attempt partial furigana for mixed Kanji/Kana tokens
-              kanji_graphemes = Regex.scan(~r/\p{Han}/u, surface) |> List.flatten()
-              
-              if length(kanji_graphemes) == 0 do
-                # No Kanji in surface, just output surface
-                surface
-              else
-                # Find the longest Kanji prefix of the surface
-                kanji_part_surface =
-                  surface
-                  |> String.graphemes()
-                  |> Enum.take_while(&Regex.match?(~r/^[\p{Han}]$/u, &1))
-                  |> Enum.join()
-                
-                # The remaining part of the surface is assumed to be okurigana/kana suffix
-                kana_suffix_in_surface = String.replace_prefix(surface, kanji_part_surface, "")
-
-                if kanji_part_surface != "" do
-                  # Check if the kana_suffix_in_surface matches the end of the full reading
-                  if String.ends_with?(hiragana_full_reading, kana_suffix_in_surface) do
-                    # The reading for the kanji part is the full reading minus the matched suffix
-                    kanji_reading = String.replace_suffix(hiragana_full_reading, kana_suffix_in_surface, "")
-                    
-                    if kanji_reading != "" do
-                      "<ruby>#{kanji_part_surface}<rt>#{kanji_reading}</rt></ruby>#{kana_suffix_in_surface}"
-                    else
-                      # Fallback if calculated kanji_reading is empty (e.g., if surface was pure Kanji and reading matched)
-                      "<ruby>#{surface}<rt>#{hiragana_full_reading}</rt></ruby>"
-                    end
-                  else
-                    # Fallback to whole word furigana if kana suffix doesn't align
-                    "<ruby>#{surface}<rt>#{hiragana_full_reading}</rt></ruby>"
-                  end
-                else
-                  # Fallback to whole word furigana if no Kanji prefix (should not happen if `length(kanji_graphemes) > 0`)
-                  "<ruby>#{surface}<rt>#{hiragana_full_reading}</rt></ruby>"
-                end
-              end
-            end
-          _ ->
-            surface # No reading or other cases, just return surface
-        end
+        process_mecab_token(surface, feature)
       _ ->
-        "" # Malformed line
+        # Malformed line (e.g., just a newline or unexpected format)
+        Logger.warning("Malformed MeCab output line: #{inspect(line)}")
+        ""
+    end
+  end
+
+defp process_mecab_token(surface, feature) do
+    reading = Enum.at(feature, 7) # Reading is the 8th field (index 7)
+
+    cond do
+      reading == "*" or not is_binary(reading) ->
+        # No reading or reading is a wildcard, just return surface
+        surface
+
+      true ->
+        hiragana_full_reading = to_hiragana(reading)
+
+        # If the surface is pure Kana (or reading is identical to surface), return surface
+        if hiragana_full_reading == surface or not Regex.match?(~r/\p{Han}/u, surface) do
+          surface
+        else
+          # Otherwise, it's Kanji or mixed Kanji/Kana, and reading is different.
+          # Apply the partial furigana heuristic.
+          apply_partial_furigana_heuristic(surface, hiragana_full_reading)
+        end
+    end
+  end
+
+
+  # Applies a heuristic to generate partial furigana for mixed Kanji/Kana tokens.
+  # This attempts to split the furigana only to the Kanji part, leaving the okurigana as plain text.
+  defp apply_partial_furigana_heuristic(surface, hiragana_full_reading) do
+    # Find the longest Kanji prefix of the surface
+    kanji_part_surface =
+      surface
+      |> String.graphemes()
+      |> Enum.take_while(&Regex.match?(~r/^[\p{Han}]$/u, &1))
+      |> Enum.join()
+    
+    # The remaining part of the surface is assumed to be okurigana/kana suffix
+    kana_suffix_in_surface = String.replace_prefix(surface, kanji_part_surface, "")
+
+    cond do
+      kanji_part_surface == "" ->
+        # No Kanji prefix, fallback to whole token furigana (e.g. if reading was actually Kanji)
+        # This case should ideally not be hit if called correctly, as process_mecab_token checks for Han.
+        "<ruby>#{surface}<rt>#{hiragana_full_reading}</rt></ruby>"
+      String.ends_with?(hiragana_full_reading, kana_suffix_in_surface) ->
+        # The reading for the kanji part is the full reading minus the matched suffix
+        kanji_reading = String.replace_suffix(hiragana_full_reading, kana_suffix_in_surface, "")
+        
+        if kanji_reading != "" do
+          "<ruby>#{kanji_part_surface}<rt>#{kanji_reading}</rt></ruby>#{kana_suffix_in_surface}"
+        else
+          # Fallback if calculated kanji_reading is empty (e.g., if surface was pure Kanji and reading matched)
+          # This happens if surface is '本' (ほん) and reading 'ほん'.
+          "<ruby>#{surface}<rt>#{hiragana_full_reading}</rt></ruby>"
+        end
+      true ->
+        # Fallback to whole word furigana if kana suffix doesn't align
+        "<ruby>#{surface}<rt>#{hiragana_full_reading}</rt></ruby>"
     end
   end
 
