@@ -35,17 +35,17 @@ defmodule KumaSanKanji.NLP.FuriganaTest do
     test "handles kanji mixed with kana" do
       input = "赤い車"
       output = Furigana.parse_sentence(input)
-      assert output == "<ruby>赤い<rt>あかい</rt></ruby><ruby>車<rt>くるま</rt></ruby>"
+      assert output == "<ruby>赤<rt>あか</rt></ruby>い<ruby>車<rt>くるま</rt></ruby>"
     end
 
     test "handles verbs with kanji root and hiragana okurigana" do
       input = "行きます" # Yuki-masu (to go)
       output = Furigana.parse_sentence(input)
-      assert output == "<ruby>行き<rt>いき</rt></ruby>ます"
+      assert output == "<ruby>行<rt>い</rt></ruby>きます"
 
       input = "食べます" # Tabe-masu (to eat)
       output = Furigana.parse_sentence(input)
-      assert output == "<ruby>食べ<rt>たべ</rt></ruby>ます"
+      assert output == "<ruby>食<rt>た</rt></ruby>べます"
     end
   end
 end
