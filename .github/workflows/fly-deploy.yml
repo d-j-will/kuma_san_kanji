@@ -94,6 +94,13 @@ jobs:
           DATABASE_URL: postgres://postgres:postgres@localhost/kuma_san_kanji_dev
           DISABLE_LIVE_RELOAD: 1
 
+      - name: Upload KanjiVG assets
+        uses: actions/upload-artifact@v4
+        with:
+          name: kanjivg-assets
+          path: priv/static/kanjivg
+          if-no-files-found: warn
+
   deploy:
     name: Deploy app
     runs-on: ubuntu-latest
@@ -101,6 +108,11 @@ jobs:
     concurrency: deploy-group    # optional: ensure only one action runs at a time
     steps:
       - uses: actions/checkout@v4
+      - name: Download KanjiVG assets
+        uses: actions/download-artifact@v4
+        with:
+          name: kanjivg-assets
+          path: priv/static/kanjivg
       - uses: superfly/flyctl-actions/setup-flyctl@master
       - run: flyctl deploy --remote-only
         env:
