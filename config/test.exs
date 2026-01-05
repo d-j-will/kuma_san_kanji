@@ -35,3 +35,13 @@ config :phoenix, :plug_init_mode, :runtime
 # Enable helpful, but potentially expensive runtime checks
 config :phoenix_live_view,
   enable_expensive_runtime_checks: true
+
+# Token signing secret for AshAuthentication
+config :kuma_san_kanji, :token_signing_secret, "test-secret-key-for-jwt-signing"
+
+# Auth0 configuration for test (dummy values)
+config :kuma_san_kanji, :auth0,
+  client_id: "test-client-id",
+  client_secret: "test-client-secret",
+  base_url: "https://test.auth0.com",
+  redirect_uri: "http://localhost:4002/auth/user/auth0/callback"

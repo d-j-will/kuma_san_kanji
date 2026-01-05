@@ -65,7 +65,7 @@ defmodule KumaSanKanji.TestHelpers do
   Creates a session for testing purposes using the test user lookup.
   """
   def create_test_session(_conn, user) do
-    token = Phoenix.Token.sign(KumaSanKanjiWeb.Endpoint, "user auth", user.id)
+    {:ok, token, _claims} = AshAuthentication.Jwt.token_for_user(user)
 
     %{
       "user_id" => user.id,
@@ -77,14 +77,12 @@ defmodule KumaSanKanji.TestHelpers do
   Gets user from session for testing, bypassing authorization.
   """
   def get_test_user_from_session(user_id, token) when is_binary(user_id) and is_binary(token) do
-    max_token_age = 60 * 60 * 24 * 7  # 7 days
-
-    with {:ok, verified_user_id} <- Phoenix.Token.verify(KumaSanKanjiWeb.Endpoint, "user auth", token, max_age: max_token_age),
-         true <- verified_user_id == user_id,
+    with {:ok, %{"sub" => subject}, _signer} <- AshAuthentication.Jwt.verify(token, KumaSanKanji.Accounts.User),
+         true <- String.contains?(subject, user_id),
          {:ok, user} <- get_test_user(user_id) do
       {:ok, user}
     else
-      _error -> {:error, :invalid_session}
+      _ -> {:error, :invalid_session}
     end
   end
 
@@ -99,8 +97,9 @@ defmodule KumaSanKanji.TestHelpers do
     token = case user.__metadata__ do
       %{token: token} when is_binary(token) -> token
       _ ->
-        # Fallback: generate a simple token for testing
-        Phoenix.Token.sign(KumaSanKanjiWeb.Endpoint, "user auth", user.id)
+        # Fallback: generate a valid JWT using AshAuthentication
+        {:ok, token, _claims} = AshAuthentication.Jwt.token_for_user(user)
+        token
     end
 
     conn

@@ -5,10 +5,6 @@ defmodule KumaSanKanji.Auth do
 
   alias KumaSanKanji.Accounts.User
 
-  # Maximum age for session tokens in seconds
-  # 7 days
-  @max_token_age 60 * 60 * 24 * 7
-
   @doc """
   Gets a user by ID.
   Returns `{:ok, user}` if found, otherwise `{:error, :not_found}`.
@@ -27,8 +23,8 @@ defmodule KumaSanKanji.Auth do
   Returns the session data to be stored in the session.
   """
   def create_session(_conn, user) do
-    # Generate a random token for the session
-    token = Phoenix.Token.sign(KumaSanKanjiWeb.Endpoint, "user auth", user.id)
+    # Generate a JWT for the session
+    {:ok, token, _claims} = AshAuthentication.Jwt.token_for_user(user)
 
     %{
       "user_id" => user.id,
@@ -41,7 +37,19 @@ defmodule KumaSanKanji.Auth do
   Returns `{:ok, user_id}` if valid, otherwise `{:error, reason}`.
   """
   def verify_session_token(token) do
-    Phoenix.Token.verify(KumaSanKanjiWeb.Endpoint, "user auth", token, max_age: @max_token_age)
+    case AshAuthentication.Jwt.verify(token, KumaSanKanji.Accounts.User) do
+      {:ok, %{"sub" => subject}, _} ->
+        # Extract user ID from subject (format: "user?id=UUID")
+        case URI.parse(subject) do
+          %URI{query: query} when is_binary(query) ->
+             case URI.decode_query(query) do
+               %{"id" => id} -> {:ok, id}
+               _ -> {:error, :invalid}
+             end
+          _ -> {:error, :invalid}
+        end
+      _ -> {:error, :invalid}
+    end
   end
 
   @doc """
