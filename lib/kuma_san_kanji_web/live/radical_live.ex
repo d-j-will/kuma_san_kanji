@@ -39,7 +39,7 @@ defmodule KumaSanKanjiWeb.RadicalLive do
     ~H"""
     <div class="px-4 py-10 sm:px-6 sm:py-16 lg:px-8">
       <div class="mx-auto max-w-2xl">
-        <h1 class="text-3xl font-wabi-display mb-6 text-wabi-hok_blue_dark">Radical Details</h1>
+        <h1 class="text-3xl font-wabi-display mb-6 text-base-content">Radical Details</h1>
         <%= if @radical do %>
           <div class="wabi-paper wabi-texture border border-wabi-border rounded p-6">
             <div class="flex items-start gap-6">
@@ -53,11 +53,11 @@ defmodule KumaSanKanjiWeb.RadicalLive do
                 <p :if={@radical.alt_forms != []} class="text-xs wabi-text mb-2">Alt Forms: {Enum.join(@radical.alt_forms, ", ")}</p>
                 <p :if={@radical.mnemonic} class="text-xs italic wabi-text mb-2">{@radical.mnemonic}</p>
                 <p :if={@radical.notes} class="text-xs wabi-text mb-2">{@radical.notes}</p>
-                <p :if={@radical.high_yield} class="inline-block text-xs font-semibold px-2 py-1 bg-wabi-hok_blue/10 border border-wabi-hok_blue rounded text-wabi-hok_blue_dark">High Yield</p>
+                <p :if={@radical.high_yield} class="inline-block text-xs font-semibold px-2 py-1 bg-wabi-hok_blue/10 border border-wabi-hok_blue rounded text-base-content">High Yield</p>
               </div>
             </div>
             <div :if={@radical.kanjis != []} class="mt-8">
-              <h3 class="text-xl font-wabi-display mb-3 text-wabi-indigo">Kanji Using This Radical (showing up to 50)</h3>
+              <h3 class="text-xl font-wabi-display mb-3 text-base-content">Kanji Using This Radical (showing up to 50)</h3>
               <div class="flex flex-wrap gap-2">
                 <%= for k <- @radical.kanjis do %>
                   <span class="inline-flex items-center justify-center w-12 h-12 text-2xl font-wabi rounded bg-wabi-paper-aged border border-wabi-border">
@@ -73,7 +73,7 @@ defmodule KumaSanKanjiWeb.RadicalLive do
           </div>
         <% end %>
         <div class="mt-6">
-          <.link navigate={~p"/explore"} class="text-wabi-accent underline">Back to Explore</.link>
+          <.link navigate={~p"/explore"} class="text-primary underline">Back to Explore</.link>
         </div>
       </div>
     </div>

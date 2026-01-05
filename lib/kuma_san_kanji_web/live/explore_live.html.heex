@@ -1,6 +1,6 @@
 <div class="px-4 py-10 sm:px-6 sm:py-20 lg:px-8 xl:px-20 xl:py-24">
   <div class="mx-auto max-w-2xl">
-    <h1 class="text-3xl font-wabi-display tracking-tight text-wabi-hok_blue_dark sm:text-4xl">
+    <h1 class="text-3xl font-wabi-display tracking-tight text-base-content sm:text-4xl">
       Explore Kanji <span class="kanji-highlight">漢字</span>
     </h1>
 
@@ -70,7 +70,7 @@
 
         <!-- Radical Information -->
   <div :if={@radical && !match?(%Ash.NotLoaded{}, @radical)} class="mb-6">
-          <h3 class="text-lg font-semibold text-wabi-indigo font-wabi-display mb-2">Radical</h3>
+          <h3 class="text-lg font-semibold text-base-content font-wabi-display mb-2">Radical</h3>
           <div class="flex items-start gap-4 bg-wabi-paper-aged rounded-md p-4 border border-wabi-border">
             <div class="flex items-center justify-center w-16 h-16 rounded bg-wabi-paper text-3xl font-wabi">
               <.link navigate={~p"/radicals/#{@radical.kangxi_index}"} class="hover:underline" aria-label={"View radical #{@radical.glyph} details"}>
@@ -109,7 +109,7 @@
 
               subgroup = if join_entry, do: join_entry.subgroup %>
               <span class="inline-flex items-center rounded-md bg-wabi-hok_blue/10 border border-wabi-hok_blue px-3 py-1">
-                <span class="font-medium text-wabi-hok_blue_dark">{group.name}</span>
+                <span class="font-medium text-base-content">{group.name}</span>
                 <%= if subgroup do %>
                   <span class="ml-1 text-xs font-wabi text-wabi-charcoal">({subgroup})</span>
                 <% end %>
@@ -120,7 +120,7 @@
 
 <!-- Educational Context Section -->
         <div :if={@thematic_info.edu_context}>
-          <h3 class="text-lg font-semibold text-wabi-rust font-wabi-display mb-2">
+          <h3 class="text-lg font-semibold text-base-content font-wabi-display mb-2">
             Educational Context
           </h3>
 
@@ -140,7 +140,7 @@
 
 <!-- Learning Metadata Section -->
         <div :if={@learning_meta != []}>
-          <h3 class="text-lg font-semibold text-wabi-clay font-wabi-display mb-2">
+          <h3 class="text-lg font-semibold text-base-content font-wabi-display mb-2">
             Learning Tips
           </h3>          <div class="mb-6 bg-wabi-paper-aged rounded-md p-4 border border-wabi-border">
             <%= for meta <- @learning_meta do %>
@@ -163,7 +163,7 @@
           </div>
         </div>
 
-        <h3 class="text-lg font-semibold text-wabi-rust font-wabi-display mb-2">Meanings</h3>
+        <h3 class="text-lg font-semibold text-base-content font-wabi-display mb-2">Meanings</h3>
 
         <ul class="mb-6 list-disc pl-6 wabi-text">
           <%= for meaning <- @kanji.meanings do %>
@@ -173,7 +173,7 @@
           <% end %>
         </ul>
 
-        <h3 class="text-lg font-semibold text-wabi-indigo font-wabi-display mb-2">Pronunciations</h3>
+        <h3 class="text-lg font-semibold text-base-content font-wabi-display mb-2">Pronunciations</h3>
 
         <div class="mb-6">
           <div class="overflow-hidden bg-wabi-paper-aged rounded-md border border-wabi-border">
@@ -188,13 +188,13 @@
                     <span class={
                       case pronunciation.type do
                         "on" ->
-                          "rounded-full bg-wabi-hok_blue/10 border border-wabi-hok_blue px-2.5 py-0.5 text-xs font-medium text-wabi-hok_blue_dark"
+                          "rounded-full bg-wabi-hok_blue/10 border border-wabi-hok_blue px-2.5 py-0.5 text-xs font-medium text-base-content"
 
                         "kun" ->
-                          "rounded-full bg-wabi-rust/10 border border-wabi-rust px-2.5 py-0.5 text-xs font-medium text-wabi-rust"
+                          "rounded-full bg-wabi-rust/10 border border-wabi-rust px-2.5 py-0.5 text-xs font-medium text-base-content"
 
                         _ ->
-                          "rounded-full bg-wabi-clay/10 border border-wabi-clay px-2.5 py-0.5 text-xs font-medium text-wabi-clay"
+                          "rounded-full bg-wabi-clay/10 border border-wabi-clay px-2.5 py-0.5 text-xs font-medium text-base-content"
                       end
                     }>
                       {pronunciation.type}
@@ -208,7 +208,7 @@
 
 <!-- Usage Examples Section -->
         <div :if={@usage_examples != []}>
-          <h3 class="text-lg font-semibold text-wabi-clay font-wabi-display mb-2">Common Words</h3>
+          <h3 class="text-lg font-semibold text-base-content font-wabi-display mb-2">Common Words</h3>
 
           <div class="mb-6">
             <div class="overflow-hidden bg-wabi-paper-aged rounded-md border border-wabi-border">
@@ -222,7 +222,7 @@
                           {example.reading}
                         </span>                      </span>
 
-                      <span class="rounded-full bg-wabi-clay/10 border border-wabi-clay px-2.5 py-0.5 text-xs font-medium text-wabi-clay">
+                      <span class="rounded-full bg-wabi-clay/10 border border-wabi-clay px-2.5 py-0.5 text-xs font-medium text-base-content">
                         Level {example.common_level}
                       </span>
                     </div>
@@ -243,7 +243,7 @@
           </div>
         </div>
 
-        <h3 class="text-lg font-semibold text-wabi-indigo font-wabi-display mb-2">
+        <h3 class="text-lg font-semibold text-base-content font-wabi-display mb-2">
           Example Sentences
         </h3>
 
@@ -261,7 +261,7 @@
 
         <!-- User Notes Section -->
         <div :if={@is_authenticated} class="mt-8">
-          <h3 class="text-lg font-semibold text-wabi-rust font-wabi-display mb-2">
+          <h3 class="text-lg font-semibold text-base-content font-wabi-display mb-2">
             My Notes
           </h3>
           <div class="bg-wabi-paper-aged rounded-md p-4 border border-wabi-border">

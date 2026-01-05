@@ -27,14 +27,16 @@
   }
 
   .wabi-accent-text {
-    @apply text-primary font-bold text-base;
+    /* Use base-content with high opacity for safe contrast instead of primary color */
+    @apply text-base-content font-bold text-base;
   }
 
   /* Enhanced Kanji character display */
   .kanji-display {
     @apply text-8xl font-bold tracking-tight text-center p-8 leading-none;
     font-family: "Yuji Syuku", "Zen Maru Gothic", "M PLUS 1p", sans-serif;
-    @apply text-primary;
+    /* Use base-content for maximum contrast on kanji strokes */
+    @apply text-base-content;
   }
 
   .kanji-container {
@@ -62,7 +64,9 @@
 
   /* Typography */
   .jp-title-wabi {
-    @apply font-display text-secondary;
+    /* Use secondary if legible, otherwise fall back to base-content in your theme tweaks. 
+       For now, base-content is safer for AAA/AA compliance. */
+    @apply font-display text-base-content;
   }
 
   /* Navigation */
@@ -84,15 +88,17 @@
   }
 
   .badge-wabi {
-    @apply badge badge-primary badge-outline;
+    /* Solid badge ensures contrast between bg-primary and text-primary-content */
+    @apply badge badge-primary;
   }
 
   .link-wabi {
-    @apply link link-primary;
+    /* Default link uses base-content usually, or inherits. hover:text-primary allows branding on interaction */
+    @apply link hover:text-primary;
   }
 
   .info-text-wabi {
-    @apply text-info;
+    @apply text-base-content/80;
   }
 
   .main-content-wabi {
@@ -151,34 +157,34 @@
 
   .kanji-text {
     font-family: "Yuji Syuku", "Zen Antique Soft", cursive;
-    @apply text-2xl font-bold text-primary;
+    @apply text-2xl font-bold text-base-content;
   }
 
   .kanji-accent {
     font-family: "Yuji Syuku", "Zen Antique Soft", cursive;
-    @apply text-xl font-bold text-accent inline-block;
+    @apply text-xl font-bold text-base-content inline-block;
   }
 
   .kanji-highlight {
     font-family: "Yuji Syuku", "Zen Antique Soft", cursive;
-    @apply text-3xl font-bold text-secondary bg-base-200 rounded-lg p-2 inline-block shadow-md;
+    @apply text-3xl font-bold text-base-content bg-base-200 rounded-lg p-2 inline-block shadow-md;
   }
 
   .kanji-primary {
     font-family: "Yuji Syuku", "Zen Antique Soft", cursive;
-    @apply text-4xl font-bold text-primary;
+    @apply text-4xl font-bold text-base-content;
   }
 
   .text-kanji-primary {
-    @apply text-primary;
+    @apply text-base-content;
   }
 
   .text-kanji-accent {
-    @apply text-accent;
+    @apply text-base-content;
   }
 
   .text-kanji-highlight {
-    @apply text-secondary;
+    @apply text-base-content;
   }
 
   .bg-kanji-bg {
