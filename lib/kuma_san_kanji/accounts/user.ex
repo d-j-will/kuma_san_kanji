@@ -98,6 +98,11 @@ defmodule KumaSanKanji.Accounts.User do
       change set_attribute(:dev_mode_enabled, arg(:enabled))
     end
 
+    # Action for users to update their own settings
+    update :update_settings do
+      accept [:username, :theme, :marketing_emails, :study_reminders]
+    end
+
     # Generic update action for admin operations
     update :update do
       accept [:admin, :dev_mode_enabled]
@@ -172,6 +177,11 @@ defmodule KumaSanKanji.Accounts.User do
       authorize_if actor_attribute_equals(:admin, true)
     end
 
+    # Users can update their own settings
+    policy action(:update_settings) do
+      authorize_if expr(id == ^actor(:id))
+    end
+
     # Allow create_for_test for testing purposes
     policy action(:create_for_test) do
       authorize_if always()
@@ -193,6 +203,21 @@ defmodule KumaSanKanji.Accounts.User do
 
     attribute :username, :ci_string, allow_nil?: false, public?: true
     attribute :email, :ci_string, allow_nil?: false
+
+    attribute :theme, :string do
+      default "cupcake"
+      public? true
+    end
+
+    attribute :marketing_emails, :boolean do
+      default false
+      public? true
+    end
+
+    attribute :study_reminders, :boolean do
+      default true
+      public? true
+    end
 
     attribute :dev_mode_enabled, :boolean do
       default false

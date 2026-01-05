@@ -43,6 +43,13 @@ defmodule KumaSanKanjiWeb.Components.Navigation do
                   Quiz
                 </.link>
 
+                <.link
+                  navigate={~p"/settings"}
+                  class="nav-item-wabi inline-flex items-center border-b-2 border-transparent px-1 pt-1 text-sm font-wabi font-medium text-wabi-charcoal hover:border-wabi-rust hover:text-wabi-rust"
+                >
+                  Settings
+                </.link>
+
                 <%= if admin?(@current_user) do %>
                   <.link
                     navigate={~p"/admin/users"}
@@ -132,6 +139,13 @@ defmodule KumaSanKanjiWeb.Components.Navigation do
               class="block border-l-4 border-transparent py-2 pl-3 pr-4 text-base font-wabi font-medium text-wabi-charcoal hover:border-wabi-rust hover:bg-wabi-cream hover:text-wabi-rust"
             >
               Quiz
+            </.link>
+
+            <.link
+              navigate={~p"/settings"}
+              class="block border-l-4 border-transparent py-2 pl-3 pr-4 text-base font-wabi font-medium text-wabi-charcoal hover:border-wabi-rust hover:bg-wabi-cream hover:text-wabi-rust"
+            >
+              Settings
             </.link>
           <% end %>
         </div>
