@@ -48,7 +48,7 @@ defmodule KumaSanKanjiWeb.RadicalLive do
               </div>
               <div class="flex-1">
                 <h2 class="text-2xl font-wabi-display mb-2">{@radical.meaning}</h2>
-                <p class="text-sm wabi-text mb-2">Kangxi # {@radical.kangxi_index} • Strokes: {@radical.stroke_count}</p>
+                <p class="text-sm wabi-text mb-2">Bushu # {@radical.kangxi_index} • Strokes: {@radical.stroke_count}</p>
                 <p :if={@radical.japanese_name} class="text-sm wabi-text mb-2">Japanese: {@radical.japanese_name}</p>
                 <p :if={@radical.alt_forms != []} class="text-xs wabi-text mb-2">Alt Forms: {Enum.join(@radical.alt_forms, ", ")}</p>
                 <p :if={@radical.mnemonic} class="text-xs italic wabi-text mb-2">{@radical.mnemonic}</p>
