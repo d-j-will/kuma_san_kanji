@@ -23,51 +23,53 @@ module.exports = {
   ],
   theme: {
     extend: {      colors: {
-        brand: "oklch(63.5% 0.25 31)",        // Wabi-Sabi inspired natural color palette in oklch format
+        brand: "oklch(var(--p))",
         wabi: {
-          // Base neutrals - weathered and natural
-          cream: "oklch(96% 0.015 85)",        // Weathered cream
-          stone: "oklch(85% 0.012 75)",        // Stone gray
-          ecru: "oklch(95% 0.010 80)",         // Gentle ecru
-          paper: "oklch(98% 0.008 85)",        // Handmade paper
-          shadow: "oklch(0% 0 0 / 0.08)",      // Subtle shadows          // Natural accent colors - improved contrast
-          indigo: "oklch(38% 0.025 250)",      // Natural indigo
-          rust: "oklch(45% 0.08 35)",          // Rust/clay
-          hok_blue: "oklch(32% 0.12 230)",     // Hokusai blue - darker for better contrast
-          hok_blue_dark: "oklch(28% 0.12 230)", // Even darker variant for high contrast
-          clay: "oklch(50% 0.06 55)",          // Clay brown
-          charcoal: "oklch(25% 0.015 250)",    // Sumi ink black
+          // Base neutrals mapped to daisyUI base colors
+          cream: "oklch(var(--b1))",
+          stone: "oklch(var(--b2))",
+          ecru: "oklch(var(--b3))",
+          paper: "oklch(var(--b1))",
+          shadow: "oklch(0% 0 0 / 0.1)",
           
-          // Improved border and UI colors
-          border: "oklch(75% 0.015 75)",       // Darker border for better visibility
-          border_light: "oklch(82% 0.012 75)",  // Lighter variant
+          // Natural accent colors mapped to daisyUI semantic colors
+          indigo: "oklch(var(--s))",      // Secondary
+          rust: "oklch(var(--a))",        // Accent
+          hok_blue: "oklch(var(--p))",    // Primary
+          hok_blue_dark: "oklch(var(--p))", // Primary (simplify for now, or use darker if possible)
+          clay: "oklch(var(--n))",        // Neutral
+          charcoal: "oklch(var(--bc))",   // Base Content
           
-          // Enhanced Kanji-specific colors for better contrast
-          'kanji-primary': "oklch(18% 0.045 250)",    // Deep sumi ink
-          'kanji-accent': "oklch(35% 0.15 15)",       // Rich cinnabar red
-          'kanji-highlight': "oklch(42% 0.12 45)",    // Vermillion accent
-          'kanji-bg': "oklch(97% 0.008 85)",          // Subtle paper background
-          'kanji-shadow': "oklch(12% 0.025 250)",     // Deep shadow
+          // Borders
+          border: "oklch(var(--b3))",
+          border_light: "oklch(var(--b2))",
           
-          // Textured variants
-          'cream-dark': "oklch(93% 0.018 80)",
-          'stone-light': "oklch(88% 0.010 75)",
-          'paper-aged': "oklch(96% 0.012 82)",
+          // Kanji specific - map to semantic for now
+          'kanji-primary': "oklch(var(--p))",
+          'kanji-accent': "oklch(var(--a))",
+          'kanji-highlight': "oklch(var(--s))",
+          'kanji-bg': "oklch(var(--b1))",
+          'kanji-shadow': "oklch(var(--nc))",
+          
+          // Textured variants (simplified)
+          'cream-dark': "oklch(var(--b2))",
+          'stone-light': "oklch(var(--b2))",
+          'paper-aged': "oklch(var(--b2))",
         },
         // Keep existing colors for backward compatibility
         accent: {
-          blue: "oklch(55% 0.1 250)",     // Muted blue
-          pink: "oklch(75% 0.1 350)",     // Soft pink
-          purple: "oklch(60% 0.1 300)",   // Muted purple
-          green: "oklch(75% 0.1 150)",    // Muted green
-          yellow: "oklch(85% 0.1 90)",    // Soft yellow
+          blue: "oklch(var(--p))",
+          pink: "oklch(var(--s))",
+          purple: "oklch(var(--a))",
+          green: "oklch(var(--su))",
+          yellow: "oklch(var(--wa))",
         },
         sakura: {
-          light: "oklch(95% 0.03 350)",   // Very light pink
-          DEFAULT: "oklch(85% 0.08 350)", // Medium pink
-          dark: "oklch(70% 0.12 350)",    // Darker pink
-          blossom: "oklch(80% 0.1 5)",    // Blossom pink
-          white: "oklch(98% 0.01 350)",   // Off-white
+          light: "oklch(var(--b2))",
+          DEFAULT: "oklch(var(--s))",
+          dark: "oklch(var(--s))",
+          blossom: "oklch(var(--p))",
+          white: "oklch(var(--b1))",
         }
       },      fontFamily: {
         'katakana': ['"Zen Maru Gothic"', '"M PLUS 1p"', 'sans-serif'],
@@ -98,6 +100,7 @@ module.exports = {
   },
   plugins: [
     require("@tailwindcss/forms"),
+    require("daisyui"),
     // Allows prefixing tailwind classes with LiveView classes to add rules
     // only when LiveView classes are applied, for example:
     //
@@ -148,5 +151,41 @@ module.exports = {
         }
       }, {values})
     })
-  ]
+  ],
+  daisyui: {
+    themes: [
+      "light",
+      "dark",
+      "cupcake",
+      "bumblebee",
+      "emerald",
+      "corporate",
+      "synthwave",
+      "retro",
+      "cyberpunk",
+      "valentine",
+      "halloween",
+      "garden",
+      "forest",
+      "aqua",
+      "lofi",
+      "pastel",
+      "fantasy",
+      "wireframe",
+      "black",
+      "luxury",
+      "dracula",
+      "cmyk",
+      "autumn",
+      "business",
+      "acid",
+      "lemonade",
+      "night",
+      "coffee",
+      "winter",
+      "dim",
+      "nord",
+      "sunset",
+    ],
+  }
 }

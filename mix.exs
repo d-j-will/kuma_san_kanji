@@ -106,10 +106,10 @@ defmodule KumaSanKanji.MixProject do
       ],
       "ecto.setup": ["ecto.create", "ecto.migrate"],
       setup: ["deps.get", "assets.setup", "assets.build", "ecto.setup", "run priv/repo/seeds.exs"],
-      "assets.setup": ["tailwind.install --if-missing", "esbuild.install --if-missing"],
-      "assets.build": ["tailwind kuma_san_kanji", "esbuild kuma_san_kanji"],
+      "assets.setup": ["tailwind.install --if-missing", "esbuild.install --if-missing", "cmd npm install --prefix assets"],
+      "assets.build": ["cmd npm run deploy --prefix assets", "esbuild kuma_san_kanji"],
       "assets.deploy": [
-        "tailwind kuma_san_kanji --minify",
+        "cmd npm run deploy --prefix assets",
         "esbuild kuma_san_kanji --minify",
         "phx.digest"
       ],

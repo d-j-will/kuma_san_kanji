@@ -36,7 +36,7 @@ config :kuma_san_kanji, KumaSanKanjiWeb.Endpoint,
   secret_key_base: "bQsNOQYbw3Ju7J7yYn7BttLahgBuesIKB1pQ60sOksrH8IWNGlCGwnhakvLlxXFD",
   watchers: [
     esbuild: {Esbuild, :install_and_run, [:kuma_san_kanji, ~w(--sourcemap=inline --watch)]},
-    tailwind: {Tailwind, :install_and_run, [:kuma_san_kanji, ~w(--watch)]}
+    npm: ["run", "watch", cd: Path.expand("../assets", __DIR__)]
   ]
 
 # ## SSL Support
