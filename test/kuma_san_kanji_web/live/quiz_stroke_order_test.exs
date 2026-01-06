@@ -19,4 +19,22 @@ defmodule KumaSanKanjiWeb.QuizStrokeOrderTest do
     view |> element("button", "Show Stroke Order") |> render_click()
     assert has_element?(view, "#quiz-stroke-order")
   end
+
+  test "toggle practice mode renders tracing canvas", %{conn: conn} do
+    {:ok, view, _html} = live(conn, ~p"/quiz")
+    
+    # First show stroke order
+    view |> element("button", "Show Stroke Order") |> render_click()
+    assert has_element?(view, "#quiz-stroke-order")
+    refute has_element?(view, "canvas")
+
+    # Now enable tracing
+    view |> element("button", "Practice Writing") |> render_click()
+    assert has_element?(view, "canvas")
+    assert render(view) =~ "Disable Tracing"
+
+    # Disable it again
+    view |> element("button", "Disable Tracing") |> render_click()
+    refute has_element?(view, "canvas")
+  end
 end

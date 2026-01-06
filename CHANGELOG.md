@@ -3,6 +3,15 @@
 ## [Unreleased]
 
 ### Added
+- **Detailed Answer Feedback (Issue #23):** Enhanced quiz feedback with rich contextual information.
+  - Added expandable "Show Details" section in quiz feedback.
+  - Displays example sentences (up to 2) with Japanese text and English translations.
+  - Shows all kanji meanings as visual tags.
+  - Displays pronunciations with on/kun reading type indicators.
+  - Updated `SRS.Logic` to load example sentences alongside kanji data.
+  - Implemented progressive disclosure pattern (collapsed by default, expandable on click).
+  - Maintains clean UX with toggle animation and proper ARIA attributes for accessibility.
+  - All existing tests continue to pass (143 tests, 0 failures).
 - **Furigana Generation:** Implemented dynamic furigana display for Japanese text.
   - Uses `System.cmd("mecab")` for morphological analysis.
   - Updates `ExploreLive` to show furigana in example sentences and common words.

@@ -8,6 +8,10 @@ defmodule KumaSanKanjiWeb.StrokeOrderEvents do
     assign(socket, :show_stroke_order, !socket.assigns.show_stroke_order)
   end
 
+  def toggle_tracing(socket) do
+    assign(socket, :show_tracing, !socket.assigns.show_tracing)
+  end
+
   def stroke_event?(event), do: event in @stroke_events
 
   def handle(socket, event, %{"kanji" => kanji} = params) when event in @stroke_events do

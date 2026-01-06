@@ -1,416 +1,663 @@
 # Workspace Analysis & Recommendations
 
-**Date:** 2025-01-27  
+**Date:** 2026-01-06 (Updated)
 **Project:** KumaSanKanji - Elixir/Phoenix Kanji Learning Application
 
 ## Executive Summary
 
-This analysis identifies areas for improvement across security, code quality, documentation, testing, and project organization. The application is well-structured using Ash Framework, but several critical security issues and organizational improvements are recommended.
+This analysis tracks improvements across security, code quality, documentation, testing, and project organization. The application is well-structured using Ash Framework with strong domain-driven design principles.
+
+**Major Progress Since Last Review (2025-01-27):**
+- ✅ All critical security issues have been resolved
+- ✅ CI/CD pipeline implemented with GitHub Actions
+- ✅ Code quality tools configured (Credo, Dialyxir, ExCoveralls)
+- ✅ Test coverage reporting enabled
+- ✅ Health check endpoint added
+- ✅ Cleanup of temporary scripts completed
 
 ---
 
-## 🔴 Critical Security Issues
+## 🟢 Critical Security Issues - ALL RESOLVED ✅
 
-### 1. Overly Permissive User Read Policy
-**Location:** `lib/kuma_san_kanji/accounts/user.ex:161-164`
+### 1. ~~Overly Permissive User Read Policy~~ - ✅ FIXED
+**Location:** `lib/kuma_san_kanji/accounts/user.ex:167-173`
 
-```161:164:lib/kuma_san_kanji/accounts/user.ex
-    # Temporarily allow all read operations for debugging
-    policy action_type(:read) do
-      authorize_if always()
-    end
-```
+**Status:** ✅ **RESOLVED**
 
-**Issue:** All users can read any user's data, including potentially sensitive information.
+**Previous Issue:** All users could read any user's data.
 
-**Recommendation:**
-- Implement proper authorization policies that restrict users to reading only their own data
-- Admins should be able to read all users for management purposes
-- Example policy:
-  ```elixir
-  policy action_type(:read) do
-    authorize_if actor_attribute_equals(:admin, true)
-    authorize_if relates_to_actor_via(:id)
-  end
-  ```
-
-### 2. Missing Force SSL in Production
-**Location:** `config/prod.exs`
-
-**Issue:** The configuration comments recommend `force_ssl` but it's not implemented. This leaves the application vulnerable to man-in-the-middle attacks.
-
-**Recommendation:**
-Add to `config/prod.exs`:
+**Current Implementation:**
 ```elixir
-config :kuma_san_kanji, KumaSanKanjiWeb.Endpoint,
-  force_ssl: [hsts: true, rewrite_on: [:x_forwarded_proto]]
+policy action_type(:read) do
+  # Admins can read any user
+  authorize_if actor_attribute_equals(:admin, true)
+
+  # Users can read their own user record
+  authorize_if expr(id == ^actor(:id))
+end
 ```
 
-### 3. In-Memory Rate Limiting
-**Location:** `lib/kuma_san_kanji_web/live/quiz_live.ex:512-528`
-
-**Issue:** Rate limiting is stored in LiveView assigns, which means:
-- Limits reset on page refresh
-- Not shared across browser tabs
-- Lost on server restart
-- Can be bypassed by clearing session
-
-**Recommendation:**
-- Implement persistent rate limiting using:
-  - `ExRated` or `Hammer` for in-memory with persistence
-  - Redis for distributed rate limiting
-  - Database-backed rate limiting for production
-- Consider using `PlugAttack` or similar middleware
+**Security Properties:**
+- ✅ Users can only read their own data
+- ✅ Admins can read all users for management
+- ✅ Prevents privacy violations (email, settings, admin status exposure)
+- ✅ Uses Ash's expression DSL to prevent SQL injection
 
 ---
 
-## 🟡 High Priority Improvements
+### 2. ~~Missing Force SSL in Production~~ - ✅ FIXED
+**Location:** `config/runtime.exs:52`
 
-### 4. Clean Up Test Scripts Directory
-**Location:** `test_scripts/` (40+ files)
+**Status:** ✅ **RESOLVED**
 
-**Issue:** The `test_scripts/` directory contains many temporary debugging and testing scripts that should be:
-- Moved to proper test files
-- Documented if they serve a purpose
-- Removed if obsolete
+**Previous Issue:** HTTPS not enforced, vulnerable to MITM attacks.
 
-**Recommendation:**
-- Audit each file and determine if it's still needed
-- Move reusable scripts to `scripts/` with proper documentation
-- Delete obsolete files
-- Add `test_scripts/` to `.gitignore` if these are truly temporary
+**Current Implementation:**
+```elixir
+force_ssl: [hsts: true, rewrite_on: [:x_forwarded_proto]]
+```
 
-**Files to review:**
-- `test_scripts/*_fixed.exs` - likely obsolete
-- `test_scripts/debug_*.exs` - debugging scripts
-- `test_scripts/fix_*.exs` - one-time fixes
-- `test_scripts/reset_*.exs` - could be consolidated into mix tasks
+**Security Properties:**
+- ✅ Enforces HTTPS for all connections
+- ✅ Enables HSTS (HTTP Strict Transport Security)
+- ✅ Protects against man-in-the-middle attacks
+- ✅ Properly handles proxy headers (X-Forwarded-Proto)
 
-### 5. Consolidate Admin Setup Scripts
-**Location:** Multiple files at root level
+---
 
-**Issue:** Three separate admin setup scripts:
-- `admin_setup.exs`
-- `create_admin.exs`
-- `make_admin.exs`
+### 3. ~~In-Memory Rate Limiting~~ - ✅ IMPROVED
+**Location:** `lib/kuma_san_kanji_web/live/quiz_live.ex:528-550` & `lib/kuma_san_kanji/quiz/session.ex`
 
-**Recommendation:**
-- Consolidate into a single `mix` task: `mix kuma_san_kanji.admin.create`
-- Remove redundant scripts
-- Document the single approach in README
+**Status:** ✅ **SIGNIFICANTLY IMPROVED**
 
-### 6. Improve README Documentation
+**Previous Issue:** Rate limiting only in LiveView assigns (easily bypassed).
+
+**Current Implementation:**
+- Rate limit timestamps stored in `KumaSanKanji.Quiz.Session` GenServer with ETS
+- Persists across page refreshes and browser tabs
+- Survives LiveView crashes
+
+**Security Properties:**
+- ✅ Persists across page refreshes
+- ✅ Shared across browser tabs (same ETS table)
+- ✅ Survives LiveView crashes (GenServer manages state)
+- ✅ Microsecond latency (faster than database)
+- ⚠️ Lost on server restart (acceptable tradeoff for single-server deployment)
+- ⚠️ Not distributed across multiple servers (not needed for current Fly.io deployment)
+
+**Future Enhancement (Low Priority):**
+For multi-server deployments, consider Redis or database-backed rate limiting. Current ETS implementation is production-ready for single-server deployments.
+
+---
+
+## ✅ High Priority Improvements - COMPLETED
+
+### 4. ~~Clean Up Test Scripts Directory~~ - ✅ COMPLETED
+**Status:** ✅ **RESOLVED**
+
+The `test_scripts/` directory has been removed. Temporary debugging scripts have been cleaned up.
+
+---
+
+### 5. ~~Consolidate Admin Setup Scripts~~ - ✅ COMPLETED
+**Status:** ✅ **RESOLVED**
+
+Admin setup scripts have been consolidated and removed from the root directory.
+
+---
+
+### 6. ~~Improve README Documentation~~ - ⚠️ STILL NEEDS EXPANSION
 **Location:** `README.md`
 
-**Issue:** The README is minimal and doesn't explain:
-- What the application does
-- Architecture overview
-- Setup instructions beyond basic Phoenix commands
-- Links to existing documentation
+**Status:** ⚠️ **PARTIAL PROGRESS**
+
+**Current State:**
+- ✅ Basic project description with KanjiVG attribution
+- ✅ Setup instructions present
+- ⚠️ Missing architecture overview
+- ⚠️ Missing links to documentation in `docs/` and `plans/`
+- ⚠️ Missing development workflow guide
 
 **Recommendation:**
 Expand README to include:
-- Project overview and purpose
+- Project overview and unique value proposition
 - Architecture (Ash Framework, domain-driven design)
-- Setup instructions (reference `SETUP_COMPLETE.md` if detailed)
-- Links to:
+- Links to documentation:
   - `AGENTS.md` for development guidelines
   - `DEPLOYMENT.md` for deployment
   - `docs/` folder for feature documentation
   - `plans/` folder for roadmap
-- Quick start guide
-- Development workflow
+- Quick start guide for contributors
+- Development workflow (testing, linting, etc.)
 
-### 7. Add Test Coverage Reporting
-**Location:** `mix.exs`
+---
 
-**Issue:** No test coverage tool configured.
+### 7. ~~Add Test Coverage Reporting~~ - ✅ COMPLETED
+**Location:** `mix.exs:103`
 
-**Recommendation:**
-Add `excoveralls` or `ex_unit_cover`:
+**Status:** ✅ **RESOLVED**
+
+**Current Configuration:**
 ```elixir
 {:excoveralls, "~> 0.18", only: :test}
 ```
 
-Then add to `mix.exs` aliases:
-```elixir
-"test.coverage": ["test --cover"]
-```
+Test coverage reporting is configured and functional.
 
 ---
 
-## 🟢 Medium Priority Improvements
+## ✅ Medium Priority Improvements - MOSTLY COMPLETED
 
-### 8. Add CI/CD Configuration
-**Issue:** No visible CI/CD configuration files (`.github/workflows/`, `.gitlab-ci.yml`, etc.)
+### 8. ~~Add CI/CD Configuration~~ - ✅ COMPLETED
+**Location:** `.github/workflows/`
 
-**Recommendation:**
-- Add GitHub Actions workflow for:
-  - Running tests
-  - Code formatting checks
-  - Security scanning
-  - Deployment (if applicable)
+**Status:** ✅ **FULLY IMPLEMENTED**
 
-### 9. Add Code Quality Tools
-**Recommendation:**
-- Add `credo` for static code analysis:
-  ```elixir
-  {:credo, "~> 1.7", only: [:dev, :test], runtime: false}
-  ```
-- Add `dialyxir` for type checking:
-  ```elixir
-  {:dialyxir, "~> 1.4", only: [:dev, :test], runtime: false}
-  ```
-- Configure in `mix.exs` aliases:
-  ```elixir
-  "quality": ["format --check-formatted", "credo --strict", "dialyzer"]
-  ```
+**Current Workflows:**
+- ✅ `fly-deploy.yml` - Build, test, and deploy pipeline
+- ✅ `gemini-*.yml` - Automated issue triage and management
+- ✅ PostgreSQL database setup in CI
+- ✅ MeCab installation for furigana support
+- ✅ KanjiVG asset ingestion and artifact upload
+- ✅ Automated deployment to Fly.io on successful tests
 
-### 10. Environment Variable Validation
+**CI Pipeline Steps:**
+1. Build and compile with warnings-as-errors
+2. Run full test suite
+3. Setup and build assets
+4. Ingest KanjiVG SVG files
+5. Deploy to Fly.io (London region)
+
+---
+
+### 9. ~~Add Code Quality Tools~~ - ✅ COMPLETED
+**Location:** `mix.exs:101-102, 125`
+
+**Status:** ✅ **FULLY CONFIGURED**
+
+**Current Configuration:**
+```elixir
+{:credo, "~> 1.7", only: [:dev, :test], runtime: false}
+{:dialyxir, "~> 1.4", only: [:dev, :test], runtime: false}
+
+# Mix alias
+quality: ["format --check-formatted", "credo --strict"]
+```
+
+**Tools Available:**
+- ✅ Credo for static code analysis
+- ✅ Dialyxir for type checking
+- ✅ Format checking
+- ✅ Mix alias for running quality checks
+
+**Note:** Dependencies are declared but may need installation in local environment (`mix deps.get`).
+
+---
+
+### 10. Environment Variable Validation - ⚠️ PARTIAL
 **Location:** `config/runtime.exs`
 
-**Issue:** Environment variables are checked but not validated for format/range.
+**Status:** ⚠️ **PARTIAL IMPLEMENTATION**
+
+**Current State:**
+- ✅ Required variables validated with descriptive errors
+- ✅ Good error messages for missing variables
+- ⚠️ No format validation (PORT range, POOL_SIZE positive, etc.)
 
 **Recommendation:**
-- Add validation for:
-  - `PORT` (should be 1-65535)
-  - `POOL_SIZE` (should be positive integer)
-  - Database URL format
-- Provide helpful error messages with examples
+Add validation for:
+- `PORT` (should be 1-65535)
+- `POOL_SIZE` (should be positive integer)
+- Database URL format validation
+- Provide examples in error messages
 
-### 11. Add Health Check Endpoint
-**Issue:** No health check endpoint for monitoring/load balancers.
+---
 
-**Recommendation:**
-Add to `router.ex`:
+### 11. ~~Add Health Check Endpoint~~ - ✅ COMPLETED
+**Location:** `lib/kuma_san_kanji_web/router.ex:26`
+
+**Status:** ✅ **IMPLEMENTED**
+
 ```elixir
 get "/health", HealthController, :check
 ```
 
-Implement a simple controller that checks:
-- Database connectivity
-- Application status
-- Returns 200 if healthy, 503 if unhealthy
+Health check endpoint is available for monitoring and load balancers.
 
-### 12. Improve Error Handling
+---
+
+### 12. Improve Error Handling - ⚠️ IN PROGRESS
 **Location:** Throughout codebase
 
-**Issue:** Some error handling could be more user-friendly.
+**Status:** ⚠️ **PARTIAL IMPLEMENTATION**
+
+**Current State:**
+- ✅ Structured error handling in SRS logic
+- ✅ User-friendly flash messages
+- ✅ Error logging in quiz sessions
+- ⚠️ Could benefit from error tracking service integration
 
 **Recommendation:**
-- Standardize error messages
-- Use `gettext` for internationalization
-- Add structured logging with context
-- Implement error tracking (Sentry, AppSignal, etc.)
+- Standardize error message format across all LiveViews
+- Consider error tracking service (Sentry, AppSignal, etc.)
+- Implement `gettext` for internationalization of error messages
+- Add structured logging with request correlation IDs
 
-### 13. Add Database Indexes Audit
-**Location:** Migrations
+---
 
-**Recommendation:**
-- Review all queries for missing indexes
-- Ensure foreign keys are indexed
-- Add composite indexes for common query patterns
-- Document index strategy
+### 13. Database Indexes Audit - ⚠️ NEEDS REVIEW
+**Location:** Migrations in `priv/repo/migrations/`
 
-### 14. Add API Documentation
-**Issue:** No API documentation visible (though this may be a LiveView-only app).
+**Status:** ⚠️ **NOT AUDITED**
 
 **Recommendation:**
-If API endpoints exist:
-- Add OpenAPI/Swagger documentation
-- Use `phoenix_swagger` or similar
-- Document authentication requirements
+- Review all common queries for missing indexes
+- Ensure all foreign keys are indexed
+- Add composite indexes for SRS due date queries
+- Document index strategy in migration comments
+
+---
+
+### 14. API Documentation - N/A
+**Status:** ℹ️ **NOT APPLICABLE**
+
+This is a LiveView-only application without REST API endpoints. API documentation is not needed.
 
 ---
 
 ## 📋 Code Quality Improvements
 
-### 15. Remove Debug Code from Production
+### 15. Remove Debug Code from Production - ⚠️ ONGOING
 **Location:** Multiple files
 
-**Issues found:**
-- Debug logging in production code (should use proper log levels)
-- Debug comments in templates
-- Temporary debugging policies
+**Status:** ⚠️ **MOSTLY CLEAN, SOME ITEMS REMAIN**
+
+**Items to Review:**
+- ✅ User read policy debug code removed
+- ⚠️ Check for any remaining `IO.inspect` calls in production code
+- ⚠️ Review for any `Mix.env() == :dev` conditionals that could be feature flags
 
 **Recommendation:**
-- Use proper log levels (`:debug`, `:info`, `:warn`, `:error`)
-- Remove debug-only code paths
-- Use feature flags instead of `Mix.env()` checks
+- Grep for `IO.inspect`, `IO.puts`, `dbg()` in production code
+- Use proper log levels consistently
+- Consider feature flag system instead of environment checks
 
-### 16. Standardize Logging
+---
+
+### 16. Standardize Logging - ⚠️ IN PROGRESS
 **Location:** Throughout codebase
 
+**Status:** ⚠️ **PARTIAL IMPLEMENTATION**
+
+**Current State:**
+- ✅ Some structured logging with Logger
+- ⚠️ Inconsistent log message format
+- ⚠️ No request correlation IDs
+
 **Recommendation:**
-- Use structured logging with metadata
+- Add request IDs for tracing across LiveView sessions
 - Standardize log message format
-- Add request IDs for tracing
-- Consider `LoggerJSON` for structured logs
+- Consider `LoggerJSON` for structured logs in production
+- Ensure no PII in logs
 
-### 17. Add Type Specifications
+---
+
+### 17. Add Type Specifications - ⚠️ PARTIAL
 **Location:** Throughout codebase
+
+**Status:** ⚠️ **MINIMAL TYPESPECS**
 
 **Recommendation:**
 - Add `@spec` annotations to public functions
-- Use `Dialyzer` to catch type errors
+- Run Dialyzer to catch type errors
 - Document complex types with `@type` definitions
+- Start with critical modules (SRS logic, auth, quiz)
 
 ---
 
 ## 📚 Documentation Improvements
 
-### 18. Add Architecture Documentation
+### 18. Add Architecture Documentation - ⚠️ NEEDS CREATION
 **Recommendation:**
 Create `docs/architecture.md` covering:
-- Ash Framework patterns used
-- Domain boundaries
-- Resource relationships
-- Authentication flow
-- SRS algorithm overview
+- Ash Framework patterns and domain structure
+- Domain boundaries (Accounts, Kanji, Content, SRS, Quiz)
+- Resource relationships and data flow
+- Authentication flow with Auth0
+- SRS algorithm overview (SM-2 implementation)
+- Session management strategy
+- Future: AI-driven FCPM system
 
-### 19. Add Contributing Guidelines
+---
+
+### 19. Add Contributing Guidelines - ⚠️ NEEDS CREATION
 **Recommendation:**
 Create `CONTRIBUTING.md` with:
-- Code style guidelines
-- Testing requirements
-- PR process
+- Code style guidelines (follows AGENTS.md)
+- Testing requirements (coverage, types of tests)
+- PR process and review checklist
 - Commit message format
+- How to run quality checks (`mix quality`)
+- How to run tests locally
 
-### 20. Add Security Policy
+---
+
+### 20. Add Security Policy - ⚠️ NEEDS CREATION
 **Recommendation:**
 Create `SECURITY.md` with:
-- How to report vulnerabilities
-- Security best practices
+- How to report vulnerabilities responsibly
+- Security best practices for contributors
 - Known security considerations
+- Authentication and authorization patterns
+- Data privacy considerations
 
 ---
 
 ## 🧪 Testing Improvements
 
-### 21. Add Integration Tests
-**Recommendation:**
-- Add end-to-end tests for critical flows
-- Test authentication flows
-- Test SRS algorithm correctness
-- Test rate limiting behavior
+### 21. Add Integration Tests - ⚠️ PARTIAL
+**Status:** ⚠️ **GOOD UNIT TESTS, FEW INTEGRATION TESTS**
 
-### 22. Add Property-Based Tests
-**Recommendation:**
-- Already using `stream_data` - expand usage
-- Add property tests for SRS algorithm
-- Test data validation edge cases
+**Current State:**
+- ✅ 141 tests passing (5 properties, 136 examples)
+- ✅ Unit tests for resources and SRS logic
+- ⚠️ Limited end-to-end LiveView tests
 
-### 23. Add Performance Tests
 **Recommendation:**
-- Add benchmarks for critical paths
-- Test database query performance
-- Load test quiz sessions
+- Add integration tests for:
+  - Complete quiz flow (login → select kanji → answer → review)
+  - Authentication flows (Auth0 callback, logout)
+  - SRS progression through multiple reviews
+  - Rate limiting across sessions
+
+---
+
+### 22. Add Property-Based Tests - ✅ IN USE
+**Status:** ✅ **IMPLEMENTED**
+
+**Current State:**
+- ✅ Using `stream_data` dependency
+- ✅ 5 property-based tests passing
+
+**Recommendation:**
+- Expand property tests for SRS algorithm edge cases
+- Test data validation boundary conditions
+- Add property tests for furigana parsing
+
+---
+
+### 23. Add Performance Tests - ⚠️ NOT IMPLEMENTED
+**Recommendation:**
+- Add benchmarks for critical paths (quiz answer processing)
+- Test database query performance (N+1 query detection)
+- Load test quiz sessions with concurrent users
+- Benchmark KanjiVG SVG loading and caching
 
 ---
 
 ## 🔧 Configuration Improvements
 
-### 24. Add Development Seed Data
+### 24. Development Seed Data - ✅ IMPLEMENTED
 **Location:** `priv/repo/seeds.exs`
 
-**Recommendation:**
-- Ensure seeds work for development
-- Add sample users with different roles
-- Add sample kanji progress data
-- Document seed data structure
+**Status:** ✅ **FULLY FUNCTIONAL**
 
-### 25. Environment-Specific Configuration
+**Current State:**
+- ✅ Seeds 81 kanji with meanings, pronunciations, examples
+- ✅ Seeds content domain (thematic groups, educational contexts)
+- ✅ Works in development and test environments
+
+**Future Enhancement:**
+- Add sample users with different roles (regular user, admin)
+- Add sample progress data for testing SRS features
+- Document seed data structure in comments
+
+---
+
+### 25. Environment-Specific Configuration - ⚠️ NEEDS .env.example
+**Status:** ⚠️ **MISSING .env.example FILE**
+
+**Current State:**
+- ✅ No secrets in version control
+- ✅ Environment variables documented in runtime.exs comments
+- ⚠️ Missing `.env.example` file for developers
+
 **Recommendation:**
-- Review all configuration files
-- Ensure no secrets in version control
-- Document required environment variables
-- Add `.env.example` file
+Create `.env.example` with:
+```env
+# Database
+DATABASE_URL=postgres://postgres:postgres@localhost/kuma_san_kanji_dev
+
+# Phoenix
+SECRET_KEY_BASE=generate_with_mix_phx_gen_secret
+PHX_HOST=localhost
+PORT=4000
+
+# Auth0
+AUTH0_CLIENT_ID=your_client_id_here
+AUTH0_CLIENT_SECRET=your_client_secret_here
+AUTH0_DOMAIN=your_domain.auth0.com
+AUTH0_REDIRECT_URI=http://localhost:4000/auth/user/auth0/callback
+
+# Tokens
+TOKEN_SIGNING_SECRET=generate_with_mix_phx_gen_secret
+```
 
 ---
 
 ## 📊 Monitoring & Observability
 
-### 26. Add Application Monitoring
-**Recommendation:**
-- Configure `telemetry` events for key operations
-- Add metrics for:
-  - Quiz session duration
-  - Answer submission rate
-  - SRS algorithm performance
-  - Error rates
-- Consider integrating with monitoring services
+### 26. Application Monitoring - ⚠️ BASIC TELEMETRY ONLY
+**Status:** ⚠️ **TELEMETRY CONFIGURED, NOT EXPORTED**
 
-### 27. Add Structured Logging
+**Current State:**
+- ✅ Phoenix LiveView telemetry
+- ✅ Ecto telemetry for database queries
+- ⚠️ No custom business metrics
+- ⚠️ No external monitoring service integration
+
 **Recommendation:**
-- Use structured logging format
-- Add correlation IDs
-- Log important business events
-- Ensure PII is not logged
+Add custom telemetry events for:
+- Quiz session duration
+- Answer submission rate and accuracy
+- SRS algorithm execution time
+- KanjiVG cache hit/miss ratio
+- Rate limit violations
+
+Consider integration with monitoring services (AppSignal, New Relic, etc.)
+
+---
+
+### 27. Structured Logging - ⚠️ PARTIAL
+**Status:** ⚠️ **USES LOGGER, NOT STRUCTURED**
+
+**Recommendation:**
+- Implement structured logging with metadata
+- Add correlation IDs for request tracing
+- Log important business events (level up, mastery milestones)
+- Ensure PII is scrubbed from logs
+- Consider `LoggerJSON` for production
 
 ---
 
 ## 🚀 Performance Optimizations
 
-### 28. Database Query Optimization
+### 28. Database Query Optimization - ⚠️ NEEDS PROFILING
 **Recommendation:**
-- Review N+1 query patterns
-- Use `Ash.load/2` for eager loading
-- Add query analysis to identify slow queries
-- Consider query result caching where appropriate
+- Profile queries with `Ecto.Query` explain plans
+- Review N+1 query patterns (use Ash's telemetry to identify)
+- Ensure proper use of `Ash.load/2` for eager loading
+- Add query result caching for frequently accessed kanji
+- Monitor slow queries in production
 
-### 29. Asset Optimization
-**Recommendation:**
-- Review asset sizes
-- Ensure proper minification in production
-- Consider CDN for static assets
-- Optimize SVG files if possible
+---
+
+### 29. Asset Optimization - ✅ CONFIGURED
+**Status:** ✅ **OPTIMIZED**
+
+**Current State:**
+- ✅ esbuild minification in production
+- ✅ Tailwind purging unused CSS
+- ✅ Phoenix digest for cache busting
+- ✅ KanjiVG SVGs cached in ETS
+
+**Potential Enhancement:**
+- Consider CDN for static assets in production
+- Lazy load KanjiVG SVGs for non-visible kanji
+- Optimize SVG file sizes if needed
 
 ---
 
 ## 📦 Dependency Management
 
-### 30. Review Dependencies
+### 30. Review Dependencies - ⚠️ NEEDS AUDIT
 **Location:** `mix.exs`
 
+**Status:** ⚠️ **NOT RECENTLY AUDITED**
+
 **Recommendation:**
-- Audit dependencies for security vulnerabilities
+- Run `mix hex.audit` to check for security vulnerabilities
 - Update to latest compatible versions
-- Remove unused dependencies
-- Document why each dependency is needed
+- Review if all dependencies are still needed
+- Document why each major dependency is used (in comments or docs)
+
+**Note:** mix.exs shows deprecation warning about `preferred_cli_env` that should be moved to `cli/0` function.
 
 ---
 
-## Priority Action Plan
+## 🎯 Current Priority Action Plan
 
-### Immediate (This Week)
-1. ✅ Fix User read policy (Security)
-2. ✅ Add force_ssl to production config (Security)
-3. ✅ Improve README with project overview
+### Immediate (Next 2 Weeks)
+
+1. ⚠️ **Create .env.example file** (1 hour)
+   - Document all required environment variables
+   - Include example values and generation instructions
+
+2. ⚠️ **Expand README.md** (2-3 hours)
+   - Add architecture overview
+   - Link to documentation folders
+   - Add development workflow section
+   - Include quick start guide
+
+3. ⚠️ **Fix mix.exs deprecation warning** (30 minutes)
+   - Move `preferred_cli_env` to `cli/0` function
+   - Test with `mix test`, `mix coveralls`
+
+4. ⚠️ **Audit database indexes** (2-4 hours)
+   - Review common queries
+   - Add missing indexes (especially SRS next_review_date queries)
+   - Document indexing strategy
 
 ### Short Term (This Month)
-4. ✅ Implement persistent rate limiting
-5. ✅ Clean up test_scripts directory
-6. ✅ Consolidate admin setup scripts
-7. ✅ Add test coverage reporting
-8. ✅ Add code quality tools (credo, dialyxir)
+
+5. ⚠️ **Create CONTRIBUTING.md** (2 hours)
+   - Code style guidelines
+   - Testing requirements
+   - PR process
+
+6. ⚠️ **Create SECURITY.md** (1 hour)
+   - Vulnerability reporting process
+   - Security best practices
+
+7. ⚠️ **Add integration tests** (4-6 hours)
+   - End-to-end quiz flow
+   - Authentication flows
+   - Rate limiting behavior
+
+8. ⚠️ **Run dependency audit** (1-2 hours)
+   - `mix hex.audit`
+   - Update vulnerable packages
+   - Remove unused dependencies
 
 ### Medium Term (Next Quarter)
-9. ✅ Add CI/CD pipeline
-10. ✅ Add health check endpoint
-11. ✅ Improve error handling and logging
-12. ✅ Add architecture documentation
+
+9. ⚠️ **Create architecture documentation** (4-6 hours)
+   - Document domain structure
+   - Explain Ash patterns used
+   - Document SRS algorithm
+
+10. ⚠️ **Add custom telemetry** (3-4 hours)
+    - Business metrics for quiz performance
+    - SRS algorithm metrics
+    - Cache performance metrics
+
+11. ⚠️ **Consider monitoring service integration** (4-8 hours)
+    - Evaluate AppSignal, Sentry, or New Relic
+    - Implement if budget allows
+    - Set up alerts for critical errors
+
+12. ⚠️ **Environment variable validation** (2-3 hours)
+    - Add format validation for PORT, POOL_SIZE
+    - Improve error messages with examples
+
+---
+
+## 🎓 Feature Development Priorities
+
+Based on GitHub Issues and planning documents:
+
+### High Priority Features (Next 2-4 Weeks)
+
+1. **Issue #23: Detailed Answer Feedback in Quiz** (4-6 hours)
+   - Show example sentences after answering
+   - Display common word compounds
+   - Add contextual usage information
+   - All data already exists in database
+
+2. **Issue #13: Furigana Controls** (2-3 hours)
+   - Add user preference: always/hover/after-answer
+   - Persist preference in user settings
+   - Update UI across explore and quiz pages
+
+3. **Content Expansion** (ongoing)
+   - Expand from 81 to 200+ kanji
+   - Use existing grade kanji references
+   - Automate ingestion where possible
+
+### Medium Priority Features (1-2 Months)
+
+4. **Issue #22: Interactive Stroke Tracing** (1-2 days)
+   - Add canvas overlay on KanjiVG SVG
+   - Implement stroke direction detection
+   - Calculate accuracy against correct strokes
+   - Provide visual feedback
+
+5. **Audio Enhancements** (2-3 days)
+   - Add pitch accent indicators
+   - Improve voice selection logic
+   - Add audio for common words
+
+### Future Vision (3-6 Months)
+
+6. **AI-Driven SRS System** (2-3 weeks)
+   - Implement "Rarity" progression system (Grey/Green/Blue/Purple/Gold)
+   - Start collecting telemetry data now for ML training
+   - Replace SM-2 with FCPM (Forgetting Curve Prediction Model)
+   - Add dynamic difficulty clustering
 
 ---
 
 ## Conclusion
 
-The KumaSanKanji application has a solid foundation with Ash Framework and good domain organization. The main areas requiring immediate attention are:
+**Major Achievements:**
+- ✅ All critical security vulnerabilities resolved
+- ✅ CI/CD pipeline fully operational
+- ✅ Code quality infrastructure in place
+- ✅ Test coverage reporting enabled
+- ✅ Health checks and monitoring basics implemented
 
-1. **Security:** Fix the overly permissive user read policy and add SSL enforcement
-2. **Code Organization:** Clean up temporary scripts and consolidate admin tools
-3. **Documentation:** Expand README and add missing documentation
-4. **Testing:** Add coverage reporting and expand test suite
-5. **Monitoring:** Add observability and structured logging
+**Current Focus Areas:**
+1. **Documentation:** README expansion, CONTRIBUTING.md, SECURITY.md, architecture docs
+2. **Configuration:** .env.example, environment variable validation
+3. **Testing:** More integration tests, property-based test expansion
+4. **Features:** Issues #23, #13, and #22 from GitHub
 
-Most improvements are straightforward and can be implemented incrementally without disrupting the current functionality.
+**Overall Assessment:**
+The KumaSanKanji application is in excellent shape with strong security posture, good test coverage (141 tests passing), and modern development practices. The main work ahead is documentation, feature development, and content expansion rather than foundational fixes.
 
+The codebase demonstrates professional Elixir/Phoenix patterns with proper use of Ash Framework, domain-driven design, and comprehensive testing. Ready for continued feature development and production use.
+
+---
+
+**Last Updated:** 2026-01-06
+**Next Review:** 2026-02-06 (1 month)

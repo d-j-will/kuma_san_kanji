@@ -9,7 +9,10 @@ defmodule KumaSanKanjiWeb.ExploreLive do
     total_kanji = KumaSanKanji.Kanji.count_all!()
     user = socket.assigns[:current_user]
     is_authenticated = user != nil
-    socket = assign(socket, :show_stroke_order, false)
+    socket =
+      socket
+      |> assign(:show_stroke_order, false)
+      |> assign(:show_tracing, false)
 
     case total_kanji do
       n when n > 0 ->
@@ -91,6 +94,7 @@ defmodule KumaSanKanjiWeb.ExploreLive do
           usage_examples: usage_examples,
           radical: radical,
           progress: progress,
+          show_tracing: false,
           note_form: to_form(%{"notes" => if(progress, do: progress.notes, else: "")})
         )
 
@@ -168,6 +172,10 @@ defmodule KumaSanKanjiWeb.ExploreLive do
         socket
       end
     {:noreply, socket}
+  end
+
+  def handle_event("toggle_tracing", _params, socket) do
+    {:noreply, StrokeOrderEvents.toggle_tracing(socket)}
   end
 
   def handle_event(event, params = %{"kanji" => _}, socket) when event in ["stroke_order_restart", "stroke_order_step", "stroke_order_toggle_style"] do

@@ -425,7 +425,7 @@ defmodule KumaSanKanji.SRS.Logic do
 
     case Kanji
          |> Ash.Query.filter(id in ^kanji_ids)
-         |> Ash.Query.load([:meanings, :pronunciations])
+         |> Ash.Query.load([:meanings, :pronunciations, :example_sentences])
          |> Ash.Query.select([:id, :character, :grade, :stroke_count, :jlpt_level])
          |> Ash.read(actor: actor) do
       {:ok, kanji_list} ->

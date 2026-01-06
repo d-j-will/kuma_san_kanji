@@ -32,6 +32,7 @@ defmodule KumaSanKanjiWeb.QuizLive do
      socket =
        socket
        |> assign(:show_stroke_order, false)
+       |> assign(:show_tracing, false)
     quiz_state =
       case restore_session_if_exists(user.id, params["session_id"], user) do
         {:ok, restored_state} ->
@@ -96,6 +97,7 @@ defmodule KumaSanKanjiWeb.QuizLive do
           |> assign(:show_feedback, false)
           |> assign(:feedback_message, "")
           |> assign(:feedback_type, :info)
+          |> assign(:feedback_details_expanded, false)
           |> assign(:session_start_time, System.system_time(:millisecond))
           |> assign(:answers_count, quiz_state[:answers_count] || 0)
           |> assign(:last_answer_times, quiz_state[:last_answer_times] || [])
@@ -185,6 +187,12 @@ defmodule KumaSanKanjiWeb.QuizLive do
   @impl true
   def handle_event("toggle_mobile_help", _params, socket) do
     {:noreply, assign(socket, :mobile_help_visible, !socket.assigns.mobile_help_visible)}
+  end
+
+  @impl true
+  def handle_event("toggle_feedback_details", _params, socket) do
+    {:noreply,
+     assign(socket, :feedback_details_expanded, !socket.assigns.feedback_details_expanded)}
   end
 
   @impl true
@@ -327,6 +335,10 @@ defmodule KumaSanKanjiWeb.QuizLive do
         socket
       end
     {:noreply, socket}
+  end
+
+  def handle_event("toggle_tracing", _params, socket) do
+    {:noreply, StrokeOrderEvents.toggle_tracing(socket)}
   end
 
   def handle_event(event, params = %{"kanji" => _}, socket) when event in ["stroke_order_restart", "stroke_order_step", "stroke_order_toggle_style"] do
@@ -618,8 +630,10 @@ defmodule KumaSanKanjiWeb.QuizLive do
           # Save the progress record
           |> assign(:current_progress, progress)
           |> assign(:show_feedback, false)
+          |> assign(:show_tracing, false)
           |> assign(:feedback_message, "")
           |> assign(:feedback_type, :info)
+          |> assign(:feedback_details_expanded, false)
           |> assign(:user_answer, "")
           |> assign(:quiz_complete, false)
 

@@ -28,10 +28,18 @@
                 {@kanji.character}
               </span>
             </div>
-      <button type="button" class="mt-2 text-xs underline text-wabi-accent"
+            <div class="flex gap-2">
+              <button type="button" class="mt-2 text-xs underline text-wabi-accent"
         phx-click="toggle_stroke_order" aria-expanded={@show_stroke_order || false}>
-              {if @show_stroke_order, do: "Hide Stroke Order", else: "Show Stroke Order"}
-            </button>
+                {if @show_stroke_order, do: "Hide Stroke Order", else: "Show Stroke Order"}
+              </button>
+              <%= if @show_stroke_order do %>
+                <button type="button" class="mt-2 text-xs underline text-wabi-hok_blue"
+        phx-click="toggle_tracing" aria-expanded={@show_tracing}>
+                  {if @show_tracing, do: "Disable Tracing", else: "Practice Writing"}
+                </button>
+              <% end %>
+            </div>
       <span id="stroke-order-toggle-explore" data-scope="explore" data-current={@show_stroke_order}
       data-initial={@show_stroke_order}
       phx-hook="StrokeOrderToggle" class="hidden"></span>
@@ -45,7 +53,8 @@
             <KumaSanKanjiWeb.KanjiStrokeOrderComponent.stroke_order
               id="explore-stroke-order"
               kanji={@kanji.character}
-              animate?={true} />
+              animate?={true}
+              mode={if @show_tracing, do: :trace, else: :view} />
             <p class="mt-2 text-[10px] text-wabi-stone/60">Stroke order data © KanjiVG (CC BY-SA 3.0)</p>
           </div>
         <% end %>
