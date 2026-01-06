@@ -526,9 +526,15 @@ defmodule KumaSanKanjiWeb.QuizLive do
   defp validate_and_sanitize_answer(_), do: {:error, :invalid_format}
 
   defp check_rate_limit(socket) do
+    user = socket.assigns.current_user
     current_time = System.system_time(:millisecond)
-    _session_start = socket.assigns.session_start_time
-    last_times = socket.assigns.last_answer_times
+
+    # Fetch latest timestamps from persistent session to prevent multi-tab bypass
+    last_times =
+      case KumaSanKanji.Quiz.Session.get_for_user(user.id) do
+        {:ok, session} -> session.last_answer_times || []
+        _ -> socket.assigns.last_answer_times
+      end
 
     # Remove old timestamps outside the window
     recent_times =

@@ -182,9 +182,9 @@ defmodule KumaSanKanji.Accounts.User do
       authorize_if expr(id == ^actor(:id))
     end
 
-    # Allow create_for_test for testing purposes
+    # Allow create_for_test only for admins (internal tasks use authorize?: false to bypass)
     policy action(:create_for_test) do
-      authorize_if always()
+      authorize_if actor_attribute_equals(:admin, true)
     end
 
     # Allow generic update for admin operations

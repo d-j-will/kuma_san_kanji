@@ -23,6 +23,10 @@ defmodule KumaSanKanjiWeb.Router do
   end
 
   scope "/", KumaSanKanjiWeb do
+    get "/health", HealthController, :check
+  end
+
+  scope "/", KumaSanKanjiWeb do
     pipe_through :browser
 
     ash_authentication_live_session :public_routes,

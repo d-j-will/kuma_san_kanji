@@ -9,8 +9,21 @@ defmodule KumaSanKanji.MixProject do
       elixirc_paths: elixirc_paths(Mix.env()),
       start_permanent: Mix.env() == :prod,
       consolidate_protocols: Mix.env() != :dev,
+      test_coverage: [tool: ExCoveralls],
       aliases: aliases(),
       deps: deps()
+    ]
+  end
+
+  def cli do
+    [
+      preferred_envs: [
+        coveralls: :test,
+        "coveralls.detail": :test,
+        "coveralls.post": :test,
+        "coveralls.html": :test,
+        "coveralls.cobertura": :test
+      ]
     ]
   end
 
@@ -84,7 +97,10 @@ defmodule KumaSanKanji.MixProject do
       # Property-based testing (Ash already depends on stream_data ~> 1.0)
       {:stream_data, "~> 1.0"},
       {:tidewave, "~> 0.5", only: [:dev]},
-      {:lazy_html, ">= 0.1.0", only: :test}
+      {:lazy_html, ">= 0.1.0", only: :test},
+      {:credo, "~> 1.7", only: [:dev, :test], runtime: false},
+      {:dialyxir, "~> 1.4", only: [:dev, :test], runtime: false},
+      {:excoveralls, "~> 0.18", only: :test}
     ]
   end
 
@@ -106,6 +122,8 @@ defmodule KumaSanKanji.MixProject do
       ],
       "ecto.setup": ["ecto.create", "ecto.migrate"],
       setup: ["deps.get", "assets.setup", "assets.build", "ecto.setup", "run priv/repo/seeds.exs"],
+      quality: ["format --check-formatted", "credo --strict"],
+      "test.coverage": ["coveralls.html"],
       "assets.setup": ["tailwind.install --if-missing", "esbuild.install --if-missing", "cmd npm install --prefix assets"],
       "assets.build": ["cmd npm run deploy --prefix assets", "esbuild kuma_san_kanji"],
       "assets.deploy": [
