@@ -454,7 +454,7 @@
                       type="button"
                       phx-click="toggle_feedback_details"
                       class="w-full flex items-center justify-between p-4 bg-wabi-paper-aged/50 hover:bg-wabi-paper-aged rounded-lg border border-wabi-border transition-colors text-left group"
-                      aria-expanded={@feedback_details_expanded}
+                      aria-expanded={to_string(@feedback_details_expanded)}
                       aria-controls="feedback-details-panel"
                     >
                       <span class="text-sm font-wabi-display font-semibold text-wabi-rust">
@@ -495,7 +495,7 @@
                             <div class="flex flex-wrap gap-2">
                               <%= for meaning <- @current_kanji.meanings do %>
                                 <span class="px-3 py-1 bg-wabi-cream/30 text-wabi-charcoal rounded-full text-sm font-wabi">
-                                  {meaning.meaning}
+                                  {meaning.value}
                                 </span>
                               <% end %>
                             </div>
@@ -515,7 +515,7 @@
                                   pronunciation.type == "kun" && "bg-green-100 text-green-800"
                                 ]}>
                                   <span class="text-xs opacity-70 uppercase">{pronunciation.type}</span>
-                                  {pronunciation.reading}
+                                  {pronunciation.value}
                                 </span>
                               <% end %>
                             </div>
@@ -534,7 +534,7 @@
                                     {example.japanese}
                                   </p>
                                   <p class="text-sm text-wabi-charcoal/70 font-wabi">
-                                    {example.english}
+                                    {example.translation}
                                   </p>
                                 </div>
                               <% end %>

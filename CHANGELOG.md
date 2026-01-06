@@ -11,7 +11,12 @@
   - Updated `SRS.Logic` to load example sentences alongside kanji data.
   - Implemented progressive disclosure pattern (collapsed by default, expandable on click).
   - Maintains clean UX with toggle animation and proper ARIA attributes for accessibility.
-  - All existing tests continue to pass (143 tests, 0 failures).
+  - **Testing:** Added 8 comprehensive behavioral tests for feedback details functionality:
+    - Collapse/expand toggle behavior
+    - Meanings, pronunciations, and example sentences rendering
+    - ARIA accessibility attributes
+    - State reset when navigating to next kanji
+  - All tests passing: 153 tests (increased from 143), 0 failures.
 - **Furigana Generation:** Implemented dynamic furigana display for Japanese text.
   - Uses `System.cmd("mecab")` for morphological analysis.
   - Updates `ExploreLive` to show furigana in example sentences and common words.

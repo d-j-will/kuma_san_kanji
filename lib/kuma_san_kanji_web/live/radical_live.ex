@@ -1,25 +1,26 @@
 defmodule KumaSanKanjiWeb.RadicalLive do
   use KumaSanKanjiWeb, :live_view
   alias KumaSanKanji.Domain
-  require Ash.Query
 
   @impl true
   def mount(%{"id" => id}, _session, socket) do
     kangxi_index = parse_int(id)
-    radical = if kangxi_index, do: Domain.get_radical_by_kangxi_index!(kangxi_index), else: nil
+    # Use code interface that handles loading kanjis
+    radical = if kangxi_index, do: Domain.get_radical_with_kanjis(kangxi_index), else: nil
+
+    # Handle case where get_radical_with_kanjis returns {:ok, radical} or just radical if bang version
+    # The interface returns {:ok, ...} by default unless we used get?: true with bang or bang function
+    # Domain definition used `get?: true` but defined function `get_radical_with_kanjis` without bang.
+    # Wait, Domain definition: `define :get_radical_with_kanjis, ... get?: true`
+    # This means it returns `{:ok, result}` or `{:error, ...}`.
+    # However, `Domain.get_radical_with_kanjis` is generated. If I call it without !, it returns tuple.
+    # But `get_radical_by_kangxi_index!` was used before? No, `Domain.get_radical_by_kangxi_index!` was used.
+    # I should handle the tuple.
 
     radical =
-      if radical do
-        # Limit to first 50 kanji using this radical for performance
-        kanji_query =
-          KumaSanKanji.Kanji.Kanji
-          |> Ash.Query.sort(character: :asc)
-          |> Ash.Query.limit(50)
-          |> Ash.Query.select([:id, :character, :grade, :stroke_count, :jlpt_level])
-
-        Ash.load!(radical, kanjis: kanji_query)
-      else
-        radical
+      case radical do
+        {:ok, r} -> r
+        _ -> nil
       end
 
     {:ok, assign(socket, radical: radical)}

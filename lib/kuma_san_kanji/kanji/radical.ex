@@ -64,6 +64,16 @@ defmodule KumaSanKanji.Kanji.Radical do
       filter expr(kangxi_index == ^arg(:kangxi_index))
       get? true
     end
+
+    read :get_with_kanjis do
+      argument :kangxi_index, :integer, allow_nil?: false
+      filter expr(kangxi_index == ^arg(:kangxi_index))
+      get? true
+      prepare(fn query, _context ->
+        query
+        |> Ash.Query.load(kanjis: [limit: 50, sort: [character: :asc]])
+      end)
+    end
   end
 
   identities do
@@ -75,6 +85,7 @@ defmodule KumaSanKanji.Kanji.Radical do
     define :create_radical, action: :create
     define :get_radical_by_glyph, action: :get_by_glyph, args: [:glyph]
     define :get_radical_by_kangxi_index, action: :get_by_kangxi_index, args: [:kangxi_index]
+    define :get_radical_with_kanjis, action: :get_with_kanjis, args: [:kangxi_index]
     define :list_radicals, action: :read
   end
 

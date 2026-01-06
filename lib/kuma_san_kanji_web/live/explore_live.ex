@@ -20,7 +20,7 @@ defmodule KumaSanKanjiWeb.ExploreLive do
 
         case get_kanji_by_offset(current_offset) do
           {:ok, kanji, thematic_info, learning_meta, usage_examples} ->
-            radical = kanji.radical || load_radical(kanji)
+            radical = kanji.radical
             progress = if is_authenticated, do: load_user_progress(user.id, kanji.id), else: nil
 
             {:ok,
@@ -83,7 +83,7 @@ defmodule KumaSanKanjiWeb.ExploreLive do
 
     case get_kanji_by_offset(new_offset) do
       {:ok, kanji, thematic_info, learning_meta, usage_examples} ->
-        radical = kanji.radical || load_radical(kanji)
+        radical = kanji.radical
         progress = if user, do: load_user_progress(user.id, kanji.id), else: nil
 
         socket = assign(socket,
@@ -230,7 +230,7 @@ defmodule KumaSanKanjiWeb.ExploreLive do
               end
           }
 
-          loaded_kanji = Ash.load!(loaded_kanji, :radical)
+          # loaded_kanji already has radical loaded via get_kanji_by_id!
           {:ok, loaded_kanji, thematic_info, learning_meta, usage_examples}
         else
           _error ->
@@ -242,13 +242,6 @@ defmodule KumaSanKanjiWeb.ExploreLive do
 
       error ->
         error
-    end
-  end
-
-  defp load_radical(kanji) do
-    case Ash.load(kanji, :radical) do
-      {:ok, with_radical} -> with_radical.radical
-      _ -> nil
     end
   end
 

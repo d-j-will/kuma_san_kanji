@@ -1,7 +1,6 @@
 defmodule KumaSanKanjiWeb.ExploreStrokeOrderTest do
   use KumaSanKanjiWeb.ConnCase, async: false
   import Phoenix.LiveViewTest
-  import KumaSanKanji.TestHelpers
 
   setup do
     {:ok, _kanji} = KumaSanKanji.Domain.create_kanji(%{character: "日", grade: 1, stroke_count: 4, jlpt_level: 5})
