@@ -24,7 +24,7 @@ end
 
 # We don't run a server during test. If one is required,
 # you can enable the server option below.
-  config :kuma_san_kanji, KumaSanKanjiWeb.Endpoint,
+config :kuma_san_kanji, KumaSanKanjiWeb.Endpoint,
   http: [ip: {127, 0, 0, 1}, port: 4002],
   secret_key_base: "dvZzhvleOMWBI/hGf5ny7873F4gtsR9ewRnQiKK7hcM2labweW9/WdbgxrVEfJNu",
   server: false
@@ -54,8 +54,3 @@ config :kuma_san_kanji, :auth0,
   client_secret: "test-client-secret",
   base_url: "https://test.auth0.com",
   redirect_uri: "http://localhost:4002/auth/user/auth0/callback"
-
-# Exclude tests that require external dependencies (like MeCab) in CI
-if System.get_env("CI") do
-  ExUnit.configure(exclude: [:mecab])
-end

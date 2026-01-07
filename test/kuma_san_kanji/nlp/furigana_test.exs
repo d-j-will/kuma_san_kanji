@@ -2,8 +2,6 @@ defmodule KumaSanKanji.NLP.FuriganaTest do
   use ExUnit.Case, async: true
   alias KumaSanKanji.NLP.Furigana
 
-  @moduletag :mecab
-
   describe "parse_sentence/1" do
     test "parses simple sentence with kanji" do
       input = "日本語を勉強します"
