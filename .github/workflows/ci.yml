@@ -51,6 +51,11 @@ jobs:
     - name: Install dependencies
       run: mix deps.get
 
+    - name: Install MeCab
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y mecab libmecab-dev mecab-ipadic-utf8
+
     - name: Setup Database
       run: mix ash.setup
 
