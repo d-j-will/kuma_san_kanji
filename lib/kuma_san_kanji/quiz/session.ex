@@ -83,7 +83,8 @@ defmodule KumaSanKanji.Quiz.Session do
                %{
                  current_kanji: kanji,
                  answers_count: session.answers_count,
-                 last_answer_times: session.last_answer_times
+                 last_answer_times: session.last_answer_times,
+                 session_start_time: Map.get(session, :session_start_time)
                }}
 
             {:error, reason} ->
@@ -170,7 +171,7 @@ defmodule KumaSanKanji.Quiz.Session do
   # Private helpers
 
   defp validate_session_data(session_data) do
-    required_fields = [:user_id, :current_kanji_id, :answers_count]
+    required_fields = [:user_id, :current_kanji_id, :answers_count, :session_start_time]
 
     if Enum.all?(required_fields, &Map.has_key?(session_data, &1)) do
       :ok
