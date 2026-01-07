@@ -98,7 +98,7 @@ defmodule KumaSanKanjiWeb.QuizLive do
           |> assign(:feedback_message, "")
           |> assign(:feedback_type, :info)
           |> assign(:feedback_details_expanded, false)
-          |> assign(:session_start_time, System.system_time(:millisecond))
+          |> assign(:session_start_time, quiz_state[:session_start_time] || System.system_time(:millisecond))
           |> assign(:answers_count, quiz_state[:answers_count] || 0)
           |> assign(:last_answer_times, quiz_state[:last_answer_times] || [])
           |> assign(:quiz_complete, false)
@@ -438,10 +438,9 @@ defmodule KumaSanKanjiWeb.QuizLive do
     session_data = %{
       user_id: user_id,
       current_kanji_id: current_kanji_id,
-      current_kanji: socket.assigns.current_kanji,
-      current_progress: socket.assigns.current_progress,
       answers_count: socket.assigns.answers_count,
-      last_answer_times: socket.assigns.last_answer_times
+      last_answer_times: socket.assigns.last_answer_times,
+      session_start_time: socket.assigns.session_start_time
     }
 
     # Save session asynchronously to avoid blocking the LiveView
@@ -757,6 +756,17 @@ defmodule KumaSanKanjiWeb.QuizLive do
   defp get_validation_error_message(:invalid_format), do: "Invalid answer format"
 
   defp format_relative_time(nil), do: "N/A"
+
+  defp format_duration(start_time) when is_integer(start_time) do
+    diff = System.system_time(:millisecond) - start_time
+    seconds = div(diff, 1000)
+    minutes = div(seconds, 60)
+    seconds = rem(seconds, 60)
+
+    "#{minutes}:#{String.pad_leading(Integer.to_string(seconds), 2, "0")}"
+  end
+
+  defp format_duration(_), do: "0:00"
 
   defp format_relative_time(%DateTime{} = dt) do
     now = DateTime.utc_now()
