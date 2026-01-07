@@ -124,7 +124,11 @@ defmodule KumaSanKanji.MixProject do
       setup: ["deps.get", "assets.setup", "assets.build", "ecto.setup", "run priv/repo/seeds.exs"],
       quality: ["format --check-formatted", "credo --strict"],
       "test.coverage": ["coveralls.html"],
-      "assets.setup": ["tailwind.install --if-missing", "esbuild.install --if-missing", "cmd npm install --prefix assets"],
+      "assets.setup": [
+        "tailwind.install --if-missing",
+        "esbuild.install --if-missing",
+        "cmd npm install --prefix assets"
+      ],
       "assets.build": ["cmd npm run deploy --prefix assets", "esbuild kuma_san_kanji"],
       "assets.deploy": [
         "cmd npm run deploy --prefix assets",

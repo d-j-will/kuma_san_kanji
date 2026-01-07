@@ -39,27 +39,32 @@ defmodule KumaSanKanji.Release do
 
     # For PostgreSQL, we need to handle table dropping differently
     for repo <- repos() do
-      {:ok, _, _} = Ecto.Migrator.with_repo(repo, fn repo ->
-        # Get all table names (excluding system tables)
-        result = repo.query!("""
-          SELECT tablename
-          FROM pg_tables
-          WHERE schemaname = 'public'
-          AND tablename != 'schema_migrations'
-        """, [])
+      {:ok, _, _} =
+        Ecto.Migrator.with_repo(repo, fn repo ->
+          # Get all table names (excluding system tables)
+          result =
+            repo.query!(
+              """
+                SELECT tablename
+                FROM pg_tables
+                WHERE schemaname = 'public'
+                AND tablename != 'schema_migrations'
+              """,
+              []
+            )
 
-        tables = result.rows |> Enum.map(&List.first/1)
+          tables = result.rows |> Enum.map(&List.first/1)
 
-        # Drop all tables with CASCADE to handle foreign key constraints
-        Enum.each(tables, fn table ->
-          repo.query!("DROP TABLE IF EXISTS #{table} CASCADE", [])
-          IO.puts("Dropped table: #{table}")
+          # Drop all tables with CASCADE to handle foreign key constraints
+          Enum.each(tables, fn table ->
+            repo.query!("DROP TABLE IF EXISTS #{table} CASCADE", [])
+            IO.puts("Dropped table: #{table}")
+          end)
+
+          # Clean up the schema_migrations table
+          repo.query!("DELETE FROM schema_migrations", [])
+          IO.puts("Cleaned schema_migrations table")
         end)
-
-        # Clean up the schema_migrations table
-        repo.query!("DELETE FROM schema_migrations", [])
-        IO.puts("Cleaned schema_migrations table")
-      end)
     end
 
     IO.puts("Dropped all tables, running migrations...")
@@ -82,7 +87,9 @@ defmodule KumaSanKanji.Release do
     load_app()
     start_seed_dependencies()
 
-    admin_email = System.get_env("ADMIN_EMAIL") || raise "Missing environment variable `ADMIN_EMAIL`!"
+    admin_email =
+      System.get_env("ADMIN_EMAIL") || raise "Missing environment variable `ADMIN_EMAIL`!"
+
     IO.puts("Setting up admin user with email: #{admin_email}")
 
     try do
@@ -92,9 +99,11 @@ defmodule KumaSanKanji.Release do
             IO.puts("✅ User #{user.email} is already an admin")
           else
             IO.puts("Making user #{user.email} an admin...")
+
             case KumaSanKanji.Accounts.update_user(user, %{admin: true}, authorize?: false) do
               {:ok, updated_user} ->
                 IO.puts("✅ Successfully made #{updated_user.email} an admin")
+
               {:error, reason} ->
                 IO.puts("❌ Failed to make user admin: #{inspect(reason)}")
                 raise "Admin setup failed: #{inspect(reason)}"
@@ -106,14 +115,18 @@ defmodule KumaSanKanji.Release do
           IO.puts("User not found. Creating admin placeholder for #{admin_email}")
           username = admin_email |> String.split("@") |> List.first()
 
-          case KumaSanKanji.Accounts.create_test_user(%{
-            email: admin_email,
-            username: username,
-            admin: true,
-            dev_mode_enabled: true
-          }, authorize?: false) do
+          case KumaSanKanji.Accounts.create_test_user(
+                 %{
+                   email: admin_email,
+                   username: username,
+                   admin: true,
+                   dev_mode_enabled: true
+                 },
+                 authorize?: false
+               ) do
             {:ok, user} ->
               IO.puts("✅ Created admin placeholder: #{user.email}")
+
             {:error, reason} ->
               IO.puts("❌ Failed to create admin placeholder: #{inspect(reason)}")
               raise "Admin creation failed: #{inspect(reason)}"
@@ -146,9 +159,11 @@ defmodule KumaSanKanji.Release do
     start_seed_dependencies()
 
     IO.puts("Running migrations...")
+
     for repo <- repos() do
       {:ok, _, _} = Ecto.Migrator.with_repo(repo, &Ecto.Migrator.run(&1, :up, all: true))
     end
+
     IO.puts("Migrations completed")
 
     IO.puts("Setting up admin user...")

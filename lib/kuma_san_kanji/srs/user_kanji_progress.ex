@@ -80,8 +80,8 @@ defmodule KumaSanKanji.SRS.UserKanjiProgress do
 
     # Custom action to initialize progress for a user-kanji pair
     create :initialize do
-      upsert? true
-      upsert_identity :unique_user_kanji
+      upsert?(true)
+      upsert_identity(:unique_user_kanji)
       argument(:user_id, :uuid, allow_nil?: false)
       argument(:kanji_id, :uuid, allow_nil?: false)
 
@@ -102,10 +102,10 @@ defmodule KumaSanKanji.SRS.UserKanjiProgress do
     # Action to record a review result and update SRS state
     update :record_review do
       accept([:last_result])
-      require_atomic? false
+      require_atomic?(false)
 
       # Use extracted change module for SM-2 logic
-      change KumaSanKanji.SRS.Changes.ApplySm2
+      change(KumaSanKanji.SRS.Changes.ApplySm2)
     end
 
     # Action to update user notes
@@ -133,18 +133,20 @@ defmodule KumaSanKanji.SRS.UserKanjiProgress do
     read :due_for_review do
       argument(:user_id, :uuid, allow_nil?: false)
       argument(:limit, :integer, default: 10)
-  # Horizon (in seconds) to look ahead; 0 means only items currently due
-  # Look-ahead horizon in seconds (default 1 hour) to prefetch near-due items
-  argument(:horizon_seconds, :integer, default: 3600)
+      # Horizon (in seconds) to look ahead; 0 means only items currently due
+      # Look-ahead horizon in seconds (default 1 hour) to prefetch near-due items
+      argument(:horizon_seconds, :integer, default: 3600)
 
       prepare(fn query, _context ->
         user_id = Ash.Query.get_argument(query, :user_id)
+
         horizon_seconds =
           case Ash.Query.get_argument(query, :horizon_seconds) do
             nil -> 0
             v when is_integer(v) and v > 0 -> v
             _ -> 0
           end
+
         now = DateTime.utc_now()
         horizon_time = DateTime.add(now, horizon_seconds, :second)
 
@@ -173,8 +175,9 @@ defmodule KumaSanKanji.SRS.UserKanjiProgress do
     end
 
     read :next_review do
-      argument :user_id, :uuid, allow_nil?: false
-      filter expr(user_id == ^arg(:user_id) and next_review_date > now())
+      argument(:user_id, :uuid, allow_nil?: false)
+      filter(expr(user_id == ^arg(:user_id) and next_review_date > now()))
+
       prepare(fn query, _ ->
         query
         |> Ash.Query.sort(next_review_date: :asc)
@@ -186,17 +189,17 @@ defmodule KumaSanKanji.SRS.UserKanjiProgress do
   policies do
     # Allow admin bypass for all actions
     bypass action_type([:read, :create, :update, :destroy]) do
-      authorize_if actor_attribute_equals(:admin, true)
+      authorize_if(actor_attribute_equals(:admin, true))
     end
 
     # For authenticated users, they can only access their own progress records
     policy action_type([:read, :update, :destroy]) do
-      authorize_if relates_to_actor_via(:user)
+      authorize_if(relates_to_actor_via(:user))
     end
 
     # For create actions, check that the user_id argument matches the actor
     policy action_type(:create) do
-      authorize_if expr(^actor(:id) == ^arg(:user_id))
+      authorize_if(expr(^actor(:id) == ^arg(:user_id)))
     end
   end
 
@@ -205,7 +208,12 @@ defmodule KumaSanKanji.SRS.UserKanjiProgress do
     define(:initialize, action: :initialize, args: [:user_id, :kanji_id])
     define(:record_review, action: :record_review)
     define(:update_notes, action: :update_notes)
-    define(:get_user_kanji_progress, action: :get_user_kanji_progress, args: [:user_id, :kanji_id])
+
+    define(:get_user_kanji_progress,
+      action: :get_user_kanji_progress,
+      args: [:user_id, :kanji_id]
+    )
+
     define(:due_for_review, action: :due_for_review, args: [:user_id])
     define(:user_stats, action: :user_stats, args: [:user_id])
     define(:get_by_id, action: :read, get_by: [:id])

@@ -15,9 +15,10 @@ defmodule KumaSanKanji.Kanji.Kanji do
   end
 
   relationships do
-    belongs_to :radical, KumaSanKanji.Kanji.Radical,
+    belongs_to(:radical, KumaSanKanji.Kanji.Radical,
       allow_nil?: true,
       define_attribute?: true
+    )
 
     has_many(:meanings, KumaSanKanji.Kanji.Meaning, destination_attribute: :kanji_id)
     has_many(:pronunciations, KumaSanKanji.Kanji.Pronunciation, destination_attribute: :kanji_id)
@@ -39,7 +40,8 @@ defmodule KumaSanKanji.Kanji.Kanji do
     end
 
     read :list_all do
-      pagination offset?: true, keyset?: true, countable: :by_default
+      pagination(offset?: true, keyset?: true, countable: :by_default)
+
       prepare(fn query, _context ->
         query
         |> Ash.Query.load([:meanings, :pronunciations, :example_sentences, :radical])
@@ -48,18 +50,20 @@ defmodule KumaSanKanji.Kanji.Kanji do
     end
 
     read :get_by_character do
-      get? true
+      get?(true)
       argument(:character, :string, allow_nil?: false)
-      filter expr(character == ^arg(:character))
+      filter(expr(character == ^arg(:character)))
+
       prepare(fn query, _context ->
         query |> Ash.Query.load([:meanings, :pronunciations, :example_sentences, :radical])
       end)
     end
 
     read :get_by_id do
-      get? true
+      get?(true)
       argument(:id, :uuid, allow_nil?: false)
-      filter expr(id == ^arg(:id))
+      filter(expr(id == ^arg(:id)))
+
       prepare(fn query, _context ->
         query |> Ash.Query.load([:meanings, :pronunciations, :example_sentences, :radical])
       end)
@@ -67,7 +71,7 @@ defmodule KumaSanKanji.Kanji.Kanji do
 
     read :by_offset do
       argument(:offset, :integer, allow_nil?: false)
-      get? true
+      get?(true)
 
       prepare(fn query, _context ->
         offset = Ash.Query.get_argument(query, :offset)
@@ -80,7 +84,8 @@ defmodule KumaSanKanji.Kanji.Kanji do
     end
 
     read :list_for_init do
-      argument :limit, :integer, default: 10
+      argument(:limit, :integer, default: 10)
+
       prepare(fn query, _context ->
         query
         |> Ash.Query.sort(grade: :asc)

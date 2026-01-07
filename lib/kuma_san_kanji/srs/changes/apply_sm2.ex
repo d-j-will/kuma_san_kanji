@@ -28,8 +28,10 @@ defmodule KumaSanKanji.SRS.Changes.ApplySm2 do
     result = Changeset.get_attribute(changeset, :last_result)
 
     current_interval = Changeset.get_attribute(changeset, :interval) || 1
+
     current_ease_factor =
       Changeset.get_attribute(changeset, :ease_factor) || Decimal.new("2.5")
+
     current_repetitions = Changeset.get_attribute(changeset, :repetitions) || 0
     current_total_reviews = Changeset.get_attribute(changeset, :total_reviews) || 0
     current_correct_reviews = Changeset.get_attribute(changeset, :correct_reviews) || 0
@@ -57,7 +59,7 @@ defmodule KumaSanKanji.SRS.Changes.ApplySm2 do
               Decimal.new("1.3")
             )
 
-            {1, new_ease_factor, 0, current_correct_reviews}
+          {1, new_ease_factor, 0, current_correct_reviews}
 
         :skip ->
           {max(1, div(current_interval, 2)), current_ease_factor, current_repetitions,

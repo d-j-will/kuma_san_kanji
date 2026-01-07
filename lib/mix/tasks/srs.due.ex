@@ -22,10 +22,10 @@ defmodule Mix.Tasks.Srs.Due do
     opts = OptionParser.parse!(argv, switches: @switches) |> elem(0)
 
     user_id = opts[:user] || abort!("--user <uuid> is required")
-  limit = opts[:limit] || 10
-  horizon_opt = opts[:horizon]
-  raw? = opts[:raw] || false
-  json? = opts[:json] || false
+    limit = opts[:limit] || 10
+    horizon_opt = opts[:horizon]
+    raw? = opts[:raw] || false
+    json? = opts[:json] || false
 
     {:ok, user_uuid} = Ecto.UUID.cast(user_id)
 
@@ -47,10 +47,12 @@ defmodule Mix.Tasks.Srs.Due do
       json? ->
         json_items = Enum.map(results, &to_json_map/1)
         IO.puts(Jason.encode!(json_items))
+
       raw? ->
-      IO.inspect(results, label: "due_items")
+        IO.inspect(results, label: "due_items")
+
       true ->
-      render_table(results)
+        render_table(results)
     end
   end
 
@@ -63,9 +65,17 @@ defmodule Mix.Tasks.Srs.Due do
 
   defp render_table(items) do
     header = ["Kanji ID", "Interval", "Reps", "EF", "Next Review (UTC)", "Last Result"]
+
     rows =
       Enum.map(items, fn r ->
-        [ short(r.kanji_id), r.interval, r.repetitions, Decimal.to_string(r.ease_factor), fmt_dt(r.next_review_date), to_string(r.last_result || :nil) ]
+        [
+          short(r.kanji_id),
+          r.interval,
+          r.repetitions,
+          Decimal.to_string(r.ease_factor),
+          fmt_dt(r.next_review_date),
+          to_string(r.last_result || nil)
+        ]
       end)
 
     widths = header |> Enum.map(&String.length/1)
@@ -102,7 +112,9 @@ defmodule Mix.Tasks.Srs.Due do
     end)
   end
 
-  defp table_line(widths), do: Enum.map(widths, &String.duplicate("-", &1 + 2)) |> Enum.join("+") |> surround("+")
+  defp table_line(widths),
+    do: Enum.map(widths, &String.duplicate("-", &1 + 2)) |> Enum.join("+") |> surround("+")
+
   defp row_line(cols, widths) do
     cols
     |> Enum.zip(widths)

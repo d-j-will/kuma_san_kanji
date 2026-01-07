@@ -6,7 +6,7 @@ defmodule KumaSanKanji.NLP.FuriganaTest do
     test "parses simple sentence with kanji" do
       input = "日本語を勉強します"
       output = Furigana.parse_sentence(input)
-      
+
       assert output =~ "<ruby>日本語<rt>にほんご</rt></ruby>"
       assert output =~ "を"
       assert output =~ "<ruby>勉強<rt>べんきょう</rt></ruby>"
@@ -27,7 +27,7 @@ defmodule KumaSanKanji.NLP.FuriganaTest do
       # So it might add furigana?
       # Logic: if Regex.match?(~r/[\p{Han}]/u, surface) ...
       # Katakana is NOT Han (Kanji). So it should return surface.
-      
+
       input = "カメラ"
       assert Furigana.parse_sentence(input) == "カメラ"
     end
@@ -39,11 +39,13 @@ defmodule KumaSanKanji.NLP.FuriganaTest do
     end
 
     test "handles verbs with kanji root and hiragana okurigana" do
-      input = "行きます" # Yuki-masu (to go)
+      # Yuki-masu (to go)
+      input = "行きます"
       output = Furigana.parse_sentence(input)
       assert output == "<ruby>行<rt>い</rt></ruby>きます"
 
-      input = "食べます" # Tabe-masu (to eat)
+      # Tabe-masu (to eat)
+      input = "食べます"
       output = Furigana.parse_sentence(input)
       assert output == "<ruby>食<rt>た</rt></ruby>べます"
     end

@@ -25,17 +25,21 @@ defmodule KumaSanKanji.Kanji.Meaning do
     end
 
     read :by_kanji_and_value do
-      argument :kanji_id, :uuid, allow_nil?: false
-      argument :value, :string, allow_nil?: false
-      argument :language, :string, default: "en"
+      argument(:kanji_id, :uuid, allow_nil?: false)
+      argument(:value, :string, allow_nil?: false)
+      argument(:language, :string, default: "en")
 
-      filter expr(kanji_id == ^arg(:kanji_id) and value == ^arg(:value) and
-        (language == ^arg(:language) or (is_nil(language) and ^arg(:language) == "en")))
+      filter(
+        expr(
+          kanji_id == ^arg(:kanji_id) and value == ^arg(:value) and
+            (language == ^arg(:language) or (is_nil(language) and ^arg(:language) == "en"))
+        )
+      )
     end
   end
 
   identities do
-    identity :unique_meaning_per_kanji, [:kanji_id, :value, :language]
+    identity(:unique_meaning_per_kanji, [:kanji_id, :value, :language])
   end
 
   code_interface do

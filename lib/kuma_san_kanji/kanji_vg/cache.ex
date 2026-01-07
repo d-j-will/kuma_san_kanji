@@ -16,7 +16,9 @@ defmodule KumaSanKanji.KanjiVG.Cache do
           :ets.delete(@table, hex)
           :miss
         end
-      _ -> :miss
+
+      _ ->
+        :miss
     end
   end
 
@@ -27,7 +29,14 @@ defmodule KumaSanKanji.KanjiVG.Cache do
 
   @impl true
   def init(_) do
-    :ets.new(@table, [:named_table, :public, :set, read_concurrency: true, write_concurrency: true])
+    :ets.new(@table, [
+      :named_table,
+      :public,
+      :set,
+      read_concurrency: true,
+      write_concurrency: true
+    ])
+
     {:ok, %{}}
   end
 end

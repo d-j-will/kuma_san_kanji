@@ -34,7 +34,8 @@ defmodule KumaSanKanji.SRS.Logic do
     # Validate and sanitize limit parameter
     sanitized_limit = sanitize_limit(limit)
 
-    case UserKanjiProgress.due_for_review(user_id,
+    case UserKanjiProgress.due_for_review(
+           user_id,
            %{limit: sanitized_limit, horizon_seconds: 0},
            actor: actor
          ) do

@@ -11,14 +11,17 @@ config :kuma_san_kanji, KumaSanKanji.Repo,
   pool_size: 10
 
 # Token signing secret for AshAuthentication
-config :kuma_san_kanji, :token_signing_secret, "dev-secret-key-this-should-be-changed-in-production"
+config :kuma_san_kanji,
+       :token_signing_secret,
+       "dev-secret-key-this-should-be-changed-in-production"
 
 # Auth0 configuration for development
 config :kuma_san_kanji, :auth0,
   client_id: System.get_env("AUTH0_CLIENT_ID") || "your-auth0-client-id",
-  client_secret: System.get_env("AUTH0_CLIENT_SECRET") || "your-auth0-client-secret", 
+  client_secret: System.get_env("AUTH0_CLIENT_SECRET") || "your-auth0-client-secret",
   base_url: System.get_env("AUTH0_DOMAIN") || "https://your-domain.auth0.com",
-  redirect_uri: System.get_env("AUTH0_REDIRECT_URI") || "http://localhost:4000/auth/user/auth0/callback"
+  redirect_uri:
+    System.get_env("AUTH0_REDIRECT_URI") || "http://localhost:4000/auth/user/auth0/callback"
 
 # For development, we disable any cache and enable
 # debugging and code reloading.

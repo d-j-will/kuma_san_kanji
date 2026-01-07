@@ -34,6 +34,7 @@ defmodule KumaSanKanji.Application do
     case Supervisor.start_link(children, opts) do
       {:ok, _pid} = result ->
         result
+
       error ->
         error
     end

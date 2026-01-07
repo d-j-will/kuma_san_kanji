@@ -42,13 +42,17 @@ defmodule KumaSanKanji.Auth do
         # Extract user ID from subject (format: "user?id=UUID")
         case URI.parse(subject) do
           %URI{query: query} when is_binary(query) ->
-             case URI.decode_query(query) do
-               %{"id" => id} -> {:ok, id}
-               _ -> {:error, :invalid}
-             end
-          _ -> {:error, :invalid}
+            case URI.decode_query(query) do
+              %{"id" => id} -> {:ok, id}
+              _ -> {:error, :invalid}
+            end
+
+          _ ->
+            {:error, :invalid}
         end
-      _ -> {:error, :invalid}
+
+      _ ->
+        {:error, :invalid}
     end
   end
 

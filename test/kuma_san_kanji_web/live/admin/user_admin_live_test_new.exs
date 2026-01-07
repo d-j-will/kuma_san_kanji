@@ -31,17 +31,22 @@ defmodule KumaSanKanjiWeb.Admin.UserAdminLiveTest do
       assert has_element?(view, "td", to_string(admin_user.email))
     end
 
-    test "dev mode toggle event works with valid data", %{conn: conn, admin_user: _admin_user, regular_user: regular_user} do
+    test "dev mode toggle event works with valid data", %{
+      conn: conn,
+      admin_user: _admin_user,
+      regular_user: regular_user
+    } do
       # Verify user starts with dev mode disabled
       refute regular_user.dev_mode_enabled
 
       {:ok, view, _html} = live(conn, ~p"/admin/users")
 
       # Simulate the toggle dev mode event
-      result = render_hook(view, "toggle_dev_mode", %{
-        "user_id" => regular_user.id,
-        "enabled" => "true"
-      })
+      result =
+        render_hook(view, "toggle_dev_mode", %{
+          "user_id" => regular_user.id,
+          "enabled" => "true"
+        })
 
       # The hook should process without error
       assert result
@@ -59,14 +64,20 @@ defmodule KumaSanKanjiWeb.Admin.UserAdminLiveTest do
       |> render_click()
 
       # Check that the database was updated
-      {:ok, updated_user} = KumaSanKanji.Accounts.get_user_by_id(regular_user.id, authorize?: false)
+      {:ok, updated_user} =
+        KumaSanKanji.Accounts.get_user_by_id(regular_user.id, authorize?: false)
+
       assert updated_user.dev_mode_enabled, "Dev mode should be enabled in the database"
 
       # The button should now show "Enabled"
       assert has_element?(view, "button[phx-value-user_id='#{regular_user.id}']", "Enabled")
     end
 
-    test "displays user information correctly", %{conn: conn, admin_user: admin_user, regular_user: regular_user} do
+    test "displays user information correctly", %{
+      conn: conn,
+      admin_user: admin_user,
+      regular_user: regular_user
+    } do
       {:ok, view, _html} = live(conn, ~p"/admin/users")
 
       # Should show admin user information
@@ -78,7 +89,10 @@ defmodule KumaSanKanjiWeb.Admin.UserAdminLiveTest do
       assert has_element?(view, "td", to_string(regular_user.username))
     end
 
-    test "button state reflects actual dev mode status after toggle", %{conn: conn, regular_user: regular_user} do
+    test "button state reflects actual dev mode status after toggle", %{
+      conn: conn,
+      regular_user: regular_user
+    } do
       {:ok, view, _html} = live(conn, ~p"/admin/users")
 
       # Initially, user should have dev mode disabled
@@ -93,21 +107,29 @@ defmodule KumaSanKanjiWeb.Admin.UserAdminLiveTest do
       assert has_element?(view, "button[phx-value-user_id='#{regular_user.id}']", "Enabled")
 
       # Verify database was actually updated
-      {:ok, updated_user} = KumaSanKanji.Accounts.get_user_by_id(regular_user.id, authorize?: false)
+      {:ok, updated_user} =
+        KumaSanKanji.Accounts.get_user_by_id(regular_user.id, authorize?: false)
+
       assert updated_user.dev_mode_enabled, "Dev mode should be enabled in the database"
 
       # The button should now show "Enabled"
       assert has_element?(view, "button[phx-value-user_id='#{regular_user.id}']", "Enabled")
     end
 
-    test "button text and styling changes after dev mode toggle", %{conn: conn, regular_user: regular_user} do
+    test "button text and styling changes after dev mode toggle", %{
+      conn: conn,
+      regular_user: regular_user
+    } do
       {:ok, view, _html} = live(conn, ~p"/admin/users")
 
       # Initially, user should have dev mode disabled
       assert has_element?(view, "button[phx-value-user_id='#{regular_user.id}']", "Disabled")
 
       # Button should have gray styling for disabled state
-      assert has_element?(view, "button[class*='bg-gray-100'][class*='text-gray-800'][phx-value_user_id='#{regular_user.id}']")
+      assert has_element?(
+               view,
+               "button[class*='bg-gray-100'][class*='text-gray-800'][phx-value_user_id='#{regular_user.id}']"
+             )
 
       # Click to enable dev mode
       view
@@ -123,12 +145,19 @@ defmodule KumaSanKanjiWeb.Admin.UserAdminLiveTest do
       assert has_element?(view, "button[phx-value-user_id='#{regular_user.id}']", "Enabled")
 
       # Button should now have green styling for enabled state
-      assert has_element?(view, "button[phx-value-user_id='#{regular_user.id}'][class*='bg-green-100'][class*='text-green-800']")
+      assert has_element?(
+               view,
+               "button[phx-value-user_id='#{regular_user.id}'][class*='bg-green-100'][class*='text-green-800']"
+             )
 
       # The phx-value-enabled should now be "false" (to allow disabling)
       # Wait a bit for the state to update
       Process.sleep(100)
-      assert has_element?(view, "button[phx-value-user_id='#{regular_user.id}'][phx-value-enabled='false']")
+
+      assert has_element?(
+               view,
+               "button[phx-value-user_id='#{regular_user.id}'][phx-value-enabled='false']"
+             )
 
       # Click again to disable dev mode
       view
@@ -142,10 +171,16 @@ defmodule KumaSanKanjiWeb.Admin.UserAdminLiveTest do
       assert has_element?(view, "button[phx-value-user_id='#{regular_user.id}']", "Disabled")
 
       # Button should be back to gray styling
-      assert has_element?(view, "button[class*='bg-gray-100'][class*='text-gray-800'][phx-value_user_id='#{regular_user.id}']")
+      assert has_element?(
+               view,
+               "button[class*='bg-gray-100'][class*='text-gray-800'][phx-value_user_id='#{regular_user.id}']"
+             )
 
       # The phx-value-enabled should now be "true" (to allow enabling)
-      assert has_element?(view, "button[phx-value-user_id='#{regular_user.id}'][phx-value-enabled='true']")
+      assert has_element?(
+               view,
+               "button[phx-value-user_id='#{regular_user.id}'][phx-value-enabled='true']"
+             )
     end
   end
 
@@ -159,16 +194,20 @@ defmodule KumaSanKanjiWeb.Admin.UserAdminLiveTest do
       %{admin_user: admin_user, regular_user: regular_user}
     end
 
-    test "toggle_user_dev_mode enables dev mode", %{admin_user: admin_user, regular_user: regular_user} do
+    test "toggle_user_dev_mode enables dev mode", %{
+      admin_user: admin_user,
+      regular_user: regular_user
+    } do
       # User starts with dev mode disabled
       refute regular_user.dev_mode_enabled
 
       # Toggle to enable dev mode
-      {:ok, updated_user} = KumaSanKanji.Accounts.toggle_user_dev_mode(
-        regular_user,
-        %{enabled: true},
-        actor: admin_user
-      )
+      {:ok, updated_user} =
+        KumaSanKanji.Accounts.toggle_user_dev_mode(
+          regular_user,
+          %{enabled: true},
+          actor: admin_user
+        )
 
       # Verify dev mode is enabled
       assert updated_user.dev_mode_enabled
@@ -176,24 +215,26 @@ defmodule KumaSanKanjiWeb.Admin.UserAdminLiveTest do
 
     test "toggle_user_dev_mode disables dev mode", %{admin_user: admin_user} do
       # Create a user with dev mode enabled
-      user = KumaSanKanji.Accounts.User
-      |> Ash.Changeset.for_create(:create_for_test, %{
-        email: "devuser@example.com",
-        username: "devuser",
-        admin: false,
-        dev_mode_enabled: true
-      })
-      |> Ash.create!(authorize?: false)
+      user =
+        KumaSanKanji.Accounts.User
+        |> Ash.Changeset.for_create(:create_for_test, %{
+          email: "devuser@example.com",
+          username: "devuser",
+          admin: false,
+          dev_mode_enabled: true
+        })
+        |> Ash.create!(authorize?: false)
 
       # User starts with dev mode enabled
       assert user.dev_mode_enabled
 
       # Toggle to disable dev mode
-      {:ok, updated_user} = KumaSanKanji.Accounts.toggle_user_dev_mode(
-        user,
-        %{enabled: false},
-        actor: admin_user
-      )
+      {:ok, updated_user} =
+        KumaSanKanji.Accounts.toggle_user_dev_mode(
+          user,
+          %{enabled: false},
+          actor: admin_user
+        )
 
       # Verify dev mode is disabled
       refute updated_user.dev_mode_enabled
@@ -223,7 +264,10 @@ defmodule KumaSanKanjiWeb.Admin.UserAdminLiveTest do
       end
     end
 
-    test "toggle_user_dev_mode requires enabled argument", %{admin_user: admin_user, regular_user: regular_user} do
+    test "toggle_user_dev_mode requires enabled argument", %{
+      admin_user: admin_user,
+      regular_user: regular_user
+    } do
       # Should raise error when enabled argument is missing
       assert_raise Ash.Error.Invalid, fn ->
         KumaSanKanji.Accounts.toggle_user_dev_mode(
@@ -234,7 +278,10 @@ defmodule KumaSanKanjiWeb.Admin.UserAdminLiveTest do
       end
     end
 
-    test "toggle_user_dev_mode validates enabled argument type", %{admin_user: admin_user, regular_user: regular_user} do
+    test "toggle_user_dev_mode validates enabled argument type", %{
+      admin_user: admin_user,
+      regular_user: regular_user
+    } do
       # Should raise error when enabled argument is not a boolean
       assert_raise Ash.Error.Invalid, fn ->
         KumaSanKanji.Accounts.toggle_user_dev_mode(

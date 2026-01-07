@@ -3,13 +3,20 @@ defmodule KumaSanKanjiWeb.ExploreStrokeOrderTest do
   import Phoenix.LiveViewTest
 
   setup do
-    {:ok, _kanji} = KumaSanKanji.Domain.create_kanji(%{character: "日", grade: 1, stroke_count: 4, jlpt_level: 5})
+    {:ok, _kanji} =
+      KumaSanKanji.Domain.create_kanji(%{
+        character: "日",
+        grade: 1,
+        stroke_count: 4,
+        jlpt_level: 5
+      })
+
     {:ok, conn: build_conn()}
   end
 
   test "toggle practice mode in explore renders tracing canvas", %{conn: conn} do
     {:ok, view, _html} = live(conn, ~p"/explore")
-    
+
     # First show stroke order
     view |> element("button", "Show Stroke Order") |> render_click()
     assert has_element?(view, "#explore-stroke-order")

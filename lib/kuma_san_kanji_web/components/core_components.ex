@@ -249,20 +249,30 @@ defmodule KumaSanKanjiWeb.CoreComponents do
 
   # Private function to generate button classes based on variant and size
   defp button_classes(variant, size) do
-    base_classes = "phx-submit-loading:opacity-75 transition-all duration-300 font-wabi font-medium rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
+    base_classes =
+      "phx-submit-loading:opacity-75 transition-all duration-300 font-wabi font-medium rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
 
-    size_classes = case size do
-      "sm" -> "px-4 py-2 text-sm"
-      "md" -> "px-6 py-3 text-base"
-      "lg" -> "px-8 py-4 text-lg"
-    end
+    size_classes =
+      case size do
+        "sm" -> "px-4 py-2 text-sm"
+        "md" -> "px-6 py-3 text-base"
+        "lg" -> "px-8 py-4 text-lg"
+      end
 
-    variant_classes = case variant do
-      "primary" -> "btn-wabi-accent bg-wabi-hok_blue text-wabi-cream hover:bg-wabi-hok_blue_dark focus:ring-wabi-hok_blue border border-wabi-border"
-      "secondary" -> "btn-wabi bg-wabi-stone text-wabi-charcoal hover:bg-wabi-stone/80 focus:ring-wabi-stone border border-wabi-border"
-      "accent" -> "btn-wabi-accent bg-wabi-rust text-wabi-cream hover:bg-wabi-rust/80 focus:ring-wabi-rust border border-wabi-border"
-      "danger" -> "btn-wabi bg-red-500 text-white hover:bg-red-600 focus:ring-red-500 border border-red-400"
-    end
+    variant_classes =
+      case variant do
+        "primary" ->
+          "btn-wabi-accent bg-wabi-hok_blue text-wabi-cream hover:bg-wabi-hok_blue_dark focus:ring-wabi-hok_blue border border-wabi-border"
+
+        "secondary" ->
+          "btn-wabi bg-wabi-stone text-wabi-charcoal hover:bg-wabi-stone/80 focus:ring-wabi-stone border border-wabi-border"
+
+        "accent" ->
+          "btn-wabi-accent bg-wabi-rust text-wabi-cream hover:bg-wabi-rust/80 focus:ring-wabi-rust border border-wabi-border"
+
+        "danger" ->
+          "btn-wabi bg-red-500 text-white hover:bg-red-600 focus:ring-red-500 border border-red-400"
+      end
 
     [base_classes, size_classes, variant_classes]
   end
@@ -366,7 +376,7 @@ defmodule KumaSanKanjiWeb.CoreComponents do
         {@rest}
       >
         <option :if={@prompt} value="">{@prompt}</option>
-         {Phoenix.HTML.Form.options_for_select(@options, @value)}
+        {Phoenix.HTML.Form.options_for_select(@options, @value)}
       </select>
 
       <.error :for={msg <- @errors}>{msg}</.error>
@@ -378,7 +388,7 @@ defmodule KumaSanKanjiWeb.CoreComponents do
     ~H"""
     <div>
       <.label for={@id}>{@label}</.label>
-       <textarea
+      <textarea
         id={@id}
         name={@name}
         class={[

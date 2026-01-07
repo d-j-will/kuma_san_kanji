@@ -9,6 +9,7 @@ defmodule KumaSanKanjiWeb.ExploreLive do
     total_kanji = KumaSanKanji.Kanji.count_all!()
     user = socket.assigns[:current_user]
     is_authenticated = user != nil
+
     socket =
       socket
       |> assign(:show_stroke_order, false)
@@ -86,21 +87,25 @@ defmodule KumaSanKanjiWeb.ExploreLive do
         radical = kanji.radical
         progress = if user, do: load_user_progress(user.id, kanji.id), else: nil
 
-        socket = assign(socket,
-          kanji: kanji,
-          current_offset: new_offset,
-          thematic_info: thematic_info,
-          learning_meta: learning_meta,
-          usage_examples: usage_examples,
-          radical: radical,
-          progress: progress,
-          show_tracing: false,
-          note_form: to_form(%{"notes" => if(progress, do: progress.notes, else: "")})
-        )
+        socket =
+          assign(socket,
+            kanji: kanji,
+            current_offset: new_offset,
+            thematic_info: thematic_info,
+            learning_meta: learning_meta,
+            usage_examples: usage_examples,
+            radical: radical,
+            progress: progress,
+            show_tracing: false,
+            note_form: to_form(%{"notes" => if(progress, do: progress.notes, else: "")})
+          )
 
         socket =
           if socket.assigns.show_stroke_order && kanji && kanji.character do
-            Phoenix.LiveView.push_event(socket, "stroke_order_restart", %{kanji: kanji.character, mode: "brush"})
+            Phoenix.LiveView.push_event(socket, "stroke_order_restart", %{
+              kanji: kanji.character,
+              mode: "brush"
+            })
           else
             socket
           end
@@ -133,9 +138,11 @@ defmodule KumaSanKanjiWeb.ExploreLive do
                    socket
                    |> assign(:progress, updated)
                    |> put_flash(:info, "Note saved!")}
+
                 {:error, _} ->
                   {:noreply, put_flash(socket, :error, "Failed to save note.")}
               end
+
             {:error, _} ->
               {:noreply, put_flash(socket, :error, "Failed to initialize progress.")}
           end
@@ -147,6 +154,7 @@ defmodule KumaSanKanjiWeb.ExploreLive do
                socket
                |> assign(:progress, updated)
                |> put_flash(:info, "Note saved!")}
+
             {:error, _} ->
               {:noreply, put_flash(socket, :error, "Failed to save note.")}
           end
@@ -165,12 +173,17 @@ defmodule KumaSanKanjiWeb.ExploreLive do
   def handle_event("toggle_stroke_order", _params, socket) do
     new_val = !socket.assigns.show_stroke_order
     socket = StrokeOrderEvents.toggle(socket)
+
     socket =
       if new_val && socket.assigns.kanji && socket.assigns.kanji.character do
-        Phoenix.LiveView.push_event(socket, "stroke_order_restart", %{kanji: socket.assigns.kanji.character, mode: "brush"})
+        Phoenix.LiveView.push_event(socket, "stroke_order_restart", %{
+          kanji: socket.assigns.kanji.character,
+          mode: "brush"
+        })
       else
         socket
       end
+
     {:noreply, socket}
   end
 
@@ -178,7 +191,8 @@ defmodule KumaSanKanjiWeb.ExploreLive do
     {:noreply, StrokeOrderEvents.toggle_tracing(socket)}
   end
 
-  def handle_event(event, params = %{"kanji" => _}, socket) when event in ["stroke_order_restart", "stroke_order_step", "stroke_order_toggle_style"] do
+  def handle_event(event, params = %{"kanji" => _}, socket)
+      when event in ["stroke_order_restart", "stroke_order_step", "stroke_order_toggle_style"] do
     {:noreply, StrokeOrderEvents.handle(socket, event, params)}
   end
 

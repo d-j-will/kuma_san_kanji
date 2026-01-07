@@ -201,7 +201,8 @@ defmodule KumaSanKanji.SRS.IntegrationTest do
 
       # Verify we see the completion screen
       assert view |> has_element?("h2", "No Reviews Available")
-      assert render(view) =~ "You don" # Match the beginning to avoid HTML entity issues
+      # Match the beginning to avoid HTML entity issues
+      assert render(view) =~ "You don"
 
       # Test the restart button
       view |> element("button", "Check Again") |> render_click()
@@ -217,7 +218,8 @@ defmodule KumaSanKanji.SRS.IntegrationTest do
       progress: progress
     } do
       # Create another user using the test helper
-      other_user = create_simple_test_user("other-#{System.system_time(:millisecond)}@example.com")
+      other_user =
+        create_simple_test_user("other-#{System.system_time(:millisecond)}@example.com")
 
       # Try to access first user's progress - should return not_found to prevent info leakage
       result = Logic.record_review(progress.id, :correct, other_user.id, other_user)

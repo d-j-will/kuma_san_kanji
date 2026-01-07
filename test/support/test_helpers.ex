@@ -12,7 +12,7 @@ defmodule KumaSanKanji.TestHelpers do
   For now, using simple approach to bypass AshAuthentication policy issues.
   """
   def create_test_user(email \\ "test@example.com", username \\ nil) do
-    _username = username || (email |> String.split("@") |> List.first() |> String.downcase())
+    _username = username || email |> String.split("@") |> List.first() |> String.downcase()
 
     # For now, use the simple approach to bypass AshAuthentication policy issues
     create_simple_test_user(email)
@@ -77,7 +77,8 @@ defmodule KumaSanKanji.TestHelpers do
   Gets user from session for testing, bypassing authorization.
   """
   def get_test_user_from_session(user_id, token) when is_binary(user_id) and is_binary(token) do
-    with {:ok, %{"sub" => subject}, _signer} <- AshAuthentication.Jwt.verify(token, KumaSanKanji.Accounts.User),
+    with {:ok, %{"sub" => subject}, _signer} <-
+           AshAuthentication.Jwt.verify(token, KumaSanKanji.Accounts.User),
          true <- String.contains?(subject, user_id),
          {:ok, user} <- get_test_user(user_id) do
       {:ok, user}
@@ -94,13 +95,16 @@ defmodule KumaSanKanji.TestHelpers do
   """
   def log_in_user(conn, user) do
     # Try to get token from user metadata first (if it exists)
-    token = case user.__metadata__ do
-      %{token: token} when is_binary(token) -> token
-      _ ->
-        # Fallback: generate a valid JWT using AshAuthentication
-        {:ok, token, _claims} = AshAuthentication.Jwt.token_for_user(user)
-        token
-    end
+    token =
+      case user.__metadata__ do
+        %{token: token} when is_binary(token) ->
+          token
+
+        _ ->
+          # Fallback: generate a valid JWT using AshAuthentication
+          {:ok, token, _claims} = AshAuthentication.Jwt.token_for_user(user)
+          token
+      end
 
     conn
     |> Phoenix.ConnTest.init_test_session(%{})

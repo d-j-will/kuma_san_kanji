@@ -49,16 +49,31 @@ defmodule KumaSanKanjiWeb.RadicalLive do
               </div>
               <div class="flex-1">
                 <h2 class="text-2xl font-wabi-display mb-2">{@radical.meaning}</h2>
-                <p class="text-sm wabi-text mb-2">Bushu # {@radical.kangxi_index} • Strokes: {@radical.stroke_count}</p>
-                <p :if={@radical.japanese_name} class="text-sm wabi-text mb-2">Japanese: {@radical.japanese_name}</p>
-                <p :if={@radical.alt_forms != []} class="text-xs wabi-text mb-2">Alt Forms: {Enum.join(@radical.alt_forms, ", ")}</p>
-                <p :if={@radical.mnemonic} class="text-xs italic wabi-text mb-2">{@radical.mnemonic}</p>
+                <p class="text-sm wabi-text mb-2">
+                  Bushu # {@radical.kangxi_index} • Strokes: {@radical.stroke_count}
+                </p>
+                <p :if={@radical.japanese_name} class="text-sm wabi-text mb-2">
+                  Japanese: {@radical.japanese_name}
+                </p>
+                <p :if={@radical.alt_forms != []} class="text-xs wabi-text mb-2">
+                  Alt Forms: {Enum.join(@radical.alt_forms, ", ")}
+                </p>
+                <p :if={@radical.mnemonic} class="text-xs italic wabi-text mb-2">
+                  {@radical.mnemonic}
+                </p>
                 <p :if={@radical.notes} class="text-xs wabi-text mb-2">{@radical.notes}</p>
-                <p :if={@radical.high_yield} class="inline-block text-xs font-semibold px-2 py-1 bg-wabi-hok_blue/10 border border-wabi-hok_blue rounded text-base-content">High Yield</p>
+                <p
+                  :if={@radical.high_yield}
+                  class="inline-block text-xs font-semibold px-2 py-1 bg-wabi-hok_blue/10 border border-wabi-hok_blue rounded text-base-content"
+                >
+                  High Yield
+                </p>
               </div>
             </div>
             <div :if={@radical.kanjis != []} class="mt-8">
-              <h3 class="text-xl font-wabi-display mb-3 text-base-content">Kanji Using This Radical (showing up to 50)</h3>
+              <h3 class="text-xl font-wabi-display mb-3 text-base-content">
+                Kanji Using This Radical (showing up to 50)
+              </h3>
               <div class="flex flex-wrap gap-2">
                 <%= for k <- @radical.kanjis do %>
                   <span class="inline-flex items-center justify-center w-12 h-12 text-2xl font-wabi rounded bg-wabi-paper-aged border border-wabi-border">

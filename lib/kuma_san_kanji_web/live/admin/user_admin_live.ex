@@ -10,14 +10,17 @@ defmodule KumaSanKanjiWeb.Admin.UserAdminLive do
     if admin?(current_user) do
       # Try to list users with more specific error handling
       try do
-        users = KumaSanKanji.Accounts.list_users!(
-          load: [:dev_mode_enabled, :admin],
-          actor: current_user
-        )
+        users =
+          KumaSanKanji.Accounts.list_users!(
+            load: [:dev_mode_enabled, :admin],
+            actor: current_user
+          )
+
         {:ok, assign(socket, users: users)}
       rescue
         error ->
           IO.inspect(error, label: "Error loading users")
+
           {:ok,
            socket
            |> put_flash(:error, "Failed to load users: #{inspect(error)}")
@@ -40,17 +43,23 @@ defmodule KumaSanKanjiWeb.Admin.UserAdminLive do
     case KumaSanKanji.Accounts.get_user_by_id(user_id, actor: current_user) do
       {:ok, user} ->
         # Then toggle dev mode
-        case KumaSanKanji.Accounts.toggle_user_dev_mode(user, %{enabled: enabled}, actor: current_user) do
+        case KumaSanKanji.Accounts.toggle_user_dev_mode(user, %{enabled: enabled},
+               actor: current_user
+             ) do
           {:ok, _updated_user} ->
-            users = KumaSanKanji.Accounts.list_users!(
-              load: [:dev_mode_enabled, :admin],
-              actor: current_user
-            )
+            users =
+              KumaSanKanji.Accounts.list_users!(
+                load: [:dev_mode_enabled, :admin],
+                actor: current_user
+              )
 
             {:noreply,
              socket
              |> assign(users: users)
-             |> put_flash(:info, "Dev mode #{if enabled, do: "enabled", else: "disabled"} for user")}
+             |> put_flash(
+               :info,
+               "Dev mode #{if enabled, do: "enabled", else: "disabled"} for user"
+             )}
 
           {:error, _error} ->
             {:noreply, put_flash(socket, :error, "Failed to update user dev mode")}
@@ -96,19 +105,20 @@ defmodule KumaSanKanjiWeb.Admin.UserAdminLive do
               <tbody class="bg-white divide-y divide-gray-200">
                 <tr :for={user <- @users} class="hover:bg-gray-50">
                   <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                    <%= user.email %>
+                    {user.email}
                   </td>
                   <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    <%= user.username %>
+                    {user.username}
                   </td>
                   <td class="px-6 py-4 whitespace-nowrap">
                     <span class={[
                       "inline-flex px-2 py-1 text-xs font-semibold rounded-full",
                       if(user.admin,
                         do: "bg-purple-100 text-purple-800",
-                        else: "bg-gray-100 text-gray-800")
+                        else: "bg-gray-100 text-gray-800"
+                      )
                     ]}>
-                      <%= if user.admin, do: "Admin", else: "User" %>
+                      {if user.admin, do: "Admin", else: "User"}
                     </span>
                   </td>
                   <td class="px-6 py-4 whitespace-nowrap">
@@ -120,15 +130,16 @@ defmodule KumaSanKanjiWeb.Admin.UserAdminLive do
                         "inline-flex px-3 py-1 rounded-md text-sm font-medium transition-colors",
                         if(user.dev_mode_enabled,
                           do: "bg-green-100 text-green-800 hover:bg-green-200",
-                          else: "bg-gray-100 text-gray-800 hover:bg-gray-200")
+                          else: "bg-gray-100 text-gray-800 hover:bg-gray-200"
+                        )
                       ]}
                     >
-                      <%= if user.dev_mode_enabled, do: "Enabled", else: "Disabled" %>
+                      {if user.dev_mode_enabled, do: "Enabled", else: "Disabled"}
                     </button>
                   </td>
                   <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                     <%= if user.created_at do %>
-                      <%= Calendar.strftime(user.created_at, "%Y-%m-%d") %>
+                      {Calendar.strftime(user.created_at, "%Y-%m-%d")}
                     <% else %>
                       -
                     <% end %>
@@ -142,7 +153,11 @@ defmodule KumaSanKanjiWeb.Admin.UserAdminLive do
             <div class="flex">
               <div class="flex-shrink-0">
                 <svg class="h-5 w-5 text-blue-400" viewBox="0 0 20 20" fill="currentColor">
-                  <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
+                  <path
+                    fill-rule="evenodd"
+                    d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"
+                    clip-rule="evenodd"
+                  />
                 </svg>
               </div>
               <div class="ml-3">

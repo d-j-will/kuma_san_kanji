@@ -64,7 +64,16 @@ defmodule KumaSanKanji.Content.Seeds do
     ]
 
     Enum.map(groups, fn group_attrs ->
-      params = Map.take(group_attrs, [:name, :description, :color_code, :icon_name, :order_index, :parent_id])
+      params =
+        Map.take(group_attrs, [
+          :name,
+          :description,
+          :color_code,
+          :icon_name,
+          :order_index,
+          :parent_id
+        ])
+
       {:ok, created} = Content.create_thematic_group(params)
       created
     end)
@@ -90,7 +99,8 @@ defmodule KumaSanKanji.Content.Seeds do
     kanji_list =
       KumaSanKanji.Domain.list_kanjis!(load: [:meanings, :pronunciations, :example_sentences])
 
-    thematic_groups_map = Enum.into(thematic_groups_list, %{}, fn group -> {group.name, group} end)
+    thematic_groups_map =
+      Enum.into(thematic_groups_list, %{}, fn group -> {group.name, group} end)
 
     kanji_mapping = %{
       "一" => ["Numbers"],
@@ -140,7 +150,9 @@ defmodule KumaSanKanji.Content.Seeds do
               relevance_score: 1.0
             })
         else
-          IO.puts("Warning: Thematic group '#{group_name}' not found for kanji '#{kanji.character}'.")
+          IO.puts(
+            "Warning: Thematic group '#{group_name}' not found for kanji '#{kanji.character}'."
+          )
         end
       end)
 
@@ -153,12 +165,17 @@ defmodule KumaSanKanji.Content.Seeds do
             educational_context_id: context.id
           }
 
-          params = if kanji.jlpt_level, do: Map.put(params, :notes, "JLPT N#{kanji.jlpt_level}"), else: params
+          params =
+            if kanji.jlpt_level,
+              do: Map.put(params, :notes, "JLPT N#{kanji.jlpt_level}"),
+              else: params
 
           {:ok, _} = Content.create_kanji_learning_meta(params)
         end)
       else
-        IO.puts("Warning: Kanji '#{kanji.character}' (ID: #{kanji.id}) has no grade level, skipping KanjiLearningMeta creation.")
+        IO.puts(
+          "Warning: Kanji '#{kanji.character}' (ID: #{kanji.id}) has no grade level, skipping KanjiLearningMeta creation."
+        )
       end
     end)
   end

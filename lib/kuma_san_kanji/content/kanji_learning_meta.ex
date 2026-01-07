@@ -51,6 +51,7 @@ defmodule KumaSanKanji.Content.KanjiLearningMeta do
 
       prepare(fn query, _context ->
         context_id = Ash.Query.get_argument(query, :context_id)
+
         query
         |> Ash.Query.filter(educational_context_id == ^context_id)
         |> Ash.Query.sort(difficulty_score: :asc)

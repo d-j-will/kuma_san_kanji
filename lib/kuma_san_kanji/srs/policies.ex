@@ -17,7 +17,11 @@ defmodule KumaSanKanji.SRS.Policies do
 
     def describe(_), do: "owns the progress record"
 
-    def match?(%{actor: %{id: actor_id}, action: %{type: :create}, arguments: %{user_id: user_id}}, _context, _opts) do
+    def match?(
+          %{actor: %{id: actor_id}, action: %{type: :create}, arguments: %{user_id: user_id}},
+          _context,
+          _opts
+        ) do
       actor_id == user_id
     end
 

@@ -35,7 +35,10 @@ defmodule KumaSanKanji.Kanji.RadicalTest do
 
   test "unique constraint on kangxi_index" do
     create!()
-    assert_raise Ash.Error.Invalid, fn -> create!(%{glyph: "化", kangxi_index: @valid_attrs.kangxi_index}) end
+
+    assert_raise Ash.Error.Invalid, fn ->
+      create!(%{glyph: "化", kangxi_index: @valid_attrs.kangxi_index})
+    end
   end
 
   test "get_radical_by_glyph! finds the radical" do

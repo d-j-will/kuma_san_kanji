@@ -6,19 +6,21 @@ defmodule KumaSanKanjiWeb.ExploreLiveTest do
 
   describe "ExploreLive functionality" do
     setup do
-      kanji1 = KumaSanKanji.Domain.create_kanji!(%{
-        character: "水",
-        grade: 1,
-        stroke_count: 4,
-        jlpt_level: 5
-      })
+      kanji1 =
+        KumaSanKanji.Domain.create_kanji!(%{
+          character: "水",
+          grade: 1,
+          stroke_count: 4,
+          jlpt_level: 5
+        })
 
-      kanji2 = KumaSanKanji.Domain.create_kanji!(%{
-        character: "火",
-        grade: 1,
-        stroke_count: 4,
-        jlpt_level: 5
-      })
+      kanji2 =
+        KumaSanKanji.Domain.create_kanji!(%{
+          character: "火",
+          grade: 1,
+          stroke_count: 4,
+          jlpt_level: 5
+        })
 
       %{kanji1: kanji1, kanji2: kanji2}
     end
@@ -52,23 +54,25 @@ defmodule KumaSanKanjiWeb.ExploreLiveTest do
     end
 
     test "radical information displays when kanji has radical", %{conn: conn} do
-      radical = KumaSanKanji.Domain.create_radical!(%{
-        glyph: "氵",
-        kangxi_index: 85,
-        stroke_count: 3,
-        meaning: "water",
-        japanese_name: "さんずい"
-      })
+      radical =
+        KumaSanKanji.Domain.create_radical!(%{
+          glyph: "氵",
+          kangxi_index: 85,
+          stroke_count: 3,
+          meaning: "water",
+          japanese_name: "さんずい"
+        })
 
       existing_count = Ash.count!(KumaSanKanji.Kanji.Kanji, action: :read)
 
-      created = KumaSanKanji.Domain.create_kanji!(%{
-        character: "河",
-        grade: 2,
-        stroke_count: 8,
-        jlpt_level: 4,
-        radical_id: radical.id
-      })
+      created =
+        KumaSanKanji.Domain.create_kanji!(%{
+          character: "河",
+          grade: 2,
+          stroke_count: 8,
+          jlpt_level: 4,
+          radical_id: radical.id
+        })
 
       {:ok, view, _html} = live(conn, "/explore")
 

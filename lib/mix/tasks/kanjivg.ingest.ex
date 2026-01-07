@@ -12,22 +12,30 @@ defmodule Mix.Tasks.Kanjivg.Ingest do
     mix kanjivg.ingest --source ../kanjivg # Use local checkout
   """
 
-  @switches [all: :boolean, force: :boolean, limit: :integer, source: :string, concurrency: :integer, timeout: :integer]
+  @switches [
+    all: :boolean,
+    force: :boolean,
+    limit: :integer,
+    source: :string,
+    concurrency: :integer,
+    timeout: :integer
+  ]
 
   def run(args) do
     Mix.Task.run("app.start")
     {opts, _rest, _invalid} = OptionParser.parse(args, switches: @switches)
+
     opts =
       []
       |> maybe_put(:all?, opts[:all])
       |> maybe_put(:force?, opts[:force])
       |> maybe_put(:limit, opts[:limit])
-  |> maybe_put(:source_path, opts[:source])
-  |> maybe_put(:concurrency, opts[:concurrency])
-  |> maybe_put(:timeout, opts[:timeout])
+      |> maybe_put(:source_path, opts[:source])
+      |> maybe_put(:concurrency, opts[:concurrency])
+      |> maybe_put(:timeout, opts[:timeout])
 
-  {:ok, %{written: w, skipped: s, errors: e}} = KumaSanKanji.KanjiVG.Ingestion.ingest(opts)
-  Mix.shell().info("KanjiVG ingestion complete: written=#{w} skipped=#{s} errors=#{e}")
+    {:ok, %{written: w, skipped: s, errors: e}} = KumaSanKanji.KanjiVG.Ingestion.ingest(opts)
+    Mix.shell().info("KanjiVG ingestion complete: written=#{w} skipped=#{s} errors=#{e}")
   end
 
   defp maybe_put(acc, _k, nil), do: acc

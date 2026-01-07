@@ -32,16 +32,16 @@ defmodule KumaSanKanjiWeb.SettingsLiveTest do
       assert has_element?(view, "h2", "Profile Settings")
 
       # Switch to Appearance
-      view 
-      |> element("a", "Appearance") 
+      view
+      |> element("a", "Appearance")
       |> render_click()
 
       assert has_element?(view, "h2", "Appearance")
       assert render(view) =~ "Choose a theme"
 
       # Switch to Notifications
-      view 
-      |> element("a", "Notifications") 
+      view
+      |> element("a", "Notifications")
       |> render_click()
 
       assert has_element?(view, "h2", "Notification Preferences")

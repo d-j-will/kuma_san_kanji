@@ -19,11 +19,22 @@ defmodule KumaSanKanji.Domain do
     end
 
     resource(KumaSanKanji.Kanji.Radical) do
-      define :create_radical, action: :create
-      define :get_radical_by_glyph, action: :get_by_glyph, args: [:glyph], get?: true
-      define :get_radical_by_kangxi_index, action: :get_by_kangxi_index, args: [:kangxi_index], get?: true
-      define :get_radical_with_kanjis, action: :get_with_kanjis, args: [:kangxi_index], get?: true
-      define :list_radicals, action: :read
+      define(:create_radical, action: :create)
+      define(:get_radical_by_glyph, action: :get_by_glyph, args: [:glyph], get?: true)
+
+      define(:get_radical_by_kangxi_index,
+        action: :get_by_kangxi_index,
+        args: [:kangxi_index],
+        get?: true
+      )
+
+      define(:get_radical_with_kanjis,
+        action: :get_with_kanjis,
+        args: [:kangxi_index],
+        get?: true
+      )
+
+      define(:list_radicals, action: :read)
     end
 
     resource(KumaSanKanji.Kanji.Meaning) do

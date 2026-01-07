@@ -1,20 +1,50 @@
 defmodule KumaSanKanjiWeb.SettingsLive do
   use KumaSanKanjiWeb, :live_view
-  
+
   @themes [
-    "light", "dark", "cupcake", "bumblebee", "emerald", "corporate", "synthwave", "retro", "cyberpunk", 
-    "valentine", "halloween", "garden", "forest", "aqua", "lofi", "pastel", "fantasy", "wireframe", 
-    "black", "luxury", "dracula", "cmyk", "autumn", "business", "acid", "lemonade", "night", "coffee", 
-    "winter", "dim", "nord", "sunset"
+    "light",
+    "dark",
+    "cupcake",
+    "bumblebee",
+    "emerald",
+    "corporate",
+    "synthwave",
+    "retro",
+    "cyberpunk",
+    "valentine",
+    "halloween",
+    "garden",
+    "forest",
+    "aqua",
+    "lofi",
+    "pastel",
+    "fantasy",
+    "wireframe",
+    "black",
+    "luxury",
+    "dracula",
+    "cmyk",
+    "autumn",
+    "business",
+    "acid",
+    "lemonade",
+    "night",
+    "coffee",
+    "winter",
+    "dim",
+    "nord",
+    "sunset"
   ]
 
   def mount(_params, _session, socket) do
     user = socket.assigns.current_user
-    
+
     # Initialize form with current user data
-    form = AshPhoenix.Form.for_update(user, :update_settings, as: "user_settings", actor: user) |> to_form()
-    
-    {:ok, 
+    form =
+      AshPhoenix.Form.for_update(user, :update_settings, as: "user_settings", actor: user)
+      |> to_form()
+
+    {:ok,
      socket
      |> assign(:page_title, "Settings")
      |> assign(:form, form)
@@ -37,7 +67,11 @@ defmodule KumaSanKanjiWeb.SettingsLive do
         {:noreply,
          socket
          |> assign(:current_user, user)
-         |> assign(:form, AshPhoenix.Form.for_update(user, :update_settings, as: "user_settings", actor: user) |> to_form())
+         |> assign(
+           :form,
+           AshPhoenix.Form.for_update(user, :update_settings, as: "user_settings", actor: user)
+           |> to_form()
+         )
          |> put_flash(:info, "Settings updated successfully.")
          |> push_event("theme-changed", %{theme: user.theme})}
 
@@ -45,20 +79,24 @@ defmodule KumaSanKanjiWeb.SettingsLive do
         {:noreply, assign(socket, :form, to_form(form))}
     end
   end
-  
+
   # Instant theme preview when clicking a theme button
   def handle_event("set_theme", %{"theme" => theme}, socket) do
     params = %{"theme" => theme}
-    
+
     # Submit just the theme change
     case AshPhoenix.Form.submit(socket.assigns.form, params: params) do
       {:ok, user} ->
         {:noreply,
          socket
          |> assign(:current_user, user)
-         |> assign(:form, AshPhoenix.Form.for_update(user, :update_settings, as: "user_settings", actor: user) |> to_form())
+         |> assign(
+           :form,
+           AshPhoenix.Form.for_update(user, :update_settings, as: "user_settings", actor: user)
+           |> to_form()
+         )
          |> push_event("theme-changed", %{theme: theme})}
-         
+
       {:error, form} ->
         {:noreply, assign(socket, :form, to_form(form))}
     end

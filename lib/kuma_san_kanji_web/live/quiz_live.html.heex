@@ -285,20 +285,34 @@
                     <span class="kanji-display select-none">{@current_kanji.character}</span>
                   </div>
                   <div class="flex gap-2">
-                    <button type="button" class="mt-2 text-xs underline text-wabi-accent"
-            phx-click="toggle_stroke_order" aria-expanded={@show_stroke_order || false}>
+                    <button
+                      type="button"
+                      class="mt-2 text-xs underline text-wabi-accent"
+                      phx-click="toggle_stroke_order"
+                      aria-expanded={@show_stroke_order || false}
+                    >
                       {if @show_stroke_order, do: "Hide Stroke Order", else: "Show Stroke Order"}
                     </button>
                     <%= if @show_stroke_order do %>
-                      <button type="button" class="mt-2 text-xs underline text-wabi-hok_blue"
-              phx-click="toggle_tracing" aria-expanded={@show_tracing}>
+                      <button
+                        type="button"
+                        class="mt-2 text-xs underline text-wabi-hok_blue"
+                        phx-click="toggle_tracing"
+                        aria-expanded={@show_tracing}
+                      >
                         {if @show_tracing, do: "Disable Tracing", else: "Practice Writing"}
                       </button>
                     <% end %>
                   </div>
-                  <span id="stroke-order-toggle-quiz" data-scope="quiz" data-current={@show_stroke_order}
+                  <span
+                    id="stroke-order-toggle-quiz"
+                    data-scope="quiz"
+                    data-current={@show_stroke_order}
                     data-initial={@show_stroke_order}
-                    phx-hook="StrokeOrderToggle" class="hidden"></span>
+                    phx-hook="StrokeOrderToggle"
+                    class="hidden"
+                  >
+                  </span>
                 </div>
               </div>
             </div>
@@ -310,8 +324,11 @@
                     id="quiz-stroke-order"
                     kanji={@current_kanji.character}
                     animate?={true}
-                    mode={if @show_tracing, do: :trace, else: :view} />
-                  <p class="mt-2 text-[10px] text-wabi-stone/60">Stroke order data © KanjiVG (CC BY-SA 3.0)</p>
+                    mode={if @show_tracing, do: :trace, else: :view}
+                  />
+                  <p class="mt-2 text-[10px] text-wabi-stone/60">
+                    Stroke order data © KanjiVG (CC BY-SA 3.0)
+                  </p>
                 </div>
               <% end %>
               <!-- Kanji metadata -->
@@ -443,8 +460,12 @@
 
                 <%= if @current_progress && @current_progress.notes do %>
                   <div class="mb-6 p-4 bg-wabi-paper-aged rounded-md border border-wabi-border text-left">
-                    <span class="text-xs font-semibold text-wabi-charcoal/60 uppercase tracking-wider block mb-1">Your Notes</span>
-                    <p class="text-sm font-wabi text-wabi-charcoal whitespace-pre-wrap">{@current_progress.notes}</p>
+                    <span class="text-xs font-semibold text-wabi-charcoal/60 uppercase tracking-wider block mb-1">
+                      Your Notes
+                    </span>
+                    <p class="text-sm font-wabi text-wabi-charcoal whitespace-pre-wrap">
+                      {@current_progress.notes}
+                    </p>
                   </div>
                 <% end %>
                 <%!-- Expandable Details Section --%>
@@ -458,7 +479,7 @@
                       aria-controls="feedback-details-panel"
                     >
                       <span class="text-sm font-wabi-display font-semibold text-wabi-rust">
-                        <%= if @feedback_details_expanded, do: "Hide", else: "Show" %> Details
+                        {if @feedback_details_expanded, do: "Hide", else: "Show"} Details
                       </span>
                       <svg
                         class={[
@@ -514,7 +535,9 @@
                                   pronunciation.type == "on" && "bg-blue-100 text-blue-800",
                                   pronunciation.type == "kun" && "bg-green-100 text-green-800"
                                 ]}>
-                                  <span class="text-xs opacity-70 uppercase">{pronunciation.type}</span>
+                                  <span class="text-xs opacity-70 uppercase">
+                                    {pronunciation.type}
+                                  </span>
                                   {pronunciation.value}
                                 </span>
                               <% end %>
@@ -624,7 +647,9 @@
           <!-- Session progress -->
           <div class="wabi-paper wabi-texture border border-wabi-border p-4 text-center">
             <p class="text-sm font-wabi text-wabi-charcoal/70">
-              Session: {@answers_count} answers submitted • Time: {format_duration(@session_start_time)}
+              Session: {@answers_count} answers submitted • Time: {format_duration(
+                @session_start_time
+              )}
             </p>
           </div>
         </div>

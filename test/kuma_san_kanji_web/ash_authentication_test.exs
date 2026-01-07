@@ -46,7 +46,9 @@ defmodule KumaSanKanjiWeb.AshAuthenticationTest do
 
     test "rejects invalid session data", %{user: user} do
       assert {:error, :invalid_session} = get_test_user_from_session(user.id, "invalid_token")
-      assert {:error, :invalid_session} = get_test_user_from_session("invalid_id", "invalid_token")
+
+      assert {:error, :invalid_session} =
+               get_test_user_from_session("invalid_id", "invalid_token")
     end
   end
 

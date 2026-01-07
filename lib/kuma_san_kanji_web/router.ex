@@ -15,7 +15,6 @@ defmodule KumaSanKanjiWeb.Router do
     plug :load_from_session
   end
 
-
   pipeline :api do
     plug :accepts, ["json"]
     plug :load_from_bearer
@@ -33,22 +32,24 @@ defmodule KumaSanKanjiWeb.Router do
       on_mount: {KumaSanKanjiWeb.UserLiveAuth, :live_user_optional} do
       live "/", PageLive
       live "/explore", ExploreLive
-  live "/radicals/:id", RadicalLive
-  live "/credits", CreditsLive
+      live "/radicals/:id", RadicalLive
+      live "/credits", CreditsLive
     end
 
-    auth_routes AuthController, KumaSanKanji.Accounts.User, path: "/auth"
-    sign_out_route AuthController
+    auth_routes(AuthController, KumaSanKanji.Accounts.User, path: "/auth")
+    sign_out_route(AuthController)
 
     # Remove these if you'd like to use your own authentication views
-    sign_in_route register_path: "/register",
-                  reset_path: "/reset",
-                  auth_routes_prefix: "/auth",
-                  on_mount: [{KumaSanKanjiWeb.UserLiveAuth, :live_no_user}],
-                  overrides: [
-                    KumaSanKanjiWeb.AuthOverrides,
-                    AshAuthentication.Phoenix.Overrides.Default
-                  ]
+    sign_in_route(
+      register_path: "/register",
+      reset_path: "/reset",
+      auth_routes_prefix: "/auth",
+      on_mount: [{KumaSanKanjiWeb.UserLiveAuth, :live_no_user}],
+      overrides: [
+        KumaSanKanjiWeb.AuthOverrides,
+        AshAuthentication.Phoenix.Overrides.Default
+      ]
+    )
   end
 
   # Protected routes that require authentication

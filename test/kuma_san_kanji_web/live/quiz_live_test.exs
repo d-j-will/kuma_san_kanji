@@ -1,5 +1,4 @@
 defmodule KumaSanKanjiWeb.QuizLiveTest do
-
   use KumaSanKanjiWeb.ConnCase, async: false
   import Phoenix.LiveViewTest
   import KumaSanKanji.TestHelpers
@@ -14,44 +13,50 @@ defmodule KumaSanKanjiWeb.QuizLiveTest do
     setup_auth_mocks(user)
 
     # Create test kanji
-    {:ok, kanji} = KumaSanKanji.Domain.create_kanji(%{
-      character: "木",
-      grade: 1,
-      stroke_count: 4,
-      jlpt_level: 5
-    })
+    {:ok, kanji} =
+      KumaSanKanji.Domain.create_kanji(%{
+        character: "木",
+        grade: 1,
+        stroke_count: 4,
+        jlpt_level: 5
+      })
 
     # Add meanings
-    {:ok, _} = KumaSanKanji.Domain.create_meaning(%{
-      kanji_id: kanji.id,
-      value: "tree"
-    })
+    {:ok, _} =
+      KumaSanKanji.Domain.create_meaning(%{
+        kanji_id: kanji.id,
+        value: "tree"
+      })
 
     # Add pronunciations
-    {:ok, _} = KumaSanKanji.Domain.create_pronunciation(%{
-      kanji_id: kanji.id,
-      value: "き",
-      type: :kun
-    })
+    {:ok, _} =
+      KumaSanKanji.Domain.create_pronunciation(%{
+        kanji_id: kanji.id,
+        value: "き",
+        type: :kun
+      })
 
-    {:ok, _} = KumaSanKanji.Domain.create_pronunciation(%{
-      kanji_id: kanji.id,
-      value: "モク",
-      type: :on
-    })
+    {:ok, _} =
+      KumaSanKanji.Domain.create_pronunciation(%{
+        kanji_id: kanji.id,
+        value: "モク",
+        type: :on
+      })
 
     # Add example sentences for testing detailed feedback
-    {:ok, _} = KumaSanKanji.Domain.create_example_sentence(%{
-      kanji_id: kanji.id,
-      japanese: "木が好きです。",
-      translation: "I like trees."
-    })
+    {:ok, _} =
+      KumaSanKanji.Domain.create_example_sentence(%{
+        kanji_id: kanji.id,
+        japanese: "木が好きです。",
+        translation: "I like trees."
+      })
 
-    {:ok, _} = KumaSanKanji.Domain.create_example_sentence(%{
-      kanji_id: kanji.id,
-      japanese: "大きい木",
-      translation: "A big tree"
-    })
+    {:ok, _} =
+      KumaSanKanji.Domain.create_example_sentence(%{
+        kanji_id: kanji.id,
+        japanese: "大きい木",
+        translation: "A big tree"
+      })
 
     # Initialize SRS progress
     {:ok, progress} = Logic.initialize_progress(user.id, kanji.id, user)
