@@ -770,17 +770,6 @@ defmodule KumaSanKanjiWeb.QuizLive do
 
   defp format_relative_time(nil), do: "N/A"
 
-  defp format_duration(start_time) when is_integer(start_time) do
-    diff = System.system_time(:millisecond) - start_time
-    seconds = div(diff, 1000)
-    minutes = div(seconds, 60)
-    seconds = rem(seconds, 60)
-
-    "#{minutes}:#{String.pad_leading(Integer.to_string(seconds), 2, "0")}"
-  end
-
-  defp format_duration(_), do: "0:00"
-
   defp format_relative_time(%DateTime{} = dt) do
     now = DateTime.utc_now()
 
@@ -808,4 +797,15 @@ defmodule KumaSanKanjiWeb.QuizLive do
       end
     end
   end
+
+  defp format_duration(start_time) when is_integer(start_time) do
+    diff = System.system_time(:millisecond) - start_time
+    seconds = div(diff, 1000)
+    minutes = div(seconds, 60)
+    seconds = rem(seconds, 60)
+
+    "#{minutes}:#{String.pad_leading(Integer.to_string(seconds), 2, "0")}"
+  end
+
+  defp format_duration(_), do: "0:00"
 end
