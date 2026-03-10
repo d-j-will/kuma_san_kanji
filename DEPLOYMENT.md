@@ -1,227 +1,131 @@
-# Deployment Guide - PostgreSQL on Fly.io
+# Deployment Guide
 
-This guide explains how to deploy KumaSanKanji to Fly.io using PostgreSQL instead of SQLite.
+Production runs a single app container behind a shared Caddy reverse proxy on a Docker host (Proxmox VM). The CI/CD pipeline builds a Docker image, pushes to GHCR, SSHes into the server via Tailscale, and deploys with `docker-compose.prod.yml`.
 
 ## Prerequisites
 
-1. **Install flyctl**: Visit [https://fly.io/docs/hands-on/install-flyctl/](https://fly.io/docs/hands-on/install-flyctl/)
-2. **Login to Fly.io**: Run `fly auth login`
-3. **Have PostgreSQL ready**: Either use Fly's managed PostgreSQL or an external provider
+- Docker host running on Proxmox with Docker + Docker Compose
+- Caddy container running on the host (shared with other apps)
+- `proxy` Docker network already created (`docker network create proxy`)
+- Tailscale configured on both the Docker host and GitHub Actions
 
-## Quick Deployment
+## 1. Cloudflare Setup
 
-### Option 1: Using the Deploy Script (Recommended)
+1. **Add DNS record** for `kanji.davewil.dev`:
+   - Type: `A` (or `CNAME`)
+   - Name: `kanji`
+   - Content: your server's public IP (or Tailscale IP if using Tailscale Funnel)
+   - Proxy status: DNS only (grey cloud) — Caddy handles TLS, not Cloudflare
 
-**On Linux/Mac:**
+2. **Create API Token** for Caddy DNS challenge (if not already created for slackex):
+   - Go to: Cloudflare Dashboard > My Profile > API Tokens
+   - Create Token > Custom Token
+   - Permissions: `Zone > DNS > Edit`
+   - Zone Resources: `Include > Specific zone > davewil.dev`
+   - Copy the token — this becomes the `CADDY_CF_TOKEN` secret
 
-```bash
-chmod +x scripts/deploy-fly.sh
-./scripts/deploy-fly.sh
-```
+## 2. GitHub Actions Secrets
 
-**On Windows:**
+Go to: GitHub repo > Settings > Secrets and variables > Actions > New repository secret
 
-```powershell
-.\scripts\deploy-fly.ps1
-```
+### Required secrets
 
-### Option 2: Manual Deployment
+| Secret | Description | How to get it |
+|--------|-------------|---------------|
+| `DEPLOY_SSH_KEY` | Ed25519 private key for SSH to Docker host | `ssh-keygen -t ed25519`, add public key to host's `~/.ssh/authorized_keys` |
+| `DEPLOY_HOST` | Tailscale IP or hostname of the Docker host | `tailscale ip -4` on the host (e.g., `100.x.y.z`) |
+| `TS_OAUTH_CLIENT_ID` | Tailscale OAuth client ID for CI | Tailscale Admin > Settings > OAuth clients > Generate |
+| `TAILSCALE_AUTHKEY` | Tailscale OAuth secret | Same as above (the secret paired with the client ID) |
+| `CADDY_CF_TOKEN` | Cloudflare API token for DNS-01 TLS challenge | See Cloudflare setup above |
 
-1. **Create PostgreSQL Database** (if not already created):
+### Shared with slackex
 
-   ```bash
-   fly postgres create --name kuma-san-kanji-db --region lhr --vm-size shared-cpu-1x --initial-cluster-size 1
-   ```
+If deploying to the same host as slackex, these secrets can have the same values:
+- `DEPLOY_SSH_KEY`
+- `DEPLOY_HOST`
+- `TS_OAUTH_CLIENT_ID`
+- `TAILSCALE_AUTHKEY`
+- `CADDY_CF_TOKEN`
 
-2. **Get Database Connection String**:
+`GITHUB_TOKEN` is provided automatically by GitHub Actions for GHCR access.
 
-   ```bash
-   fly postgres connect --app kuma-san-kanji-db
-   ```
+## 3. Server Setup (first deploy only)
 
-   Note the connection details for the next step.
-
-3. **Set Application Secrets**:
-
-   ```bash
-   # Replace with your actual database credentials
-   fly secrets set DATABASE_URL="postgresql://username:password@hostname:port/database_name"
-   
-   # Generate and set secret key base
-   fly secrets set SECRET_KEY_BASE="$(openssl rand -base64 64)"
-   ```
-
-4. **Deploy the Application**:
-
-   ```bash
-   fly deploy
-   ```
-
-## Configuration Changes Made
-
-### 1. Updated `fly.toml`
-
-- Removed SQLite-specific configuration (`DATABASE_PATH`, mounts)
-- Added `release_command` to run migrations and seeding on deploy
-- Removed the volume mount (no longer needed for PostgreSQL)
-
-### 2. Updated Release Module (`lib/kuma_san_kanji/release.ex`)
-
-- Changed `reset_and_seed/0` to work with PostgreSQL instead of SQLite
-- Uses PostgreSQL-specific queries to drop tables with CASCADE
-
-### 3. Created Release Scripts
-
-- `rel/overlays/bin/migrate_and_seed` - Runs migrations and seeding
-- `rel/overlays/bin/migrate_and_seed.bat` - Windows version
-
-### 4. Updated Dockerfile
-
-- Includes entrypoint script that runs migrations and seeding before starting the server
-- Copies priv directory for migrations and seeds
-
-## Database Migration Process
-
-When you deploy, the following happens automatically:
-
-1. **Build Phase**: Application is compiled with PostgreSQL configuration
-2. **Release Phase**: `migrate_and_seed` script runs:
-   - Executes all pending migrations
-   - Seeds the database with initial kanji data
-3. **Runtime Phase**: Application starts and serves requests
-
-## Environment Variables
-
-The application expects these environment variables in production:
-
-- `DATABASE_URL`: PostgreSQL connection string
-- `SECRET_KEY_BASE`: Secret key for encryption (auto-generated)
-- `PHX_HOST`: Host name (set to `kuma-san-kanji.fly.dev`)
-- `PORT`: Server port (set to `8080`)
-- `PHX_SERVER`: Enable Phoenix server (set to `true`)
-
-## Monitoring and Maintenance
-
-### View Logs
+SSH into the Docker host and run:
 
 ```bash
-fly logs
+# Create app directory
+mkdir -p /root/kuma_san_kanji
+
+# Ensure the shared proxy network exists (skip if slackex already created it)
+docker network create proxy 2>/dev/null || true
+
+# Create the .env file with production secrets
+cat > /root/kuma_san_kanji/.env << 'EOF'
+POSTGRES_PASSWORD=<generate: openssl rand -hex 32>
+SECRET_KEY_BASE=<generate: mix phx.gen.secret>
+TOKEN_SIGNING_SECRET=<generate: mix phx.gen.secret>
+AUTH0_CLIENT_ID=<from Auth0 dashboard>
+AUTH0_CLIENT_SECRET=<from Auth0 dashboard>
+AUTH0_DOMAIN=<e.g., https://your-tenant.auth0.com>
+ADMIN_EMAIL=<your admin email>
+EOF
+
+chmod 600 /root/kuma_san_kanji/.env
 ```
 
-### SSH into Application
+## 4. Auth0 Setup
+
+1. Create a new Application in Auth0 Dashboard (Regular Web Application)
+2. Set **Allowed Callback URLs**: `https://kanji.davewil.dev/auth/user/auth0/callback`
+3. Set **Allowed Logout URLs**: `https://kanji.davewil.dev`
+4. Copy Client ID, Client Secret, and Domain into the server `.env` file
+
+## 5. Deploy Process
+
+Deploys trigger on version tags:
 
 ```bash
-fly ssh console
+# Check latest tag
+git tag --sort=-creatordate | head -5
+
+# Tag and push
+git tag v0.1.0
+git push && git push --tags
 ```
 
-### Connect to PostgreSQL
+The GitHub Actions workflow will:
+1. Run quality checks (compile, format, test, audit)
+2. Build Docker image and push to `ghcr.io/davewil/kuma-san-kanji`
+3. SSH into the Docker host via Tailscale
+4. SCP `docker-compose.prod.yml` to the server
+5. Append `kanji.davewil.dev` to Caddy config (first deploy only)
+6. Pull image, run migrations, setup admin, recreate containers
+7. Restart Caddy and smoke test `/health`
+
+## 6. First Deploy: Seed Data
+
+After the first deploy, seed the database and run KanjiVG ingestion:
 
 ```bash
-fly postgres connect --app kuma-san-kanji-db
+ssh root@<DEPLOY_HOST>
+cd /root/kuma_san_kanji
+
+# Run seeds
+docker compose -f docker-compose.prod.yml run --rm app \
+  bin/kuma_san_kanji eval "KumaSanKanji.Release.seed()"
 ```
 
-### Check Application Status
+## Docker Compose Rules
 
-```bash
-fly status
-```
+- **Always use `docker compose pull`**, never bare `docker pull`
+- **Always pass `--force-recreate --no-build --remove-orphans`** to `docker compose up`
+- **Never define `build:` in `docker-compose.prod.yml`** — production uses pre-built GHCR images
 
-### Manual Migration (if needed)
+## Infrastructure
 
-```bash
-fly ssh console
-# Inside the container:
-/app/bin/kuma_san_kanji eval "KumaSanKanji.Release.migrate()"
-```
-
-### Manual Seeding (if needed)
-
-```bash
-fly ssh console
-# Inside the container:
-/app/bin/kuma_san_kanji eval "KumaSanKanji.Release.seed()"
-```
-
-## Rollback Process
-
-If you need to rollback a deployment:
-
-1. **Rollback Application**:
-
-   ```bash
-   fly releases
-   fly releases rollback <version>
-   ```
-
-2. **Rollback Database** (if schema changes were made):
-
-   ```bash
-   fly ssh console
-   /app/bin/kuma_san_kanji eval "KumaSanKanji.Release.rollback(KumaSanKanji.Repo, <version>)"
-   ```
-
-## Troubleshooting
-
-### Common Issues
-
-1. **Database Connection Errors**:
-   - Check `DATABASE_URL` is set correctly: `fly secrets list`
-   - Verify PostgreSQL app is running: `fly status --app kuma-san-kanji-db`
-
-2. **Migration Errors**:
-   - Check logs: `fly logs`
-   - SSH and run migrations manually
-   - Verify database schema with: `fly postgres connect --app kuma-san-kanji-db`
-
-3. **Seeding Errors**:
-   - Check if data already exists (seeding is idempotent)
-   - Run seeding manually: `fly ssh console` then eval the seed function
-
-### Useful Commands
-
-```bash
-# View all apps
-fly apps list
-
-# View secrets
-fly secrets list
-
-# Set a secret
-fly secrets set KEY=value
-
-# Remove a secret
-fly secrets unset KEY
-
-# View PostgreSQL status
-fly status --app kuma-san-kanji-db
-
-# PostgreSQL logs
-fly logs --app kuma-san-kanji-db
-
-# Scale application
-fly scale count 1
-
-# Update application configuration
-fly deploy
-```
-
-## Production Considerations
-
-1. **Backup Strategy**: Set up regular PostgreSQL backups
-2. **Monitoring**: Consider adding application monitoring
-3. **SSL**: PostgreSQL connections use SSL by default
-4. **Performance**: Monitor database performance and consider scaling
-5. **Security**: Regularly rotate secrets and update dependencies
-
-## Cost Optimization
-
-- **Shared CPU**: Using shared-cpu-1x for cost efficiency
-- **Auto-stop**: Machines auto-stop when idle to save costs
-- **Min Machines**: Set to 0 for maximum cost savings (cold starts acceptable)
-
-For production workloads, consider:
-
-- Dedicated CPU instances
-- Multiple regions for redundancy
-- Larger PostgreSQL instances
-- Connection pooling (PgBouncer)
+- **Caddy**: Shared with slackex at `/opt/caddy/Caddyfile`. The deploy appends the `kanji.davewil.dev` block on first deploy.
+- **Proxy network**: The `proxy` Docker network connects Caddy to app containers across compose stacks. The app joins with alias `kanji-app`.
+- **Postgres**: Dedicated container for kuma_san_kanji (not shared with slackex).
+- **Observability**: OTEL collector, Prometheus, and Grafana run in the slackex stack. To reuse them, add OTEL env vars to the app service later.
+- **Portainer**: Running on port 9443 for Docker management.

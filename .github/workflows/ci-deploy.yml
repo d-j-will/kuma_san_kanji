@@ -1,0 +1,216 @@
+name: CI / Deploy
+
+on:
+  push:
+    branches: [main]
+    tags: ["v*"]
+  pull_request:
+    branches: [main]
+
+jobs:
+  quality:
+    name: Quality
+    runs-on: ubuntu-latest
+
+    env:
+      MIX_ENV: test
+      DATABASE_URL: ecto://postgres:postgres@localhost:5432/kuma_san_kanji_test
+
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: kuma_san_kanji_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Elixir
+        id: setup
+        uses: erlef/setup-beam@v1
+        with:
+          elixir-version: "1.18.x"
+          otp-version: "27.x"
+
+      - name: Cache deps
+        uses: actions/cache@v4
+        with:
+          path: deps
+          key: deps-${{ runner.os }}-${{ hashFiles('mix.lock') }}
+          restore-keys: deps-${{ runner.os }}-
+
+      - name: Cache build
+        uses: actions/cache@v4
+        with:
+          path: _build
+          key: build-${{ runner.os }}-${{ env.MIX_ENV }}-otp${{ steps.setup.outputs.otp-version }}-${{ hashFiles('mix.lock') }}
+          restore-keys: build-${{ runner.os }}-${{ env.MIX_ENV }}-otp${{ steps.setup.outputs.otp-version }}-
+
+      - name: Install dependencies
+        run: mix deps.get
+
+      - name: Compile (warnings as errors)
+        run: mix compile --warnings-as-errors
+
+      - name: Check formatting
+        run: mix format --check-formatted
+
+      - name: Set up database
+        run: mix ecto.create --quiet && mix ecto.migrate --quiet
+
+      - name: Tests
+        run: mix test
+
+      - name: Hex audit
+        run: mix hex.audit
+
+      - name: Check unused deps
+        run: mix deps.unlock --check-unused
+
+  deploy:
+    name: Deploy
+    runs-on: ubuntu-latest
+    needs: quality
+    if: startsWith(github.ref, 'refs/tags/v')
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract version tag
+        id: meta
+        run: echo "version=${GITHUB_REF#refs/tags/}" >> "$GITHUB_OUTPUT"
+
+      - name: Build and push image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: true
+          tags: |
+            ghcr.io/davewil/kuma-san-kanji:latest
+            ghcr.io/davewil/kuma-san-kanji:${{ steps.meta.outputs.version }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Install Tailscale
+        uses: tailscale/github-action@v4
+        with:
+          oauth-client-id: ${{ secrets.TS_OAUTH_CLIENT_ID }}
+          oauth-secret: ${{ secrets.TAILSCALE_AUTHKEY }}
+          tags: tag:ci
+
+      - name: Deploy to Docker host
+        env:
+          CADDY_CF_TOKEN: ${{ secrets.CADDY_CF_TOKEN }}
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.DEPLOY_SSH_KEY }}" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          ssh-keyscan -H ${{ secrets.DEPLOY_HOST }} >> ~/.ssh/known_hosts 2>/dev/null
+
+          # Copy deployment files to the server
+          ssh root@${{ secrets.DEPLOY_HOST }} "mkdir -p /root/kuma_san_kanji"
+          scp docker-compose.prod.yml root@${{ secrets.DEPLOY_HOST }}:/root/kuma_san_kanji/docker-compose.prod.yml
+
+          # Add kanji.davewil.dev to shared Caddyfile if not already present
+          ssh root@${{ secrets.DEPLOY_HOST }} "grep -q 'kanji.davewil.dev' /opt/caddy/Caddyfile" || {
+            sed "s|\${CADDY_CF_TOKEN}|${CADDY_CF_TOKEN}|g" Caddyfile > /tmp/Caddyfile.snippet
+            scp /tmp/Caddyfile.snippet root@${{ secrets.DEPLOY_HOST }}:/tmp/kanji-caddy-snippet
+            ssh root@${{ secrets.DEPLOY_HOST }} "cat /tmp/kanji-caddy-snippet >> /opt/caddy/Caddyfile && rm /tmp/kanji-caddy-snippet"
+          }
+
+          # Fix DNS if broken (Tailscale DNS issue on VM reboots)
+          ssh root@${{ secrets.DEPLOY_HOST }} "
+            tailscale set --accept-dns=false 2>/dev/null || true
+            nslookup ghcr.io > /dev/null 2>&1 || { printf 'nameserver 8.8.8.8\nnameserver 8.8.4.4\n' > /etc/resolv.conf; echo 'DNS fixed'; }
+          "
+
+          # Authenticate GHCR if needed
+          ssh root@${{ secrets.DEPLOY_HOST }} "docker pull ghcr.io/davewil/kuma-san-kanji:latest --quiet 2>/dev/null" || \
+            echo "${{ secrets.GITHUB_TOKEN }}" | ssh root@${{ secrets.DEPLOY_HOST }} docker login ghcr.io -u ${{ github.actor }} --password-stdin
+
+          ssh -o StrictHostKeyChecking=accept-new root@${{ secrets.DEPLOY_HOST }} << 'EOF'
+            set -e
+            cd /root/kuma_san_kanji
+
+            # Backup database (best-effort)
+            mkdir -p /root/kuma_san_kanji/backups
+            echo "Creating pre-deploy database backup..."
+            docker compose -f docker-compose.prod.yml exec -T postgres \
+              pg_dump -U postgres -Fc kuma_san_kanji_prod < /dev/null > /root/kuma_san_kanji/backups/pre_deploy_$(date +%Y%m%d_%H%M%S).dump \
+              && echo "Backup complete." || echo "Backup failed (non-fatal), continuing deploy..."
+
+            # Prune old backups, keep last 10
+            ls -t /root/kuma_san_kanji/backups/pre_deploy_*.dump 2>/dev/null | tail -n +11 | xargs -r rm --
+
+            # Docker cleanup
+            echo "=== Docker Cleanup ==="
+            docker image prune -af --filter "until=168h" 2>&1 || true
+            echo "Cleanup complete."
+
+            # Pull new image via Compose (ensures Compose tracks the updated digest)
+            echo "Pulling latest image..."
+            docker compose -f docker-compose.prod.yml pull app 2>&1
+            echo "Pull complete."
+
+            # Run migrations
+            echo "Running migrations..."
+            docker compose -f docker-compose.prod.yml run --rm --no-TTY app bin/kuma_san_kanji eval "KumaSanKanji.Release.migrate()" < /dev/null 2>&1
+            echo "Migrations complete."
+
+            # Setup admin user
+            echo "Setting up admin user..."
+            docker compose -f docker-compose.prod.yml run --rm --no-TTY app bin/kuma_san_kanji eval "KumaSanKanji.Release.setup_admin_user()" < /dev/null 2>&1
+            echo "Admin setup complete."
+
+            # Recreate containers with the new image
+            echo "Recreating containers..."
+            docker compose -f docker-compose.prod.yml up -d --force-recreate --no-build --remove-orphans 2>&1
+            echo "Containers started."
+
+            # Restart Caddy to pick up new upstream IPs
+            echo "Restarting Caddy..."
+            docker restart caddy 2>&1 && echo "Caddy restarted." || echo "Caddy restart failed (non-fatal)"
+
+            # Wait for startup
+            echo "Waiting for containers to start..."
+            sleep 10
+
+            echo "=== Container Status ==="
+            docker compose -f docker-compose.prod.yml ps 2>&1
+
+            # Smoke test
+            echo "=== Smoke Test ==="
+            HEALTH=$(docker compose -f docker-compose.prod.yml exec -T app curl -sf http://localhost:4000/health < /dev/null 2>&1) || {
+              echo "WARN: Health check unreachable (app may still be starting)"
+              HEALTH=""
+            }
+            if echo "$HEALTH" | grep -q '"status":"ok"'; then
+              echo "PASS: App health check"
+            else
+              echo "WARN: Health check did not return ok (may need manual verification)"
+            fi
+
+            echo "Deploy complete."
+          EOF

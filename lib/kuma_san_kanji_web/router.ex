@@ -5,6 +5,11 @@ defmodule KumaSanKanjiWeb.Router do
 
   import AshAuthentication.Plug.Helpers
 
+  # Health check endpoint (no session, no auth)
+  scope "/health", KumaSanKanjiWeb do
+    get "/", HealthController, :index
+  end
+
   pipeline :browser do
     plug :accepts, ["html"]
     plug :fetch_session
