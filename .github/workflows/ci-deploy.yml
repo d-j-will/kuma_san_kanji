@@ -121,8 +121,6 @@ jobs:
           tags: tag:ci
 
       - name: Deploy to Docker host
-        env:
-          CADDY_CF_TOKEN: ${{ secrets.CADDY_CF_TOKEN }}
         run: |
           mkdir -p ~/.ssh
           echo "${{ secrets.DEPLOY_SSH_KEY }}" > ~/.ssh/id_ed25519
@@ -132,13 +130,6 @@ jobs:
           # Copy deployment files to the server
           ssh root@${{ secrets.DEPLOY_HOST }} "mkdir -p /root/kuma_san_kanji"
           scp docker-compose.prod.yml root@${{ secrets.DEPLOY_HOST }}:/root/kuma_san_kanji/docker-compose.prod.yml
-
-          # Add kanji.davewil.dev to shared Caddyfile if not already present
-          ssh root@${{ secrets.DEPLOY_HOST }} "grep -q 'kanji.davewil.dev' /opt/caddy/Caddyfile" || {
-            sed "s|\${CADDY_CF_TOKEN}|${CADDY_CF_TOKEN}|g" Caddyfile > /tmp/Caddyfile.snippet
-            scp /tmp/Caddyfile.snippet root@${{ secrets.DEPLOY_HOST }}:/tmp/kanji-caddy-snippet
-            ssh root@${{ secrets.DEPLOY_HOST }} "cat /tmp/kanji-caddy-snippet >> /opt/caddy/Caddyfile && rm /tmp/kanji-caddy-snippet"
-          }
 
           # Fix DNS if broken (Tailscale DNS issue on VM reboots)
           ssh root@${{ secrets.DEPLOY_HOST }} "
@@ -189,11 +180,7 @@ jobs:
             docker compose -f docker-compose.prod.yml up -d --force-recreate --no-build --remove-orphans 2>&1
             echo "Containers started."
 
-            # Restart Caddy to pick up new upstream IPs
-            echo "Restarting Caddy..."
-            docker restart caddy 2>&1 && echo "Caddy restarted." || echo "Caddy restart failed (non-fatal)"
-
-            # Wait for startup
+            # Wait for startup (caddy-docker-proxy auto-detects new containers)
             echo "Waiting for containers to start..."
             sleep 10
 

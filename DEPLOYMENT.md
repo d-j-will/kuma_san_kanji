@@ -5,24 +5,13 @@ Production runs a single app container behind a shared Caddy reverse proxy on a 
 ## Prerequisites
 
 - Docker host running on Proxmox with Docker + Docker Compose
-- Caddy container running on the host (shared with other apps)
+- `caddy-docker-proxy` container running on the host (auto-discovers app containers via Docker labels)
 - `proxy` Docker network already created (`docker network create proxy`)
 - Tailscale configured on both the Docker host and GitHub Actions
 
-## 1. Cloudflare Setup
+## 1. Cloudflare DNS
 
-1. **Add DNS record** for `kanji.davewil.dev`:
-   - Type: `A` (or `CNAME`)
-   - Name: `kanji`
-   - Content: your server's public IP (or Tailscale IP if using Tailscale Funnel)
-   - Proxy status: DNS only (grey cloud) — Caddy handles TLS, not Cloudflare
-
-2. **Create API Token** for Caddy DNS challenge (if not already created for slackex):
-   - Go to: Cloudflare Dashboard > My Profile > API Tokens
-   - Create Token > Custom Token
-   - Permissions: `Zone > DNS > Edit`
-   - Zone Resources: `Include > Specific zone > davewil.dev`
-   - Copy the token — this becomes the `CADDY_CF_TOKEN` secret
+Add a DNS `A` record for `kanji.davewil.dev` pointing to the server's public IP (DNS only / grey cloud). The Cloudflare API token for TLS certificate provisioning is already configured on the Docker host in the caddy-docker-proxy `.env`.
 
 ## 2. GitHub Actions Secrets
 
@@ -36,7 +25,6 @@ Go to: GitHub repo > Settings > Secrets and variables > Actions > New repository
 | `DEPLOY_HOST` | Tailscale IP or hostname of the Docker host | `tailscale ip -4` on the host (e.g., `100.x.y.z`) |
 | `TS_OAUTH_CLIENT_ID` | Tailscale OAuth client ID for CI | Tailscale Admin > Settings > OAuth clients > Generate |
 | `TAILSCALE_AUTHKEY` | Tailscale OAuth secret | Same as above (the secret paired with the client ID) |
-| `CADDY_CF_TOKEN` | Cloudflare API token for DNS-01 TLS challenge | See Cloudflare setup above |
 
 ### Shared with slackex
 
@@ -45,7 +33,6 @@ If deploying to the same host as slackex, these secrets can have the same values
 - `DEPLOY_HOST`
 - `TS_OAUTH_CLIENT_ID`
 - `TAILSCALE_AUTHKEY`
-- `CADDY_CF_TOKEN`
 
 `GITHUB_TOKEN` is provided automatically by GitHub Actions for GHCR access.
 
@@ -99,9 +86,8 @@ The GitHub Actions workflow will:
 2. Build Docker image and push to `ghcr.io/davewil/kuma-san-kanji`
 3. SSH into the Docker host via Tailscale
 4. SCP `docker-compose.prod.yml` to the server
-5. Append `kanji.davewil.dev` to Caddy config (first deploy only)
-6. Pull image, run migrations, setup admin, recreate containers
-7. Restart Caddy and smoke test `/health`
+5. Pull image, run migrations, setup admin, recreate containers
+6. Smoke test `/health` (caddy-docker-proxy auto-discovers the new container via labels)
 
 ## 6. First Deploy: Seed Data
 
@@ -124,8 +110,8 @@ docker compose -f docker-compose.prod.yml run --rm app \
 
 ## Infrastructure
 
-- **Caddy**: Shared with slackex at `/opt/caddy/Caddyfile`. The deploy appends the `kanji.davewil.dev` block on first deploy.
-- **Proxy network**: The `proxy` Docker network connects Caddy to app containers across compose stacks. The app joins with alias `kanji-app`.
+- **Caddy**: `caddy-docker-proxy` runs as shared infrastructure at `/root/caddy/`. It auto-generates reverse proxy config from Docker container labels — no Caddyfile management needed per app. The app's `docker-compose.prod.yml` declares `caddy.*` labels that the proxy reads automatically.
+- **Proxy network**: The `proxy` Docker network connects caddy-docker-proxy to app containers across compose stacks.
 - **Postgres**: Dedicated container for kuma_san_kanji (not shared with slackex).
 - **Observability**: OTEL collector, Prometheus, and Grafana run in the slackex stack. To reuse them, add OTEL env vars to the app service later.
 - **Portainer**: Running on port 9443 for Docker management.

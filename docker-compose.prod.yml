@@ -17,13 +17,20 @@ services:
       AUTH0_DOMAIN: "${AUTH0_DOMAIN}"
       AUTH0_REDIRECT_URI: "https://kanji.davewil.dev/auth/user/auth0/callback"
       ADMIN_EMAIL: "${ADMIN_EMAIL}"
+    labels:
+      caddy: kanji.davewil.dev
+      caddy.tls.dns: cloudflare {env.CF_API_TOKEN}
+      caddy.reverse_proxy: "{{upstreams 4000}}"
+      caddy.reverse_proxy.health_uri: /health
+      caddy.reverse_proxy.health_interval: 5s
+      caddy.reverse_proxy.health_timeout: 3s
+      caddy.reverse_proxy.fail_duration: 15s
+      caddy.reverse_proxy.health_headers.X-Forwarded-Proto: https
     expose:
       - "4000"
     networks:
       default:
       proxy:
-        aliases:
-          - kanji-app
 
   postgres:
     image: postgres:16
