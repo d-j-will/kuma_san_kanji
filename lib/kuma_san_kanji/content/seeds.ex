@@ -82,12 +82,36 @@ defmodule KumaSanKanji.Content.Seeds do
 
   defp insert_educational_contexts do
     contexts = [
-      %{grade_level: 1, description: "First grade elementary school kanji (小学校一年生)"},
-      %{grade_level: 2, description: "Second grade elementary school kanji (小学校二年生)"},
-      %{grade_level: 3, description: "Third grade elementary school kanji (小学校三年生)"},
-      %{grade_level: 4, description: "Fourth grade elementary school kanji (小学校四年生)"},
-      %{grade_level: 5, description: "Fifth grade elementary school kanji (小学校五年生)"},
-      %{grade_level: 6, description: "Sixth grade elementary school kanji (小学校六年生)"}
+      %{
+        name: "Grade 1",
+        grade_level: 1,
+        description: "First grade elementary school kanji (小学校一年生)"
+      },
+      %{
+        name: "Grade 2",
+        grade_level: 2,
+        description: "Second grade elementary school kanji (小学校二年生)"
+      },
+      %{
+        name: "Grade 3",
+        grade_level: 3,
+        description: "Third grade elementary school kanji (小学校三年生)"
+      },
+      %{
+        name: "Grade 4",
+        grade_level: 4,
+        description: "Fourth grade elementary school kanji (小学校四年生)"
+      },
+      %{
+        name: "Grade 5",
+        grade_level: 5,
+        description: "Fifth grade elementary school kanji (小学校五年生)"
+      },
+      %{
+        name: "Grade 6",
+        grade_level: 6,
+        description: "Sixth grade elementary school kanji (小学校六年生)"
+      }
     ]
 
     Enum.map(contexts, fn context ->
@@ -161,17 +185,11 @@ defmodule KumaSanKanji.Content.Seeds do
         contexts = Enum.filter(educational_contexts, &(&1.grade_level == kanji.grade))
 
         Enum.each(contexts, fn context ->
-          params = %{
-            kanji_id: kanji.id,
-            educational_context_id: context.id
-          }
-
-          params =
-            if kanji.jlpt_level,
-              do: Map.put(params, :notes, "JLPT N#{kanji.jlpt_level}"),
-              else: params
-
-          {:ok, _} = Content.create_kanji_learning_meta(params)
+          {:ok, _} =
+            Content.create_kanji_learning_meta(%{
+              kanji_id: kanji.id,
+              educational_context_id: context.id
+            })
         end)
       else
         IO.puts(

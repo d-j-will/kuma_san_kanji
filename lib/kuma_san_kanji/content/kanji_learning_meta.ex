@@ -39,6 +39,8 @@ defmodule KumaSanKanji.Content.KanjiLearningMeta do
 
     create :create do
       accept([
+        :kanji_id,
+        :educational_context_id,
         :difficulty_score,
         :prerequisites,
         :learning_tips,

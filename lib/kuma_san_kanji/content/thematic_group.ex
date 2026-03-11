@@ -37,11 +37,11 @@ defmodule KumaSanKanji.Content.ThematicGroup do
     defaults([:read, :destroy])
 
     create :create do
-      accept([:name, :slug, :description, :color_code, :icon_name, :order_index])
+      accept([:name, :slug, :description, :color_code, :icon_name, :order_index, :parent_id])
     end
 
     update :update do
-      accept([:name, :slug, :description, :color_code, :icon_name, :order_index])
+      accept([:name, :slug, :description, :color_code, :icon_name, :order_index, :parent_id])
     end
 
     read :by_name do

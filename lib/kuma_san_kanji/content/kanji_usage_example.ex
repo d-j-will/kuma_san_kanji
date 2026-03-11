@@ -33,7 +33,7 @@ defmodule KumaSanKanji.Content.KanjiUsageExample do
     defaults([:read, :destroy])
 
     create :create do
-      accept([:context, :translation, :difficulty_level, :source, :notes])
+      accept([:kanji_id, :context, :translation, :difficulty_level, :source, :notes])
     end
 
     update :update do
