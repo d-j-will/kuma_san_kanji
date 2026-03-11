@@ -472,7 +472,9 @@ defmodule KumaSanKanjiWeb.TeachLive do
             class="p-3 bg-base-200/50 rounded-lg"
           >
             <%= if @show_furigana and @mecab_available do %>
-              <p class="text-lg text-base-content">{raw(Furigana.parse_sentence(sentence.japanese))}</p>
+              <p class="text-lg text-base-content">
+                {raw(Furigana.parse_sentence(sentence.japanese))}
+              </p>
             <% else %>
               <p class="text-lg text-base-content">{sentence.japanese}</p>
             <% end %>

@@ -72,7 +72,9 @@ defmodule KumaSanKanjiWeb.GroupLive do
         &larr; Back to Learn
       </.link>
 
-      <h1 class="text-3xl font-wabi-display tracking-tight text-base-content sm:text-4xl mt-4">{@group.name}</h1>
+      <h1 class="text-3xl font-wabi-display tracking-tight text-base-content sm:text-4xl mt-4">
+        {@group.name}
+      </h1>
       <p class="mt-1 info-text-wabi">{@learned_count} of {@total_count} learned</p>
 
       <%= if @show_session_results do %>

@@ -65,10 +65,13 @@ defmodule KumaSanKanjiWeb.LearnLive do
           <div class="flex items-center gap-2">
             <span class="text-2xl font-wabi-display text-base-content">{@reviews_due}</span>
             <span class="text-sm text-base-content/60">
-              <%= if @reviews_due == 1, do: "review", else: "reviews" %> due
+              {if @reviews_due == 1, do: "review", else: "reviews"} due
             </span>
             <%= if @reviews_due > 0 do %>
-              <.link navigate={~p"/quiz"} class="ml-1 text-sm font-medium text-primary hover:underline">
+              <.link
+                navigate={~p"/quiz"}
+                class="ml-1 text-sm font-medium text-primary hover:underline"
+              >
                 Start Review
               </.link>
             <% end %>
@@ -77,7 +80,7 @@ defmodule KumaSanKanjiWeb.LearnLive do
           <div class="flex items-center gap-2">
             <span class="text-2xl font-wabi-display text-base-content">{@study_streak}</span>
             <span class="text-sm text-base-content/60">
-              day <%= if @study_streak == 1, do: "streak", else: "streak" %>
+              day {if @study_streak == 1, do: "streak", else: "streak"}
             </span>
           </div>
         </div>
@@ -161,7 +164,9 @@ defmodule KumaSanKanjiWeb.LearnLive do
   # ---------- SRS queries ----------
 
   defp reviews_due_count(user_id, actor) do
-    case UserKanjiProgress.due_for_review(user_id, %{horizon_seconds: 0, limit: 500}, actor: actor) do
+    case UserKanjiProgress.due_for_review(user_id, %{horizon_seconds: 0, limit: 500},
+           actor: actor
+         ) do
       {:ok, records} -> length(records)
       _ -> 0
     end
