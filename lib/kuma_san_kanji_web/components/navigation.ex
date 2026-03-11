@@ -3,6 +3,7 @@ defmodule KumaSanKanjiWeb.Components.Navigation do
   use Phoenix.VerifiedRoutes, endpoint: KumaSanKanjiWeb.Endpoint, router: KumaSanKanjiWeb.Router
   alias Phoenix.LiveView.JS
   import KumaSanKanjiWeb.LiveHelpers
+  import KumaSanKanjiWeb.FeatureFlagHelper, only: [learning_path_enabled?: 0]
 
   def navbar(assigns) do
     ~H"""
@@ -36,6 +37,15 @@ defmodule KumaSanKanjiWeb.Components.Navigation do
               </.link>
 
               <%= if @current_user do %>
+                <%= if learning_path_enabled?() do %>
+                  <.link
+                    navigate={~p"/learn"}
+                    class="nav-item-wabi inline-flex items-center border-b-2 border-transparent px-1 pt-1 text-sm font-wabi font-medium text-wabi-charcoal hover:border-wabi-rust hover:text-wabi-rust"
+                  >
+                    Learn
+                  </.link>
+                <% end %>
+
                 <.link
                   navigate={~p"/quiz"}
                   class="nav-item-wabi inline-flex items-center border-b-2 border-transparent px-1 pt-1 text-sm font-wabi font-medium text-wabi-charcoal hover:border-wabi-rust hover:text-wabi-rust"
@@ -134,6 +144,15 @@ defmodule KumaSanKanjiWeb.Components.Navigation do
           </.link>
 
           <%= if @current_user do %>
+            <%= if learning_path_enabled?() do %>
+              <.link
+                navigate={~p"/learn"}
+                class="block border-l-4 border-transparent py-2 pl-3 pr-4 text-base font-wabi font-medium text-wabi-charcoal hover:border-wabi-rust hover:bg-wabi-cream hover:text-wabi-rust"
+              >
+                Learn
+              </.link>
+            <% end %>
+
             <.link
               navigate={~p"/quiz"}
               class="block border-l-4 border-transparent py-2 pl-3 pr-4 text-base font-wabi font-medium text-wabi-charcoal hover:border-wabi-rust hover:bg-wabi-cream hover:text-wabi-rust"

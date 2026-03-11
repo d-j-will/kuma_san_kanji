@@ -133,14 +133,14 @@ defmodule KumaSanKanjiWeb.GroupQuizLive do
   def render(assigns) do
     ~H"""
     <div class="max-w-3xl mx-auto px-4 py-8">
-      <h1 class="text-2xl font-bold text-gray-900 mb-6">{@group.name} Quiz</h1>
+      <h1 class="section-header-wabi text-2xl mb-6">{@group.name} Quiz</h1>
 
       <%= if @no_learned_kanji do %>
         <div class="text-center py-12">
-          <p class="text-gray-600 text-lg">Learn at least one kanji before starting the quiz.</p>
+          <p class="info-text-wabi text-lg">Learn at least one kanji before starting the quiz.</p>
           <.link
             navigate={~p"/learn/#{@slug_or_id}/1"}
-            class="inline-block mt-4 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+            class="btn-wabi-accent inline-block mt-4 px-6 py-3 rounded-lg"
           >
             Start with the first kanji
           </.link>
@@ -149,15 +149,15 @@ defmodule KumaSanKanjiWeb.GroupQuizLive do
 
       <%= if not @no_learned_kanji and @quiz_complete do %>
         <div class="text-center py-12">
-          <h2 class="text-xl font-semibold text-gray-900 mb-4">Quiz session complete!</h2>
-          <p class="text-gray-600">
+          <h2 class="text-xl font-semibold text-base-content mb-4">Quiz session complete!</h2>
+          <p class="info-text-wabi">
             Correct: {@results.correct} | Incorrect: {@results.incorrect}
           </p>
           <.link
             navigate={
               ~p"/learn/#{@slug_or_id}?correct=#{@results.correct}&incorrect=#{@results.incorrect}"
             }
-            class="inline-block mt-6 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+            class="btn-wabi-accent inline-block mt-6 px-6 py-3 rounded-lg"
           >
             Back to {@group.name}
           </.link>
@@ -166,7 +166,7 @@ defmodule KumaSanKanjiWeb.GroupQuizLive do
 
       <%= if not @no_learned_kanji and not @quiz_complete do %>
         <div class="text-center mb-8">
-          <div class="text-8xl font-light text-gray-900">{@current_kanji.character}</div>
+          <div class="text-8xl font-light text-base-content">{@current_kanji.character}</div>
         </div>
 
         <%= if @show_feedback do %>
@@ -176,7 +176,7 @@ defmodule KumaSanKanjiWeb.GroupQuizLive do
 
           <button
             phx-click="next_kanji"
-            class="w-full px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium"
+            class="btn-wabi-accent w-full px-6 py-3 rounded-lg font-medium"
           >
             Next
           </button>
@@ -187,11 +187,11 @@ defmodule KumaSanKanjiWeb.GroupQuizLive do
               name="answer"
               placeholder="Type the meaning or reading..."
               autocomplete="off"
-              class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              class="form-input-wabi px-4 py-3"
             />
             <button
               type="submit"
-              class="w-full px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium"
+              class="btn-wabi-accent w-full px-6 py-3 rounded-lg font-medium"
             >
               Submit
             </button>
@@ -202,9 +202,9 @@ defmodule KumaSanKanjiWeb.GroupQuizLive do
     """
   end
 
-  defp feedback_class(:success), do: "bg-green-50 border-green-200 text-green-800"
-  defp feedback_class(:warning), do: "bg-yellow-50 border-yellow-200 text-yellow-800"
-  defp feedback_class(_), do: "bg-red-50 border-red-200 text-red-800"
+  defp feedback_class(:success), do: "bg-success/10 border-success/30 text-success"
+  defp feedback_class(:warning), do: "bg-warning/10 border-warning/30 text-warning"
+  defp feedback_class(_), do: "bg-error/10 border-error/30 text-error"
 
   defp find_group(slug_or_id) do
     case ContentContext.get_group_by_slug(slug_or_id) do

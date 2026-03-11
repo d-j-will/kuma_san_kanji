@@ -77,57 +77,57 @@ defmodule KumaSanKanjiWeb.TeachLive do
   def render(assigns) do
     ~H"""
     <div class="max-w-3xl mx-auto px-4 py-8">
-      <div class="flex items-center gap-2 text-sm text-gray-500 mb-6">
-        <.link navigate={~p"/learn/#{@slug_or_id}"} class="hover:underline">{@group.name}</.link>
+      <div class="flex items-center gap-2 text-sm text-base-content/60 mb-6">
+        <.link navigate={~p"/learn/#{@slug_or_id}"} class="link-wabi">{@group.name}</.link>
         <span>&mdash;</span>
         <span>{@position} of {@total_kanji}</span>
       </div>
 
       <div class="text-center mb-8">
-        <div class="text-9xl font-light text-gray-900">{@kanji.character}</div>
+        <div class="text-9xl font-light text-base-content">{@kanji.character}</div>
       </div>
 
       <div class="space-y-6">
         <div>
-          <h2 class="text-lg font-semibold text-gray-700">Meaning</h2>
-          <p class="text-xl text-gray-900">
+          <h2 class="text-lg font-semibold text-base-content/80">Meaning</h2>
+          <p class="text-xl text-base-content">
             {@kanji.meanings |> Enum.map(& &1.value) |> Enum.join(", ")}
           </p>
         </div>
 
         <%= if @kun_readings != [] do %>
           <div>
-            <h2 class="text-lg font-semibold text-gray-700">Kun Readings</h2>
-            <p class="text-xl text-gray-900">{Enum.join(@kun_readings, ", ")}</p>
+            <h2 class="text-lg font-semibold text-base-content/80">Kun Readings</h2>
+            <p class="text-xl text-base-content">{Enum.join(@kun_readings, ", ")}</p>
           </div>
         <% end %>
 
         <%= if @on_readings != [] do %>
           <div>
-            <h2 class="text-lg font-semibold text-gray-700">On Readings</h2>
-            <p class="text-xl text-gray-900">{Enum.join(@on_readings, ", ")}</p>
+            <h2 class="text-lg font-semibold text-base-content/80">On Readings</h2>
+            <p class="text-xl text-base-content">{Enum.join(@on_readings, ", ")}</p>
           </div>
         <% end %>
 
         <div>
-          <h2 class="text-lg font-semibold text-gray-700">Stroke Count</h2>
-          <p class="text-xl text-gray-900">{@kanji.stroke_count}</p>
+          <h2 class="text-lg font-semibold text-base-content/80">Stroke Count</h2>
+          <p class="text-xl text-base-content">{@kanji.stroke_count}</p>
         </div>
 
         <%= if @kanji.example_sentences != [] do %>
           <div>
-            <h2 class="text-lg font-semibold text-gray-700">Example Sentences</h2>
+            <h2 class="text-lg font-semibold text-base-content/80">Example Sentences</h2>
             <div :for={sentence <- @kanji.example_sentences} class="mt-2">
-              <p class="text-lg text-gray-900">{sentence.japanese}</p>
-              <p class="text-gray-600">{sentence.translation}</p>
+              <p class="text-lg text-base-content">{sentence.japanese}</p>
+              <p class="info-text-wabi">{sentence.translation}</p>
             </div>
           </div>
         <% end %>
 
         <%= if @meta do %>
-          <div class="p-4 bg-yellow-50 rounded-lg border border-yellow-200">
-            <h2 class="text-lg font-semibold text-yellow-800">Learning Tips</h2>
-            <p class="text-yellow-900 mt-1">{@meta.learning_tips}</p>
+          <div class="p-4 bg-warning/10 rounded-lg border border-warning/30">
+            <h2 class="text-lg font-semibold text-base-content">Learning Tips</h2>
+            <p class="text-base-content/90 mt-1">{@meta.learning_tips}</p>
           </div>
         <% end %>
       </div>
@@ -135,7 +135,7 @@ defmodule KumaSanKanjiWeb.TeachLive do
       <div class="mt-10 flex items-center gap-4">
         <button
           phx-click="mark_learned"
-          class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium"
+          class="btn-wabi-accent px-6 py-3 rounded-lg font-medium"
         >
           I've learned this &mdash; Quiz me!
         </button>
@@ -143,14 +143,14 @@ defmodule KumaSanKanjiWeb.TeachLive do
         <%= if @position < @total_kanji do %>
           <.link
             navigate={~p"/learn/#{@slug_or_id}/#{@position + 1}"}
-            class="px-6 py-3 text-gray-600 hover:text-gray-800"
+            class="px-6 py-3 text-base-content/70 hover:text-base-content"
           >
             Skip to next
           </.link>
         <% else %>
           <.link
             navigate={~p"/learn/#{@slug_or_id}"}
-            class="px-6 py-3 text-gray-600 hover:text-gray-800"
+            class="px-6 py-3 text-base-content/70 hover:text-base-content"
           >
             Skip to group
           </.link>

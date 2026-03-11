@@ -68,34 +68,34 @@ defmodule KumaSanKanjiWeb.GroupLive do
   def render(assigns) do
     ~H"""
     <div class="max-w-4xl mx-auto px-4 py-8">
-      <.link navigate={~p"/learn"} class="text-blue-600 hover:underline text-sm">
+      <.link navigate={~p"/learn"} class="link-wabi text-sm">
         &larr; Back to Learn
       </.link>
 
-      <h1 class="text-3xl font-bold text-gray-900 mt-4">{@group.name}</h1>
-      <p class="mt-1 text-gray-600">{@learned_count} of {@total_count} learned</p>
+      <h1 class="section-header-wabi text-3xl mt-4">{@group.name}</h1>
+      <p class="mt-1 info-text-wabi">{@learned_count} of {@total_count} learned</p>
 
       <%= if @show_session_results do %>
-        <div class="mt-4 p-4 rounded-lg bg-blue-50 border border-blue-200">
-          <p class="font-medium text-blue-800">Session Results</p>
-          <p class="text-blue-700">
+        <div class="mt-4 p-4 rounded-lg bg-info/10 border border-info/30">
+          <p class="font-medium text-base-content">Session Results</p>
+          <p class="info-text-wabi">
             Correct: {@session_correct || 0} | Incorrect: {@session_incorrect || 0}
           </p>
         </div>
       <% end %>
 
       <%= if @kanji_list == [] do %>
-        <p class="mt-6 text-gray-500">This group is being prepared. No kanji have been added yet.</p>
+        <p class="mt-6 text-base-content/60">This group is being prepared. No kanji have been added yet.</p>
       <% else %>
         <div class="mt-6 grid grid-cols-4 sm:grid-cols-6 gap-3">
           <%= for {kanji, idx} <- Enum.with_index(@kanji_list, 1) do %>
             <.link
               navigate={~p"/learn/#{@slug_or_id}/#{idx}"}
-              class={"flex flex-col items-center p-3 rounded-lg border #{if MapSet.member?(@learned_kanji_ids, kanji.id), do: "border-green-300 bg-green-50", else: "border-gray-200 bg-white"} hover:shadow-md transition-shadow"}
+              class={"flex flex-col items-center p-3 rounded-lg border #{if MapSet.member?(@learned_kanji_ids, kanji.id), do: "border-success/40 bg-success/10", else: "border-base-300 bg-base-100"} hover:shadow-md transition-shadow"}
             >
               <span class="text-2xl">{kanji.character}</span>
               <%= if MapSet.member?(@learned_kanji_ids, kanji.id) do %>
-                <span class="text-xs text-green-600 mt-1">Learned</span>
+                <span class="text-xs text-success mt-1">Learned</span>
               <% end %>
             </.link>
           <% end %>
@@ -103,17 +103,17 @@ defmodule KumaSanKanjiWeb.GroupLive do
 
         <div class="mt-8">
           <%= if @all_learned do %>
-            <p class="text-green-700 font-semibold mb-3">All learned!</p>
+            <p class="text-success font-semibold mb-3">All learned!</p>
             <.link
               navigate={~p"/learn/#{@slug_or_id}/quiz"}
-              class="inline-block px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700"
+              class="btn-wabi-accent inline-block px-6 py-3 rounded-lg"
             >
               Review All
             </.link>
           <% else %>
             <.link
               navigate={~p"/learn/#{@slug_or_id}/#{@next_unlearned_position}"}
-              class="inline-block px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+              class="btn-wabi-accent inline-block px-6 py-3 rounded-lg"
             >
               Continue Learning
             </.link>

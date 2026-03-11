@@ -38,14 +38,14 @@ defmodule KumaSanKanjiWeb.LearnLive do
     ~H"""
     <div class="max-w-4xl mx-auto px-4 py-8">
       <div class="mb-8">
-        <h1 class="text-3xl font-bold text-gray-900">Learn</h1>
-        <p class="mt-2 text-gray-600">
+        <h1 class="section-header-wabi text-3xl">Learn</h1>
+        <p class="mt-2 info-text-wabi">
           {@total_learned} of {@total_kanji} kanji learned
         </p>
       </div>
 
       <%= if @groups == [] do %>
-        <p class="text-gray-500">No thematic groups available yet. Check back soon!</p>
+        <p class="text-base-content/60">No thematic groups available yet. Check back soon!</p>
       <% else %>
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           <.group_card
@@ -63,20 +63,20 @@ defmodule KumaSanKanjiWeb.LearnLive do
     ~H"""
     <.link
       navigate={~p"/learn/#{@group.slug || @group.id}"}
-      class="block rounded-lg border border-gray-200 p-6 hover:shadow-md transition-shadow"
+      class="card-wabi block p-6 hover:shadow-lg transition-shadow"
     >
-      <h2 class="text-xl font-semibold text-gray-900">{@group.name}</h2>
-      <p class="mt-1 text-sm text-gray-500">{@progress.total} kanji</p>
+      <h2 class="text-xl font-semibold text-base-content">{@group.name}</h2>
+      <p class="mt-1 text-sm text-base-content/60">{@progress.total} kanji</p>
       <div class="mt-3">
         <%= cond do %>
           <% @progress.learned == 0 -> %>
-            <span class="text-sm text-gray-400">Not started</span>
+            <span class="text-sm text-base-content/50">Not started</span>
           <% @progress.learned == @progress.total -> %>
-            <span class="text-sm font-medium text-green-600">
+            <span class="text-sm font-medium text-success">
               {@progress.learned}/{@progress.total} learned
             </span>
           <% true -> %>
-            <span class="text-sm text-blue-600">
+            <span class="text-sm text-primary">
               {@progress.learned}/{@progress.total} learned
             </span>
         <% end %>
