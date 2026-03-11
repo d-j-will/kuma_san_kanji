@@ -32,24 +32,24 @@ jobs:
           --health-retries 5
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Set up Elixir
         id: setup
-        uses: erlef/setup-beam@v1
+        uses: erlef/setup-beam@v2
         with:
           elixir-version: "1.18.x"
           otp-version: "27.x"
 
       - name: Cache deps
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: deps
           key: deps-${{ runner.os }}-${{ hashFiles('mix.lock') }}
           restore-keys: deps-${{ runner.os }}-
 
       - name: Cache build
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: _build
           key: build-${{ runner.os }}-${{ env.MIX_ENV }}-otp${{ steps.setup.outputs.otp-version }}-${{ hashFiles('mix.lock') }}
@@ -86,7 +86,7 @@ jobs:
       packages: write
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
