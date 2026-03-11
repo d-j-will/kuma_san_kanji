@@ -693,62 +693,11 @@ defmodule KumaSanKanjiWeb.QuizLive do
     end
   end
 
-  defp check_answer_correctness(kanji, user_answer) do
-    # Check if user answer matches any of the kanji's readings or meanings
-    kanji_data = kanji
+  defp check_answer_correctness(kanji, user_answer),
+    do: KumaSanKanjiWeb.Live.AnswerChecker.check_answer_correctness(kanji, user_answer)
 
-    normalized_meaning_answer = user_answer |> String.trim() |> String.downcase()
-    normalized_reading_answer = user_answer |> String.trim() |> normalize_kana()
-
-    # Check meanings (from meanings relationship)
-    meanings_match =
-      kanji_data.meanings
-      |> Enum.any?(fn meaning_record ->
-        String.downcase(String.trim(meaning_record.value)) == normalized_meaning_answer
-      end)
-
-    # Check readings (from pronunciations relationship) — normalize katakana/hiragana
-    readings_match =
-      kanji_data.pronunciations
-      |> Enum.any?(fn pronunciation_record ->
-        pronunciation_record.value
-        |> String.trim()
-        |> normalize_kana()
-        |> Kernel.==(normalized_reading_answer)
-      end)
-
-    meanings_match || readings_match
-  end
-
-  defp normalize_kana(str) when is_binary(str) do
-    str
-    |> String.graphemes()
-    |> Enum.map(&katakana_to_hiragana/1)
-    |> Enum.join()
-  end
-
-  defp katakana_to_hiragana(grapheme) when is_binary(grapheme) do
-    case String.to_charlist(grapheme) do
-      [cp] when cp >= 0x30A1 and cp <= 0x30F6 -> <<cp - 0x60::utf8>>
-      _ -> grapheme
-    end
-  end
-
-  defp get_feedback_message(:correct, kanji) do
-    kanji_data = kanji
-    meanings = kanji_data.meanings |> Enum.map(& &1.value) |> Enum.join(", ")
-    readings = kanji_data.pronunciations |> Enum.map(& &1.value) |> Enum.join(", ")
-
-    "Correct! #{kanji_data.character} means: #{meanings}. Readings: #{readings}"
-  end
-
-  defp get_feedback_message(:incorrect, kanji) do
-    kanji_data = kanji
-    meanings = kanji_data.meanings |> Enum.map(& &1.value) |> Enum.join(", ")
-    readings = kanji_data.pronunciations |> Enum.map(& &1.value) |> Enum.join(", ")
-
-    "Incorrect. #{kanji_data.character} means: #{meanings}. Readings: #{readings}"
-  end
+  defp get_feedback_message(result, kanji),
+    do: KumaSanKanjiWeb.Live.AnswerChecker.get_feedback_message(result, kanji)
 
   # Helper to get a user-friendly error message
   # Only show debug info in non-prod environments or for users with dev mode enabled

@@ -64,6 +64,10 @@ defmodule KumaSanKanjiWeb.Router do
       on_mount: {KumaSanKanjiWeb.UserLiveAuth, :live_user_required} do
       live "/quiz", QuizLive
       live "/settings", SettingsLive
+      live "/learn", LearnLive
+      live "/learn/:slug/quiz", GroupQuizLive
+      live "/learn/:slug/:position", TeachLive
+      live "/learn/:slug", GroupLive
     end
   end
 
