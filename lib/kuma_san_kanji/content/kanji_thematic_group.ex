@@ -28,7 +28,7 @@ defmodule KumaSanKanji.Content.KanjiThematicGroup do
   end
 
   identities do
-    identity :unique_kanji_in_group, [:kanji_id, :thematic_group_id]
+    identity(:unique_kanji_in_group, [:kanji_id, :thematic_group_id])
   end
 
   actions do
@@ -48,6 +48,7 @@ defmodule KumaSanKanji.Content.KanjiThematicGroup do
 
       prepare(fn query, _context ->
         group_id_val = Ash.Query.get_argument(query, :thematic_group_id)
+
         query
         |> Ash.Query.filter(thematic_group_id == ^group_id_val)
         |> Ash.Query.sort(relevance_score: :desc)

@@ -31,38 +31,45 @@ defmodule Mix.Tasks.Srs.Run do
     opts = OptionParser.parse!(argv, switches: @switches) |> elem(0)
 
     user_id = opts[:user] || abort!("--user <uuid> is required")
-  limit = opts[:limit] || @default_limit
-  horizon_opt = opts[:horizon]
-  mode = opts[:mode] || "random"
-  json? = opts[:json] || false
+    limit = opts[:limit] || @default_limit
+    horizon_opt = opts[:horizon]
+    mode = opts[:mode] || "random"
+    json? = opts[:json] || false
 
     {:ok, uuid} = Ecto.UUID.cast(user_id)
     user = get_user!(uuid)
 
-  due = fetch_due(uuid, limit, horizon_opt, user)
+    due = fetch_due(uuid, limit, horizon_opt, user)
 
     if due == [] do
       Mix.shell().info("No due items.")
       :ok
     else
       unless json?, do: Mix.shell().info("Processing #{length(due)} due items (mode=#{mode})\n")
-      {processed, stats} = Enum.map_reduce(due, init_stats(), fn item, acc ->
-        {result, acc2} = decide_result(mode, acc, item)
-        before = snapshot(item)
-        updated = apply_result(item, result, user)
-        after_ = snapshot(updated)
-        unless json?, do: print_row(before, after_, result)
-        {Map.merge(updated, %{__before__: before, __result__: result}), update_stats(acc2, result)}
-      end)
+
+      {processed, stats} =
+        Enum.map_reduce(due, init_stats(), fn item, acc ->
+          {result, acc2} = decide_result(mode, acc, item)
+          before = snapshot(item)
+          updated = apply_result(item, result, user)
+          after_ = snapshot(updated)
+          unless json?, do: print_row(before, after_, result)
+
+          {Map.merge(updated, %{__before__: before, __result__: result}),
+           update_stats(acc2, result)}
+        end)
+
       if json? do
         output = %{
           summary: stats,
           items: Enum.map(processed, &json_item/1)
         }
+
         IO.puts(Jason.encode!(output))
       else
         print_summary(stats)
       end
+
       :ok
     end
   end
@@ -72,9 +79,12 @@ defmodule Mix.Tasks.Srs.Run do
     |> Query.for_read(:due_for_review, %{user_id: user_id, limit: limit}, actor: actor)
     |> Ash.read!(authorize?: true)
   end
+
   defp fetch_due(user_id, limit, horizon, actor) when is_integer(horizon) do
     UserKanjiProgress
-    |> Query.for_read(:due_for_review, %{user_id: user_id, limit: limit, horizon_seconds: horizon}, actor: actor)
+    |> Query.for_read(
+      :due_for_review,
+      %{user_id: user_id, limit: limit, horizon_seconds: horizon}, actor: actor)
     |> Ash.read!(authorize?: true)
   end
 
@@ -85,8 +95,10 @@ defmodule Mix.Tasks.Srs.Run do
 
   defp decide_result("all-correct", stats, _item), do: {:correct, stats}
   defp decide_result("all-incorrect", stats, _item), do: {:incorrect, stats}
+
   defp decide_result("interactive", stats, item) do
     prompt = "Result for kanji #{short(item.kanji_id)} (c=correct i=incorrect s=skip) > "
+
     case IO.gets(prompt) |> to_string() |> String.trim() do
       "c" -> {:correct, stats}
       "i" -> {:incorrect, stats}
@@ -94,9 +106,11 @@ defmodule Mix.Tasks.Srs.Run do
       _ -> decide_result("interactive", stats, item)
     end
   end
+
   defp decide_result(_random, stats, _item) do
     # random: 80% correct, 15% incorrect, 5% skip
     r = :rand.uniform()
+
     cond do
       r < 0.80 -> {:correct, stats}
       r < 0.95 -> {:incorrect, stats}
@@ -105,11 +119,18 @@ defmodule Mix.Tasks.Srs.Run do
   end
 
   defp snapshot(p) do
-    %{id: p.id, interval: p.interval, reps: p.repetitions, ef: p.ease_factor, next: p.next_review_date}
+    %{
+      id: p.id,
+      interval: p.interval,
+      reps: p.repetitions,
+      ef: p.ease_factor,
+      next: p.next_review_date
+    }
   end
 
   defp json_item(p) do
     before = Map.get(p, :__before__)
+
     %{
       id: p.id,
       kanji_id: p.kanji_id,
@@ -131,14 +152,17 @@ defmodule Mix.Tasks.Srs.Run do
 
   defp print_row(before, after_snapshot, result) do
     IO.puts(
-      Enum.join([
-        short(before.id || ""),
-        to_string(result),
-        "i: #{before.interval} -> #{after_snapshot.interval}",
-        "r: #{before.reps} -> #{after_snapshot.reps}",
-        "ef: #{Decimal.to_string(before.ef)} -> #{Decimal.to_string(after_snapshot.ef)}",
-        "next: #{fmt_dt(after_snapshot.next)}"
-      ], " | ")
+      Enum.join(
+        [
+          short(before.id || ""),
+          to_string(result),
+          "i: #{before.interval} -> #{after_snapshot.interval}",
+          "r: #{before.reps} -> #{after_snapshot.reps}",
+          "ef: #{Decimal.to_string(before.ef)} -> #{Decimal.to_string(after_snapshot.ef)}",
+          "next: #{fmt_dt(after_snapshot.next)}"
+        ],
+        " | "
+      )
     )
   end
 

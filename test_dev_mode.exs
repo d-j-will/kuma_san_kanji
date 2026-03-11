@@ -7,8 +7,10 @@ alias KumaSanKanji.Accounts
 
 # Create a test user using the User resource directly with authorization bypass
 user_params = %{
-  email: "test-#{System.system_time(:second)}@example.com",  # Unique email
-  username: "testuser-#{System.system_time(:second)}"  # Unique username
+  # Unique email
+  email: "test-#{System.system_time(:second)}@example.com",
+  # Unique username
+  username: "testuser-#{System.system_time(:second)}"
 }
 
 case KumaSanKanji.Accounts.User
@@ -24,6 +26,7 @@ case KumaSanKanji.Accounts.User
       {:ok, updated_user} ->
         IO.puts("✓ Successfully toggled dev mode")
         IO.puts("  Dev mode enabled: #{updated_user.dev_mode_enabled}")
+
       {:error, error} ->
         IO.puts("✗ Failed to toggle dev mode (expected): #{inspect(error)}")
     end
@@ -49,6 +52,7 @@ case KumaSanKanji.Accounts.User
               {:ok, final_user} ->
                 IO.puts("✓ Admin successfully toggled dev mode")
                 IO.puts("  Dev mode enabled: #{final_user.dev_mode_enabled}")
+
               {:error, error} ->
                 IO.puts("✗ Admin failed to toggle dev mode: #{inspect(error)}")
             end
@@ -77,8 +81,10 @@ case KumaSanKanji.Accounts.User
     IO.puts("✓ Testing LiveHelpers with user: #{user.email}")
     IO.puts("  dev_mode_enabled?(user): #{LiveHelpers.dev_mode_enabled?(user)}")
     IO.puts("  admin?(user): #{LiveHelpers.admin?(user)}")
+
   {:error, error} ->
     IO.puts("✗ Failed to get user: #{inspect(error)}")
+
   {:ok, []} ->
     IO.puts("No users found")
 end

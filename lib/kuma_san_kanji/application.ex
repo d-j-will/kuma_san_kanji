@@ -21,8 +21,8 @@ defmodule KumaSanKanji.Application do
       KumaSanKanji.Repo,
       # Start the Quiz Session manager
       KumaSanKanji.Quiz.Session,
-  # KanjiVG SVG cache
-  KumaSanKanji.KanjiVG.Cache,
+      # KanjiVG SVG cache
+      KumaSanKanji.KanjiVG.Cache,
       # Start to serve requests, typically the last entry
       KumaSanKanjiWeb.Endpoint
     ]
@@ -34,6 +34,7 @@ defmodule KumaSanKanji.Application do
     case Supervisor.start_link(children, opts) do
       {:ok, _pid} = result ->
         result
+
       error ->
         error
     end

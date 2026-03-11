@@ -35,7 +35,7 @@ defmodule KumaSanKanji.Accounts.UserProgressSummaryTest do
   end
 
   test "progress_summary loads aggregates & calculation", %{user: user} do
-  summary = Accounts.progress_summary!(user.id, actor: user)
+    summary = Accounts.progress_summary!(user.id, actor: user)
     assert summary.kanji_progress_count == 1
     assert summary.total_reviews_sum == 1
     assert summary.correct_reviews_sum == 1

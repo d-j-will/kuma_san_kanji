@@ -38,6 +38,7 @@ defmodule KumaSanKanji.Content.KanjiUsageExample do
 
       prepare(fn query, _context ->
         kanji_id_val = Ash.Query.get_argument(query, :kanji_id)
+
         query
         |> Ash.Query.filter(kanji_id == ^kanji_id_val)
         |> Ash.Query.sort(difficulty_level: :asc)

@@ -12,11 +12,8 @@ services:
       PORT: "4000"
       SECRET_KEY_BASE: "${SECRET_KEY_BASE}"
       TOKEN_SIGNING_SECRET: "${TOKEN_SIGNING_SECRET}"
-      AUTH0_CLIENT_ID: "${AUTH0_CLIENT_ID}"
-      AUTH0_CLIENT_SECRET: "${AUTH0_CLIENT_SECRET}"
-      AUTH0_DOMAIN: "${AUTH0_DOMAIN}"
-      AUTH0_REDIRECT_URI: "https://kanji.davewil.dev/auth/user/auth0/callback"
       ADMIN_EMAIL: "${ADMIN_EMAIL}"
+      ADMIN_PASSWORD: "${ADMIN_PASSWORD}"
     labels:
       caddy: kanji.davewil.dev
       caddy.tls.dns: cloudflare {env.CF_API_TOKEN}

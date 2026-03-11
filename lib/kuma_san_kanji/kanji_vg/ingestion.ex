@@ -35,13 +35,19 @@ defmodule KumaSanKanji.KanjiVG.Ingestion do
 
     chars = maybe_limit(chars, limit)
 
-    Logger.info("[KanjiVG] Ingesting #{length(chars)} kanji (force?=#{force?} concurrency=#{concurrency})")
+    Logger.info(
+      "[KanjiVG] Ingesting #{length(chars)} kanji (force?=#{force?} concurrency=#{concurrency})"
+    )
+
     File.mkdir_p!(dest_dir())
 
     # Initialize failure tracking
     failure_log_path = Path.join(dest_dir(), "ingestion_failures.log")
     timestamp = DateTime.utc_now() |> DateTime.to_iso8601()
-    log_header = "# KanjiVG Ingestion Failures - #{timestamp}\n# Format: kanji_char,hex_code,error_type,error_details,attempted_url\n"
+
+    log_header =
+      "# KanjiVG Ingestion Failures - #{timestamp}\n# Format: kanji_char,hex_code,error_type,error_details,attempted_url\n"
+
     File.write!(failure_log_path, log_header)
 
     initial = %{written: 0, skipped: 0, errors: 0, failures: []}
@@ -55,12 +61,24 @@ defmodule KumaSanKanji.KanjiVG.Ingestion do
         ordered: false
       )
       |> Enum.reduce(initial, fn
-        {:ok, :written}, acc -> %{acc | written: acc.written + 1}
-        {:ok, :skipped}, acc -> %{acc | skipped: acc.skipped + 1}
+        {:ok, :written}, acc ->
+          %{acc | written: acc.written + 1}
+
+        {:ok, :skipped}, acc ->
+          %{acc | skipped: acc.skipped + 1}
+
         {:ok, {:error, failure_info}}, acc ->
           %{acc | errors: acc.errors + 1, failures: [failure_info | acc.failures]}
+
         {:exit, reason}, acc ->
-          failure_info = %{char: "unknown", hex: "unknown", error_type: "timeout", details: inspect(reason), url: "unknown"}
+          failure_info = %{
+            char: "unknown",
+            hex: "unknown",
+            error_type: "timeout",
+            details: inspect(reason),
+            url: "unknown"
+          }
+
           %{acc | errors: acc.errors + 1, failures: [failure_info | acc.failures]}
       end)
 
@@ -87,15 +105,19 @@ defmodule KumaSanKanji.KanjiVG.Ingestion do
     dest = Path.join(dest_dir(), hex <> ".svg")
 
     cond do
-      File.exists?(dest) and not force? -> :skipped
+      File.exists?(dest) and not force? ->
+        :skipped
+
       true ->
         case fetch_svg(ch, hex, base_url, source_path) do
           {:ok, raw} ->
             Logger.debug("[KanjiVG] Raw SVG #{hex} (#{byte_size(raw)} bytes)")
+
             case sanitize_svg(raw) do
               {:ok, cleaned} ->
                 File.write!(dest, cleaned)
                 :written
+
               {:error, reason} ->
                 failure_info = %{
                   char: ch,
@@ -104,9 +126,11 @@ defmodule KumaSanKanji.KanjiVG.Ingestion do
                   details: inspect(reason),
                   url: build_url(hex, base_url, source_path)
                 }
+
                 Logger.warning("[KanjiVG] Sanitize failed for #{ch} #{hex}: #{inspect(reason)}")
                 {:error, failure_info}
             end
+
           {:error, reason} ->
             failure_info = %{
               char: ch,
@@ -115,13 +139,15 @@ defmodule KumaSanKanji.KanjiVG.Ingestion do
               details: inspect(reason),
               url: build_url(hex, base_url, source_path)
             }
+
             Logger.warning("[KanjiVG] Fetch failed for #{ch} #{hex}: #{inspect(reason)}")
             {:error, failure_info}
         end
     end
   end
 
-  defp dest_dir, do: Path.join([Application.app_dir(:kuma_san_kanji), "priv", "static", "kanjivg"])
+  defp dest_dir,
+    do: Path.join([Application.app_dir(:kuma_san_kanji), "priv", "static", "kanjivg"])
 
   defp target_characters(opts) do
     cond do
@@ -140,7 +166,9 @@ defmodule KumaSanKanji.KanjiVG.Ingestion do
   defp all_unicode_from_source(opts) do
     # If local path provided, scan; else fallback to db chars to avoid huge remote enumeration.
     case opts[:source_path] do
-      nil -> db_kanji_chars()
+      nil ->
+        db_kanji_chars()
+
       path ->
         path
         |> Path.join("kanji/*.svg")
@@ -157,7 +185,8 @@ defmodule KumaSanKanji.KanjiVG.Ingestion do
   defp fetch_svg(_ch, hex, base_url, nil) do
     # Download single file (KanjiVG stores as kanji/xxxx.svg)
     url = base_url <> "/kanji/" <> hex <> ".svg"
-  Logger.debug("[KanjiVG] Fetching remote SVG #{url}")
+    Logger.debug("[KanjiVG] Fetching remote SVG #{url}")
+
     case Req.get(url) do
       {:ok, %{status: 200, body: body}} -> {:ok, body}
       {:ok, %{status: status}} -> {:error, {:http_status, status}}
@@ -166,9 +195,11 @@ defmodule KumaSanKanji.KanjiVG.Ingestion do
   catch
     _, e -> {:error, {:exception, e}}
   end
+
   defp fetch_svg(_ch, hex, _base_url, source_path) do
     file = Path.join([source_path, "kanji", hex <> ".svg"])
-  Logger.debug("[KanjiVG] Reading local SVG #{file}")
+    Logger.debug("[KanjiVG] Reading local SVG #{file}")
+
     case File.read(file) do
       {:ok, contents} -> {:ok, contents}
       error -> error
@@ -188,22 +219,31 @@ defmodule KumaSanKanji.KanjiVG.Ingestion do
   def sanitize_svg(raw) when is_binary(raw) do
     try do
       {:ok, doc} = Floki.parse_document(raw)
+
       cleaned =
         doc
         |> Floki.traverse_and_update(fn
           {tag, attrs, children} ->
             cond do
-              tag in ["script", "style", "foreignObject"] -> nil
+              tag in ["script", "style", "foreignObject"] ->
+                nil
+
               tag in @allowed_tags ->
                 attrs =
                   attrs
                   |> Enum.reject(fn {k, _} -> k in @remove_attrs end)
-                  |> Enum.reject(fn {k, v} -> k in ["xlink:href", "href"] and external_ref?(v) end)
+                  |> Enum.reject(fn {k, v} ->
+                    k in ["xlink:href", "href"] and external_ref?(v)
+                  end)
 
                 {tag, attrs, children}
-              true -> nil
+
+              true ->
+                nil
             end
-          other -> other
+
+          other ->
+            other
         end)
 
       svg = Floki.find(cleaned, "svg")
@@ -223,6 +263,7 @@ defmodule KumaSanKanji.KanjiVG.Ingestion do
       e -> {:error, {:exception, e}}
     end
   end
+
   def sanitize_svg(_), do: {:error, :invalid_input}
 
   defp external_ref?(value) do
@@ -230,8 +271,11 @@ defmodule KumaSanKanji.KanjiVG.Ingestion do
   end
 
   defp build_url(hex, base_url, nil), do: base_url <> "/kanji/" <> hex <> ".svg"
-  defp build_url(hex, _base_url, source_path), do: Path.join([source_path, "kanji", hex <> ".svg"])
+
+  defp build_url(hex, _base_url, source_path),
+    do: Path.join([source_path, "kanji", hex <> ".svg"])
 
   # KanjiVG filenames are 5-char lowercase hex, left-padded with zeros (e.g. U+4E5D -> 04e5d.svg)
-  defp codepoint_hex(<<cp::utf8>>), do: cp |> Integer.to_string(16) |> String.downcase() |> String.pad_leading(5, "0")
+  defp codepoint_hex(<<cp::utf8>>),
+    do: cp |> Integer.to_string(16) |> String.downcase() |> String.pad_leading(5, "0")
 end

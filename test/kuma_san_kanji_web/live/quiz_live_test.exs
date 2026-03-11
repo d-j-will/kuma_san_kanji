@@ -1,5 +1,4 @@
 defmodule KumaSanKanjiWeb.QuizLiveTest do
-
   use KumaSanKanjiWeb.ConnCase, async: false
   import Phoenix.LiveViewTest
   import KumaSanKanji.TestHelpers
@@ -14,31 +13,35 @@ defmodule KumaSanKanjiWeb.QuizLiveTest do
     setup_auth_mocks(user)
 
     # Create test kanji
-    {:ok, kanji} = KumaSanKanji.Domain.create_kanji(%{
-      character: "木",
-      grade: 1,
-      stroke_count: 4,
-      jlpt_level: 5
-    })
+    {:ok, kanji} =
+      KumaSanKanji.Domain.create_kanji(%{
+        character: "木",
+        grade: 1,
+        stroke_count: 4,
+        jlpt_level: 5
+      })
 
     # Add meanings
-    {:ok, _} = KumaSanKanji.Domain.create_meaning(%{
-      kanji_id: kanji.id,
-      value: "tree"
-    })
+    {:ok, _} =
+      KumaSanKanji.Domain.create_meaning(%{
+        kanji_id: kanji.id,
+        value: "tree"
+      })
 
     # Add pronunciations
-    {:ok, _} = KumaSanKanji.Domain.create_pronunciation(%{
-      kanji_id: kanji.id,
-      value: "き",
-      type: :kun
-    })
+    {:ok, _} =
+      KumaSanKanji.Domain.create_pronunciation(%{
+        kanji_id: kanji.id,
+        value: "き",
+        type: :kun
+      })
 
-    {:ok, _} = KumaSanKanji.Domain.create_pronunciation(%{
-      kanji_id: kanji.id,
-      value: "モク",
-      type: :on
-    })
+    {:ok, _} =
+      KumaSanKanji.Domain.create_pronunciation(%{
+        kanji_id: kanji.id,
+        value: "モク",
+        type: :on
+      })
 
     # Initialize SRS progress
     {:ok, progress} = Logic.initialize_progress(user.id, kanji.id, user)

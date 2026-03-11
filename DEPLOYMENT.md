@@ -47,28 +47,19 @@ mkdir -p /root/kuma_san_kanji
 # Ensure the shared proxy network exists (skip if slackex already created it)
 docker network create proxy 2>/dev/null || true
 
-# Create the .env file with production secrets
+# Create the .env file with production secrets (or use scripts/setup-server-env.sh)
 cat > /root/kuma_san_kanji/.env << 'EOF'
 POSTGRES_PASSWORD=<generate: openssl rand -hex 32>
 SECRET_KEY_BASE=<generate: mix phx.gen.secret>
 TOKEN_SIGNING_SECRET=<generate: mix phx.gen.secret>
-AUTH0_CLIENT_ID=<from Auth0 dashboard>
-AUTH0_CLIENT_SECRET=<from Auth0 dashboard>
-AUTH0_DOMAIN=<e.g., https://your-tenant.auth0.com>
 ADMIN_EMAIL=<your admin email>
+ADMIN_PASSWORD=<your admin password>
 EOF
 
 chmod 600 /root/kuma_san_kanji/.env
 ```
 
-## 4. Auth0 Setup
-
-1. Create a new Application in Auth0 Dashboard (Regular Web Application)
-2. Set **Allowed Callback URLs**: `https://kanji.davewil.dev/auth/user/auth0/callback`
-3. Set **Allowed Logout URLs**: `https://kanji.davewil.dev`
-4. Copy Client ID, Client Secret, and Domain into the server `.env` file
-
-## 5. Deploy Process
+## 4. Deploy Process
 
 Deploys trigger on version tags:
 
@@ -89,7 +80,7 @@ The GitHub Actions workflow will:
 5. Pull image, run migrations, setup admin, recreate containers
 6. Smoke test `/health` (caddy-docker-proxy auto-discovers the new container via labels)
 
-## 6. First Deploy: Seed Data
+## 5. First Deploy: Seed Data
 
 After the first deploy, seed the database and run KanjiVG ingestion:
 

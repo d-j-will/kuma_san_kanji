@@ -39,27 +39,32 @@ defmodule KumaSanKanji.Release do
 
     # For PostgreSQL, we need to handle table dropping differently
     for repo <- repos() do
-      {:ok, _, _} = Ecto.Migrator.with_repo(repo, fn repo ->
-        # Get all table names (excluding system tables)
-        result = repo.query!("""
-          SELECT tablename
-          FROM pg_tables
-          WHERE schemaname = 'public'
-          AND tablename != 'schema_migrations'
-        """, [])
+      {:ok, _, _} =
+        Ecto.Migrator.with_repo(repo, fn repo ->
+          # Get all table names (excluding system tables)
+          result =
+            repo.query!(
+              """
+                SELECT tablename
+                FROM pg_tables
+                WHERE schemaname = 'public'
+                AND tablename != 'schema_migrations'
+              """,
+              []
+            )
 
-        tables = result.rows |> Enum.map(&List.first/1)
+          tables = result.rows |> Enum.map(&List.first/1)
 
-        # Drop all tables with CASCADE to handle foreign key constraints
-        Enum.each(tables, fn table ->
-          repo.query!("DROP TABLE IF EXISTS #{table} CASCADE", [])
-          IO.puts("Dropped table: #{table}")
+          # Drop all tables with CASCADE to handle foreign key constraints
+          Enum.each(tables, fn table ->
+            repo.query!("DROP TABLE IF EXISTS #{table} CASCADE", [])
+            IO.puts("Dropped table: #{table}")
+          end)
+
+          # Clean up the schema_migrations table
+          repo.query!("DELETE FROM schema_migrations", [])
+          IO.puts("Cleaned schema_migrations table")
         end)
-
-        # Clean up the schema_migrations table
-        repo.query!("DELETE FROM schema_migrations", [])
-        IO.puts("Cleaned schema_migrations table")
-      end)
     end
 
     IO.puts("Dropped all tables, running migrations...")
@@ -82,48 +87,59 @@ defmodule KumaSanKanji.Release do
     load_app()
     start_seed_dependencies()
 
-    admin_email = System.get_env("ADMIN_EMAIL") || raise "Missing environment variable `ADMIN_EMAIL`!"
+    admin_email =
+      System.get_env("ADMIN_EMAIL") || raise "Missing environment variable `ADMIN_EMAIL`!"
+
+    admin_password = System.get_env("ADMIN_PASSWORD")
     IO.puts("Setting up admin user with email: #{admin_email}")
 
     try do
       case KumaSanKanji.Accounts.get_user_by_email(admin_email, authorize?: false) do
         {:ok, user} ->
           if user.admin do
-            IO.puts("✅ User #{user.email} is already an admin")
+            IO.puts("Admin user #{user.email} already exists")
           else
             IO.puts("Making user #{user.email} an admin...")
+
             case KumaSanKanji.Accounts.update_user(user, %{admin: true}, authorize?: false) do
               {:ok, updated_user} ->
-                IO.puts("✅ Successfully made #{updated_user.email} an admin")
+                IO.puts("Successfully made #{updated_user.email} an admin")
+
               {:error, reason} ->
-                IO.puts("❌ Failed to make user admin: #{inspect(reason)}")
                 raise "Admin setup failed: #{inspect(reason)}"
             end
           end
 
         {:error, _} ->
-          # User doesn't exist - create a placeholder admin user
-          IO.puts("User not found. Creating admin placeholder for #{admin_email}")
-          username = admin_email |> String.split("@") |> List.first()
+          # User doesn't exist - register with password
+          password = admin_password || generate_random_password()
+          IO.puts("Creating admin user for #{admin_email}")
 
-          case KumaSanKanji.Accounts.create_test_user(%{
-            email: admin_email,
-            username: username,
-            admin: true,
-            dev_mode_enabled: true
-          }, authorize?: false) do
-            {:ok, user} ->
-              IO.puts("✅ Created admin placeholder: #{user.email}")
-            {:error, reason} ->
-              IO.puts("❌ Failed to create admin placeholder: #{inspect(reason)}")
-              raise "Admin creation failed: #{inspect(reason)}"
-          end
+          user =
+            KumaSanKanji.Accounts.User
+            |> Ash.Changeset.for_create(:register_with_password, %{
+              email: admin_email,
+              password: password
+            })
+            |> Ash.create!(authorize?: false)
+
+          # Make them admin
+          KumaSanKanji.Accounts.update_user(user, %{admin: true, dev_mode_enabled: true},
+            authorize?: false
+          )
+
+          IO.puts("Created admin user: #{admin_email}")
+          unless admin_password, do: IO.puts("Generated password: #{password}")
       end
     rescue
       error ->
-        IO.puts("❌ Error during admin setup: #{inspect(error)}")
+        IO.puts("Error during admin setup: #{inspect(error)}")
         reraise error, __STACKTRACE__
     end
+  end
+
+  defp generate_random_password do
+    :crypto.strong_rand_bytes(16) |> Base.url_encode64(padding: false)
   end
 
   def seed_with_admin do
@@ -146,9 +162,11 @@ defmodule KumaSanKanji.Release do
     start_seed_dependencies()
 
     IO.puts("Running migrations...")
+
     for repo <- repos() do
       {:ok, _, _} = Ecto.Migrator.with_repo(repo, &Ecto.Migrator.run(&1, :up, all: true))
     end
+
     IO.puts("Migrations completed")
 
     IO.puts("Setting up admin user...")

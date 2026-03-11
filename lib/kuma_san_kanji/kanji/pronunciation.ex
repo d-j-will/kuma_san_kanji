@@ -26,16 +26,16 @@ defmodule KumaSanKanji.Kanji.Pronunciation do
     end
 
     read :by_kanji_and_value do
-      argument :kanji_id, :uuid, allow_nil?: false
-      argument :value, :string, allow_nil?: false
-      argument :type, :string, allow_nil?: false
+      argument(:kanji_id, :uuid, allow_nil?: false)
+      argument(:value, :string, allow_nil?: false)
+      argument(:type, :string, allow_nil?: false)
 
-      filter expr(kanji_id == ^arg(:kanji_id) and value == ^arg(:value) and type == ^arg(:type))
+      filter(expr(kanji_id == ^arg(:kanji_id) and value == ^arg(:value) and type == ^arg(:type)))
     end
   end
 
   identities do
-    identity :unique_pronunciation_per_kanji, [:kanji_id, :value, :type]
+    identity(:unique_pronunciation_per_kanji, [:kanji_id, :value, :type])
   end
 
   code_interface do

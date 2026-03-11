@@ -78,13 +78,17 @@ defmodule KumaSanKanji.MixProject do
       {:ash_postgres, "~> 2.4"},
       {:usage_rules, "~> 0.1"},
 
-      # Password hashing
-      {:pbkdf2_elixir, "~> 2.0"},
+      # Password hashing (used by AshAuthentication password strategy)
+      {:bcrypt_elixir, "~> 3.0"},
       # MCP Integration
       # Property-based testing (Ash already depends on stream_data ~> 1.0)
       {:stream_data, "~> 1.0"},
       {:tidewave, "~> 0.5", only: [:dev]},
-      {:lazy_html, ">= 0.1.0", only: :test}
+      {:lazy_html, ">= 0.1.0", only: :test},
+
+      # Feature flags
+      {:fun_with_flags, "~> 1.13"},
+      {:fun_with_flags_ui, "~> 1.1"}
     ]
   end
 

@@ -6,7 +6,15 @@ defmodule KumaSanKanjiWeb.QuizStrokeOrderTest do
   setup do
     user = create_simple_test_user("stroke#{System.system_time(:millisecond)}@ex.com")
     setup_auth_mocks(user)
-    {:ok, kanji} = KumaSanKanji.Domain.create_kanji(%{character: "日", grade: 1, stroke_count: 4, jlpt_level: 5})
+
+    {:ok, kanji} =
+      KumaSanKanji.Domain.create_kanji(%{
+        character: "日",
+        grade: 1,
+        stroke_count: 4,
+        jlpt_level: 5
+      })
+
     {:ok, _} = KumaSanKanji.SRS.Logic.initialize_progress(user.id, kanji.id, user)
     conn = log_in_user(build_conn(), user)
     {:ok, conn: conn, user: user, kanji: kanji}

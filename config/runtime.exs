@@ -77,13 +77,6 @@ if config_env() == :prod do
       System.get_env("TOKEN_SIGNING_SECRET") ||
         raise("Missing environment variable `TOKEN_SIGNING_SECRET`!")
 
-  # Auth0 configuration for production
-  config :kuma_san_kanji, :auth0,
-    client_id: System.get_env("AUTH0_CLIENT_ID") || raise("Missing environment variable `AUTH0_CLIENT_ID`!"),
-    client_secret: System.get_env("AUTH0_CLIENT_SECRET") || raise("Missing environment variable `AUTH0_CLIENT_SECRET`!"),
-    base_url: System.get_env("AUTH0_DOMAIN") || raise("Missing environment variable `AUTH0_DOMAIN`!"),
-    redirect_uri: System.get_env("AUTH0_REDIRECT_URI") || "#{System.get_env("PHX_HOST") || "example.com"}/auth/user/auth0/callback"
-
   # ## SSL Support
   #
   # To get SSL working, you will need to add the `https` key

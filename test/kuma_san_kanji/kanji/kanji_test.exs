@@ -28,7 +28,7 @@ defmodule KumaSanKanji.Kanji.KanjiTest do
       %{k1: k1, k2: k2, k3: k3}
     end
 
-  test "fetches kanji in the correct relative order", %{k1: k1, k2: k2, k3: k3} do
+    test "fetches kanji in the correct relative order", %{k1: k1, k2: k2, k3: k3} do
       # Get the current total count
       total_count = Kanji.count_all!()
 

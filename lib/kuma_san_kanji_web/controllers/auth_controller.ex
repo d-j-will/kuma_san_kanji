@@ -16,58 +16,21 @@ defmodule KumaSanKanjiWeb.AuthController do
     conn
     |> delete_session(:return_to)
     |> store_in_session(user)
-    # If your resource has a different name, update the assign name here (i.e :current_admin)
     |> assign(:current_user, user)
     |> put_flash(:info, message)
     |> redirect(to: return_to)
   end
 
-  def failure(conn, activity, reason) do
-    message =
-      case {activity, reason} do
-        {_,
-         %AshAuthentication.Errors.AuthenticationFailed{
-           caused_by: %Ash.Error.Forbidden{
-             errors: [%AshAuthentication.Errors.CannotConfirmUnconfirmedUser{}]
-           }
-         }} ->
-          """
-          You have already signed in another way, but have not confirmed your account.
-          You can confirm your account using the link we sent to you, or by resetting your password.
-          """
-
-        _ ->
-          "Incorrect email or password"
-      end
-
+  def failure(conn, _activity, _reason) do
     conn
-    |> put_flash(:error, message)
+    |> put_flash(:error, "Incorrect email or password")
     |> redirect(to: ~p"/sign-in")
   end
 
   def sign_out(conn, _params) do
-    {:ok, auth0_endpoint} =
-      KumaSanKanji.Secrets.secret_for(
-        [:authentication, :strategies, :auth0, :base_url],
-        KumaSanKanji.Accounts.User,
-        [],
-        :get
-      )
-
-    {:ok, auth0_client_id} =
-      KumaSanKanji.Secrets.secret_for(
-        [:authentication, :strategies, :auth0, :client_id],
-        KumaSanKanji.Accounts.User,
-        [],
-        :get
-      )
-
     conn
     |> clear_session(:kuma_san_kanji)
     |> put_flash(:info, "You are now signed out")
-    |> redirect(
-      external:
-        "#{auth0_endpoint}/v2/logout?client_id=#{auth0_client_id}&returnTo=#{KumaSanKanjiWeb.Endpoint.url()}"
-    )
+    |> redirect(to: ~p"/sign-in")
   end
 end

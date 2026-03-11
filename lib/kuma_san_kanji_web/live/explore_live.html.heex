@@ -6,7 +6,9 @@
 
     <p class="mt-3 text-lg wabi-text">
       Learn and discover Japanese kanji characters with Kuma-san! Click the button below to see a new kanji.
-    </p>    <div class="mt-6 mb-8">
+    </p>
+    
+    <div class="mt-6 mb-8">
       <.button
         phx-click="new_kanji"
         variant="primary"
@@ -28,13 +30,23 @@
                 {@kanji.character}
               </span>
             </div>
-      <button type="button" class="mt-2 text-xs underline text-wabi-accent"
-        phx-click="toggle_stroke_order" aria-expanded={@show_stroke_order || false}>
+            <button
+              type="button"
+              class="mt-2 text-xs underline text-wabi-accent"
+              phx-click="toggle_stroke_order"
+              aria-expanded={@show_stroke_order || false}
+            >
               {if @show_stroke_order, do: "Hide Stroke Order", else: "Show Stroke Order"}
             </button>
-      <span id="stroke-order-toggle-explore" data-scope="explore" data-current={@show_stroke_order}
-      data-initial={@show_stroke_order}
-      phx-hook="StrokeOrderToggle" class="hidden"></span>
+            <span
+              id="stroke-order-toggle-explore"
+              data-scope="explore"
+              data-current={@show_stroke_order}
+              data-initial={@show_stroke_order}
+              phx-hook="StrokeOrderToggle"
+              class="hidden"
+            >
+            </span>
           </div>
         </div>
       </div>
@@ -45,8 +57,11 @@
             <KumaSanKanjiWeb.KanjiStrokeOrderComponent.stroke_order
               id="explore-stroke-order"
               kanji={@kanji.character}
-              animate?={true} />
-            <p class="mt-2 text-[10px] text-wabi-stone/60">Stroke order data © KanjiVG (CC BY-SA 3.0)</p>
+              animate?={true}
+            />
+            <p class="mt-2 text-[10px] text-wabi-stone/60">
+              Stroke order data © KanjiVG (CC BY-SA 3.0)
+            </p>
           </div>
         <% end %>
         <div class="grid grid-cols-2 gap-4 mb-6">
@@ -59,7 +74,8 @@
           <div>
             <h3 class="text-sm font-semibold wabi-accent-text font-wabi-display">Stroke Count</h3>
 
-            <p class="mt-1 text-lg font-wabi">{@kanji.stroke_count || "N/A"}</p>          </div>
+            <p class="mt-1 text-lg font-wabi">{@kanji.stroke_count || "N/A"}</p>
+          </div>
 
           <div>
             <h3 class="text-sm font-semibold wabi-accent-text font-wabi-display">JLPT Level</h3>
@@ -67,13 +83,17 @@
             <p class="mt-1 text-lg font-wabi">N{@kanji.jlpt_level || "N/A"}</p>
           </div>
         </div>
-
-        <!-- Radical Information -->
-  <div :if={@radical && !match?(%Ash.NotLoaded{}, @radical)} class="mb-6">
+        
+<!-- Radical Information -->
+        <div :if={@radical && !match?(%Ash.NotLoaded{}, @radical)} class="mb-6">
           <h3 class="text-lg font-semibold text-wabi-indigo font-wabi-display mb-2">Radical</h3>
           <div class="flex items-start gap-4 bg-wabi-paper-aged rounded-md p-4 border border-wabi-border">
             <div class="flex items-center justify-center w-16 h-16 rounded bg-wabi-paper text-3xl font-wabi">
-              <.link navigate={~p"/radicals/#{@radical.kangxi_index}"} class="hover:underline" aria-label={"View radical #{@radical.glyph} details"}>
+              <.link
+                navigate={~p"/radicals/#{@radical.kangxi_index}"}
+                class="hover:underline"
+                aria-label={"View radical #{@radical.glyph} details"}
+              >
                 {@radical.glyph}
               </.link>
             </div>
@@ -82,11 +102,12 @@
               <div class="mt-1 text-sm wabi-text">
                 <span class="inline-block mr-4">Kangxi # {@radical.kangxi_index}</span>
                 <span class="inline-block mr-4">Strokes: {@radical.stroke_count}</span>
-                <span :if={@radical.japanese_name} class="inline-block">Ja: {@radical.japanese_name}</span>
+                <span :if={@radical.japanese_name} class="inline-block">
+                  Ja: {@radical.japanese_name}
+                </span>
               </div>
               <div :if={@radical.alt_forms != []} class="mt-2 text-xs wabi-text">
-                Alternate Forms:
-                <span class="ml-1">{Enum.join(@radical.alt_forms, ", ")}</span>
+                Alternate Forms: <span class="ml-1">{Enum.join(@radical.alt_forms, ", ")}</span>
               </div>
               <div :if={@radical.mnemonic} class="mt-2 text-xs wabi-text italic">
                 {@radical.mnemonic}
@@ -94,7 +115,7 @@
             </div>
           </div>
         </div>
-
+        
 <!-- Thematic Groups Section -->
         <div :if={@thematic_info.groups != []}>
           <h3 class="text-lg font-semibold wabi-accent-text font-wabi-display mb-2">
@@ -117,7 +138,7 @@
             <% end %>
           </div>
         </div>
-
+        
 <!-- Educational Context Section -->
         <div :if={@thematic_info.edu_context}>
           <h3 class="text-lg font-semibold text-wabi-rust font-wabi-display mb-2">
@@ -126,7 +147,9 @@
 
           <div class="mb-6 bg-wabi-paper-aged rounded-md p-4 border border-wabi-border">
             <div class="flex justify-between">
-              <span class="font-medium wabi-text">Grade {assigns.thematic_info.edu_context.grade}</span>
+              <span class="font-medium wabi-text">
+                Grade {assigns.thematic_info.edu_context.grade}
+              </span>
               <span class="wabi-text font-wabi">
                 {assigns.thematic_info.edu_context.age_range}
               </span>
@@ -137,12 +160,14 @@
             </p>
           </div>
         </div>
-
+        
 <!-- Learning Metadata Section -->
         <div :if={@learning_meta != []}>
           <h3 class="text-lg font-semibold text-wabi-clay font-wabi-display mb-2">
             Learning Tips
-          </h3>          <div class="mb-6 bg-wabi-paper-aged rounded-md p-4 border border-wabi-border">
+          </h3>
+          
+          <div class="mb-6 bg-wabi-paper-aged rounded-md p-4 border border-wabi-border">
             <%= for meta <- @learning_meta do %>
               <div class="mb-3 last:mb-0">
                 <div class="font-medium wabi-text">{meta.mnemonic_hint}</div>
@@ -173,7 +198,9 @@
           <% end %>
         </ul>
 
-        <h3 class="text-lg font-semibold text-wabi-indigo font-wabi-display mb-2">Pronunciations</h3>
+        <h3 class="text-lg font-semibold text-wabi-indigo font-wabi-display mb-2">
+          Pronunciations
+        </h3>
 
         <div class="mb-6">
           <div class="overflow-hidden bg-wabi-paper-aged rounded-md border border-wabi-border">
@@ -206,10 +233,12 @@
             </ul>
           </div>
         </div>
-
+        
 <!-- Usage Examples Section -->
         <div :if={@usage_examples != []}>
-          <h3 class="text-lg font-semibold text-wabi-clay font-wabi-display mb-2">Common Words</h3>
+          <h3 class="text-lg font-semibold text-wabi-clay font-wabi-display mb-2">
+            Common Words
+          </h3>
 
           <div class="mb-6">
             <div class="overflow-hidden bg-wabi-paper-aged rounded-md border border-wabi-border">
@@ -221,7 +250,8 @@
                         {example.compound}
                         <span class="ml-1 text-sm font-wabi wabi-text">
                           {example.reading} ({example.romaji})
-                        </span>                      </span>
+                        </span>
+                      </span>
 
                       <span class="rounded-full bg-wabi-clay/10 border border-wabi-clay px-2.5 py-0.5 text-xs font-medium text-wabi-clay">
                         Level {example.common_level}

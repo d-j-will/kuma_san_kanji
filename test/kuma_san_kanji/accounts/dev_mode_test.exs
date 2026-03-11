@@ -14,36 +14,46 @@ defmodule KumaSanKanji.Accounts.DevModeTest do
       %{admin_user: admin_user, regular_user: regular_user}
     end
 
-    test "admin can enable dev mode for a user", %{admin_user: admin_user, regular_user: regular_user} do
+    test "admin can enable dev mode for a user", %{
+      admin_user: admin_user,
+      regular_user: regular_user
+    } do
       # Verify user starts with dev mode disabled
       refute regular_user.dev_mode_enabled
 
       # Admin enables dev mode
-      {:ok, updated_user} = Accounts.toggle_user_dev_mode(
-        regular_user,
-        %{enabled: true},
-        actor: admin_user
-      )
+      {:ok, updated_user} =
+        Accounts.toggle_user_dev_mode(
+          regular_user,
+          %{enabled: true},
+          actor: admin_user
+        )
 
       assert updated_user.dev_mode_enabled
       assert updated_user.id == regular_user.id
     end
 
-    test "admin can disable dev mode for a user", %{admin_user: admin_user, regular_user: regular_user} do
+    test "admin can disable dev mode for a user", %{
+      admin_user: admin_user,
+      regular_user: regular_user
+    } do
       # First enable dev mode
-      {:ok, enabled_user} = Accounts.toggle_user_dev_mode(
-        regular_user,
-        %{enabled: true},
-        actor: admin_user
-      )
+      {:ok, enabled_user} =
+        Accounts.toggle_user_dev_mode(
+          regular_user,
+          %{enabled: true},
+          actor: admin_user
+        )
+
       assert enabled_user.dev_mode_enabled
 
       # Then disable it
-      {:ok, disabled_user} = Accounts.toggle_user_dev_mode(
-        enabled_user,
-        %{enabled: false},
-        actor: admin_user
-      )
+      {:ok, disabled_user} =
+        Accounts.toggle_user_dev_mode(
+          enabled_user,
+          %{enabled: false},
+          actor: admin_user
+        )
 
       refute disabled_user.dev_mode_enabled
       assert disabled_user.id == regular_user.id
@@ -55,76 +65,94 @@ defmodule KumaSanKanji.Accounts.DevModeTest do
 
       # Regular user should not be able to toggle dev mode for another user
       assert {:error, %Ash.Error.Forbidden{}} =
-        Accounts.toggle_user_dev_mode(
-          regular_user,
-          %{enabled: true},
-          actor: another_user
-        )
+               Accounts.toggle_user_dev_mode(
+                 regular_user,
+                 %{enabled: true},
+                 actor: another_user
+               )
     end
 
     test "user cannot toggle their own dev mode", %{regular_user: regular_user} do
       # User should not be able to toggle their own dev mode
       assert {:error, %Ash.Error.Forbidden{}} =
+               Accounts.toggle_user_dev_mode(
+                 regular_user,
+                 %{enabled: true},
+                 actor: regular_user
+               )
+    end
+
+    test "toggle_user_dev_mode requires enabled argument", %{
+      admin_user: admin_user,
+      regular_user: regular_user
+    } do
+      # Should fail without the enabled argument
+      assert {:error, %Ash.Error.Invalid{}} =
+               Accounts.toggle_user_dev_mode(
+                 regular_user,
+                 %{},
+                 actor: admin_user
+               )
+    end
+
+    test "toggle_user_dev_mode validates enabled argument type", %{
+      admin_user: admin_user,
+      regular_user: regular_user
+    } do
+      # Should fail with invalid enabled argument type
+      assert {:error, %Ash.Error.Invalid{}} =
+               Accounts.toggle_user_dev_mode(
+                 regular_user,
+                 %{enabled: "not_a_boolean"},
+                 actor: admin_user
+               )
+    end
+
+    test "toggle_user_dev_mode with nil enabled argument", %{
+      admin_user: admin_user,
+      regular_user: regular_user
+    } do
+      # Should fail with nil enabled argument
+      assert {:error, %Ash.Error.Invalid{}} =
+               Accounts.toggle_user_dev_mode(
+                 regular_user,
+                 %{enabled: nil},
+                 actor: admin_user
+               )
+    end
+
+    test "can toggle dev mode multiple times", %{
+      admin_user: admin_user,
+      regular_user: regular_user
+    } do
+      # Enable dev mode
+      {:ok, user1} =
         Accounts.toggle_user_dev_mode(
           regular_user,
           %{enabled: true},
-          actor: regular_user
-        )
-    end
-
-    test "toggle_user_dev_mode requires enabled argument", %{admin_user: admin_user, regular_user: regular_user} do
-      # Should fail without the enabled argument
-      assert {:error, %Ash.Error.Invalid{}} =
-        Accounts.toggle_user_dev_mode(
-          regular_user,
-          %{},
           actor: admin_user
         )
-    end
 
-    test "toggle_user_dev_mode validates enabled argument type", %{admin_user: admin_user, regular_user: regular_user} do
-      # Should fail with invalid enabled argument type
-      assert {:error, %Ash.Error.Invalid{}} =
-        Accounts.toggle_user_dev_mode(
-          regular_user,
-          %{enabled: "not_a_boolean"},
-          actor: admin_user
-        )
-    end
-
-    test "toggle_user_dev_mode with nil enabled argument", %{admin_user: admin_user, regular_user: regular_user} do
-      # Should fail with nil enabled argument
-      assert {:error, %Ash.Error.Invalid{}} =
-        Accounts.toggle_user_dev_mode(
-          regular_user,
-          %{enabled: nil},
-          actor: admin_user
-        )
-    end
-
-    test "can toggle dev mode multiple times", %{admin_user: admin_user, regular_user: regular_user} do
-      # Enable dev mode
-      {:ok, user1} = Accounts.toggle_user_dev_mode(
-        regular_user,
-        %{enabled: true},
-        actor: admin_user
-      )
       assert user1.dev_mode_enabled
 
       # Disable dev mode
-      {:ok, user2} = Accounts.toggle_user_dev_mode(
-        user1,
-        %{enabled: false},
-        actor: admin_user
-      )
+      {:ok, user2} =
+        Accounts.toggle_user_dev_mode(
+          user1,
+          %{enabled: false},
+          actor: admin_user
+        )
+
       refute user2.dev_mode_enabled
 
       # Enable again
-      {:ok, user3} = Accounts.toggle_user_dev_mode(
-        user2,
-        %{enabled: true},
-        actor: admin_user
-      )
+      {:ok, user3} =
+        Accounts.toggle_user_dev_mode(
+          user2,
+          %{enabled: true},
+          actor: admin_user
+        )
+
       assert user3.dev_mode_enabled
 
       # All should be the same user
@@ -132,13 +160,17 @@ defmodule KumaSanKanji.Accounts.DevModeTest do
       assert user2.id == user3.id
     end
 
-    test "can use bang version successfully", %{admin_user: admin_user, regular_user: regular_user} do
+    test "can use bang version successfully", %{
+      admin_user: admin_user,
+      regular_user: regular_user
+    } do
       # Bang version should work for valid operations
-      updated_user = Accounts.toggle_user_dev_mode!(
-        regular_user,
-        %{enabled: true},
-        actor: admin_user
-      )
+      updated_user =
+        Accounts.toggle_user_dev_mode!(
+          regular_user,
+          %{enabled: true},
+          actor: admin_user
+        )
 
       assert updated_user.dev_mode_enabled
     end
@@ -156,7 +188,10 @@ defmodule KumaSanKanji.Accounts.DevModeTest do
       end
     end
 
-    test "bang version raises on validation failure", %{admin_user: admin_user, regular_user: regular_user} do
+    test "bang version raises on validation failure", %{
+      admin_user: admin_user,
+      regular_user: regular_user
+    } do
       # Bang version should raise on validation failure
       assert_raise Ash.Error.Invalid, fn ->
         Accounts.toggle_user_dev_mode!(

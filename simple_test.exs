@@ -34,6 +34,7 @@ case KumaSanKanji.Accounts.User |> Ash.read(authorize?: false) do
 
   {:ok, []} ->
     IO.puts("ℹ No users found in database")
+
   {:error, error} ->
     IO.puts("✗ Failed to get users: #{inspect(error)}")
 end

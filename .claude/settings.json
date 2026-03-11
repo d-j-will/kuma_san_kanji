@@ -1,0 +1,31 @@
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash scripts/hooks/block-no-verify.sh \"$TOOL_INPUT\""
+          },
+          {
+            "type": "command",
+            "command": "bash scripts/hooks/block-bare-docker-pull.sh \"$TOOL_INPUT\""
+          },
+          {
+            "type": "command",
+            "command": "bash scripts/hooks/block-prod-compose-build.sh \"$TOOL_INPUT\""
+          },
+          {
+            "type": "command",
+            "command": "bash scripts/hooks/check-migration-safety.sh \"$TOOL_INPUT\""
+          },
+          {
+            "type": "command",
+            "command": "bash scripts/hooks/check-ci-deploy-patterns.sh \"$TOOL_INPUT\""
+          }
+        ]
+      }
+    ]
+  }
+}

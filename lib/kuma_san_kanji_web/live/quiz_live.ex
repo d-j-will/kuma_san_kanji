@@ -29,9 +29,10 @@ defmodule KumaSanKanjiWeb.QuizLive do
     require Logger
     user = socket.assigns.current_user
 
-     socket =
-       socket
-       |> assign(:show_stroke_order, false)
+    socket =
+      socket
+      |> assign(:show_stroke_order, false)
+
     quiz_state =
       case restore_session_if_exists(user.id, params["session_id"], user) do
         {:ok, restored_state} ->
@@ -318,18 +319,24 @@ defmodule KumaSanKanjiWeb.QuizLive do
   end
 
   def handle_event("toggle_stroke_order", _params, socket) do
-  new_val = !socket.assigns.show_stroke_order
-  socket = StrokeOrderEvents.toggle(socket)
+    new_val = !socket.assigns.show_stroke_order
+    socket = StrokeOrderEvents.toggle(socket)
+
     socket =
       if new_val && socket.assigns.current_kanji && socket.assigns.current_kanji.character do
-        Phoenix.LiveView.push_event(socket, "stroke_order_restart", %{kanji: socket.assigns.current_kanji.character, mode: "brush"})
+        Phoenix.LiveView.push_event(socket, "stroke_order_restart", %{
+          kanji: socket.assigns.current_kanji.character,
+          mode: "brush"
+        })
       else
         socket
       end
+
     {:noreply, socket}
   end
 
-  def handle_event(event, params = %{"kanji" => _}, socket) when event in ["stroke_order_restart", "stroke_order_step", "stroke_order_toggle_style"] do
+  def handle_event(event, params = %{"kanji" => _}, socket)
+      when event in ["stroke_order_restart", "stroke_order_step", "stroke_order_toggle_style"] do
     {:noreply, StrokeOrderEvents.handle(socket, event, params)}
   end
 
@@ -532,7 +539,7 @@ defmodule KumaSanKanjiWeb.QuizLive do
     result = if is_correct, do: :correct, else: :incorrect
 
     case Logic.record_review(current_progress.id, result, user.id, user) do
-  {:ok, _updated_progress} ->
+      {:ok, _updated_progress} ->
         current_time = System.system_time(:millisecond)
         updated_times = [current_time | socket.assigns.last_answer_times]
 
@@ -597,7 +604,10 @@ defmodule KumaSanKanjiWeb.QuizLive do
         # If stroke order panel is visible, trigger a restart of animation for the new kanji
         socket =
           if socket.assigns.show_stroke_order && next_kanji && next_kanji.character do
-            Phoenix.LiveView.push_event(socket, "stroke_order_restart", %{kanji: next_kanji.character, mode: "brush"})
+            Phoenix.LiveView.push_event(socket, "stroke_order_restart", %{
+              kanji: next_kanji.character,
+              mode: "brush"
+            })
           else
             socket
           end

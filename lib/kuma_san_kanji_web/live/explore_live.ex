@@ -17,6 +17,7 @@ defmodule KumaSanKanjiWeb.ExploreLive do
         case get_kanji_by_offset(current_offset) do
           {:ok, kanji, thematic_info, learning_meta, usage_examples} ->
             radical = kanji.radical || load_radical(kanji)
+
             {:ok,
              assign(socket,
                kanji: kanji,
@@ -74,18 +75,23 @@ defmodule KumaSanKanjiWeb.ExploreLive do
     case get_kanji_by_offset(new_offset) do
       {:ok, kanji, thematic_info, learning_meta, usage_examples} ->
         radical = kanji.radical || load_radical(kanji)
-        socket = assign(socket,
-          kanji: kanji,
-          current_offset: new_offset,
-          thematic_info: thematic_info,
-          learning_meta: learning_meta,
-          usage_examples: usage_examples,
-          radical: radical
-        )
+
+        socket =
+          assign(socket,
+            kanji: kanji,
+            current_offset: new_offset,
+            thematic_info: thematic_info,
+            learning_meta: learning_meta,
+            usage_examples: usage_examples,
+            radical: radical
+          )
 
         socket =
           if socket.assigns.show_stroke_order && kanji && kanji.character do
-            Phoenix.LiveView.push_event(socket, "stroke_order_restart", %{kanji: kanji.character, mode: "brush"})
+            Phoenix.LiveView.push_event(socket, "stroke_order_restart", %{
+              kanji: kanji.character,
+              mode: "brush"
+            })
           else
             socket
           end
@@ -101,16 +107,22 @@ defmodule KumaSanKanjiWeb.ExploreLive do
   def handle_event("toggle_stroke_order", _params, socket) do
     new_val = !socket.assigns.show_stroke_order
     socket = StrokeOrderEvents.toggle(socket)
+
     socket =
       if new_val && socket.assigns.kanji && socket.assigns.kanji.character do
-        Phoenix.LiveView.push_event(socket, "stroke_order_restart", %{kanji: socket.assigns.kanji.character, mode: "brush"})
+        Phoenix.LiveView.push_event(socket, "stroke_order_restart", %{
+          kanji: socket.assigns.kanji.character,
+          mode: "brush"
+        })
       else
         socket
       end
+
     {:noreply, socket}
   end
 
-  def handle_event(event, params = %{"kanji" => _}, socket) when event in ["stroke_order_restart", "stroke_order_step", "stroke_order_toggle_style"] do
+  def handle_event(event, params = %{"kanji" => _}, socket)
+      when event in ["stroke_order_restart", "stroke_order_step", "stroke_order_toggle_style"] do
     {:noreply, StrokeOrderEvents.handle(socket, event, params)}
   end
 
