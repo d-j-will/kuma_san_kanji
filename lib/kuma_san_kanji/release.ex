@@ -169,9 +169,13 @@ defmodule KumaSanKanji.Release do
 
     IO.puts("Migrations completed")
 
-    IO.puts("Setting up admin user...")
-    setup_admin_user()
-    IO.puts("Admin setup completed")
+    if System.get_env("ADMIN_EMAIL") do
+      IO.puts("Setting up admin user...")
+      setup_admin_user()
+      IO.puts("Admin setup completed")
+    else
+      IO.puts("ADMIN_EMAIL not set, skipping admin setup")
+    end
   end
 
   defp repos do
