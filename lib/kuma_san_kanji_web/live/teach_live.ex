@@ -84,12 +84,18 @@ defmodule KumaSanKanjiWeb.TeachLive do
       </div>
 
       <div class="text-center mb-8">
-        <div class="text-9xl font-light text-base-content">{@kanji.character}</div>
+        <div class="flex flex-col items-center">
+          <div class="kanji-container flex items-center justify-center w-32 h-32 rounded-lg">
+            <span class="kanji-display select-none">
+              {@kanji.character}
+            </span>
+          </div>
+        </div>
       </div>
 
       <div class="space-y-6">
         <div>
-          <h2 class="text-lg font-semibold text-base-content/80">Meaning</h2>
+          <h2 class="text-lg font-wabi-display text-base-content/80">Meaning</h2>
           <p class="text-xl text-base-content">
             {@kanji.meanings |> Enum.map(& &1.value) |> Enum.join(", ")}
           </p>
@@ -97,26 +103,26 @@ defmodule KumaSanKanjiWeb.TeachLive do
 
         <%= if @kun_readings != [] do %>
           <div>
-            <h2 class="text-lg font-semibold text-base-content/80">Kun Readings</h2>
+            <h2 class="text-lg font-wabi-display text-base-content/80">Kun Readings</h2>
             <p class="text-xl text-base-content">{Enum.join(@kun_readings, ", ")}</p>
           </div>
         <% end %>
 
         <%= if @on_readings != [] do %>
           <div>
-            <h2 class="text-lg font-semibold text-base-content/80">On Readings</h2>
+            <h2 class="text-lg font-wabi-display text-base-content/80">On Readings</h2>
             <p class="text-xl text-base-content">{Enum.join(@on_readings, ", ")}</p>
           </div>
         <% end %>
 
         <div>
-          <h2 class="text-lg font-semibold text-base-content/80">Stroke Count</h2>
+          <h2 class="text-lg font-wabi-display text-base-content/80">Stroke Count</h2>
           <p class="text-xl text-base-content">{@kanji.stroke_count}</p>
         </div>
 
         <%= if @kanji.example_sentences != [] do %>
           <div>
-            <h2 class="text-lg font-semibold text-base-content/80">Example Sentences</h2>
+            <h2 class="text-lg font-wabi-display text-base-content/80">Example Sentences</h2>
             <div :for={sentence <- @kanji.example_sentences} class="mt-2">
               <p class="text-lg text-base-content">{sentence.japanese}</p>
               <p class="info-text-wabi">{sentence.translation}</p>
