@@ -1,0 +1,82 @@
+# Trusted Source Domains for Evidence-Driven Research
+# Used by knowledge-researcher agent to validate source credibility
+
+academic:
+  description: "Peer-reviewed academic and research institutions"
+  domains:
+    - "*.edu"
+    - "*.ac.uk"
+    - "scholar.google.com"
+    - "arxiv.org"
+    - "pubmed.ncbi.nlm.nih.gov"
+    - "researchgate.net"
+    - "ieee.org"
+    - "acm.org"
+    - "springer.com"
+    - "sciencedirect.com"
+    - "jstor.org"
+    - "nature.com"
+    - "science.org"
+  reputation: high
+
+official:
+  description: "Government, standards organizations, and official documentation"
+  domains:
+    - "*.gov"
+    - "w3.org"
+    - "ietf.org"
+    - "iso.org"
+    - "nist.gov"
+    - "hexdocs.pm"
+    - "elixir-lang.org"
+    - "erlang.org"
+    - "ash-hq.org"
+    - "phoenixframework.org"
+  reputation: high
+
+industry_leaders:
+  description: "Established technology companies and recognized industry experts"
+  domains:
+    - "github.com"
+    - "stackoverflow.com"
+    - "martinfowler.com"
+    - "refactoring.guru"
+    - "thoughtworks.com/insights"
+    - "infoq.com"
+    - "elixirforum.com"
+  reputation: medium-high
+
+technical_documentation:
+  description: "Official technical documentation and established platforms"
+  domains:
+    - "developer.mozilla.org"
+    - "devdocs.io"
+    - "readthedocs.org"
+  reputation: high
+
+open_source:
+  description: "Recognized open source foundations and communities"
+  domains:
+    - "apache.org"
+    - "cncf.io"
+    - "opensource.org"
+  reputation: high
+
+medium_trust:
+  description: "Quality sources requiring cross-referencing"
+  domains:
+    - "medium.com"
+    - "dev.to"
+    - "hashnode.com"
+  reputation: medium
+
+excluded:
+  description: "Sources excluded due to low quality control or bias"
+  domains:
+    - "*.blogspot.com"
+    - "wordpress.com"
+    - "tumblr.com"
+    - "pastebin.com"
+    - "quora.com"
+  reason: "Unverified sources, potential bias, low quality control"
+  action: "Reject and log warning"

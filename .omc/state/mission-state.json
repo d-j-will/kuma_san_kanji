@@ -1,0 +1,225 @@
+{
+  "updatedAt": "2026-03-11T14:48:09.463Z",
+  "missions": [
+    {
+      "id": "session:28e7dcda-e54b-41b8-87d0-a814d1bafae6:none",
+      "source": "session",
+      "name": "none",
+      "objective": "Session mission",
+      "createdAt": "2026-03-11T00:07:54.330Z",
+      "updatedAt": "2026-03-11T13:36:34.443Z",
+      "status": "done",
+      "workerCount": 11,
+      "taskCounts": {
+        "total": 11,
+        "pending": 0,
+        "blocked": 0,
+        "inProgress": 0,
+        "completed": 11,
+        "failed": 0
+      },
+      "agents": [
+        {
+          "name": "Explore:adb9b81",
+          "role": "Explore",
+          "ownership": "adb9b819b6d0b5228",
+          "status": "done",
+          "currentStep": null,
+          "latestUpdate": "completed",
+          "completedSummary": null,
+          "updatedAt": "2026-03-11T13:36:34.443Z"
+        },
+        {
+          "name": "Explore:aa2e652",
+          "role": "Explore",
+          "ownership": "aa2e6526fccf69c68",
+          "status": "done",
+          "currentStep": null,
+          "latestUpdate": "completed",
+          "completedSummary": null,
+          "updatedAt": "2026-03-11T00:08:57.590Z"
+        },
+        {
+          "name": "general-purpose:adb5089",
+          "role": "general-purpose",
+          "ownership": "adb50892eae848393",
+          "status": "done",
+          "currentStep": null,
+          "latestUpdate": "completed",
+          "completedSummary": null,
+          "updatedAt": "2026-03-11T00:55:31.409Z"
+        },
+        {
+          "name": "nw:nw-researcher:a8b35cc",
+          "role": "nw:nw-researcher",
+          "ownership": "a8b35cc38d9fa40d7",
+          "status": "done",
+          "currentStep": null,
+          "latestUpdate": "completed",
+          "completedSummary": null,
+          "updatedAt": "2026-03-11T11:46:46.212Z"
+        },
+        {
+          "name": "nw:nw-product-discoverer:aaee8b6",
+          "role": "nw:nw-product-discoverer",
+          "ownership": "aaee8b6b1cf703469",
+          "status": "done",
+          "currentStep": null,
+          "latestUpdate": "completed",
+          "completedSummary": null,
+          "updatedAt": "2026-03-11T12:02:58.796Z"
+        },
+        {
+          "name": "nw:nw-product-owner:a816c4e",
+          "role": "nw:nw-product-owner",
+          "ownership": "a816c4edb71c07a27",
+          "status": "done",
+          "currentStep": null,
+          "latestUpdate": "completed",
+          "completedSummary": null,
+          "updatedAt": "2026-03-11T12:31:22.745Z"
+        },
+        {
+          "name": "nw:nw-researcher:a31eae9",
+          "role": "nw:nw-researcher",
+          "ownership": "a31eae9c8c56583f5",
+          "status": "done",
+          "currentStep": null,
+          "latestUpdate": "completed",
+          "completedSummary": null,
+          "updatedAt": "2026-03-11T12:40:37.992Z"
+        },
+        {
+          "name": "nw:nw-solution-architect:afc1d51",
+          "role": "nw:nw-solution-architect",
+          "ownership": "afc1d516a7065f200",
+          "status": "done",
+          "currentStep": null,
+          "latestUpdate": "completed",
+          "completedSummary": null,
+          "updatedAt": "2026-03-11T12:48:54.592Z"
+        },
+        {
+          "name": "nw:nw-acceptance-designer:a372939",
+          "role": "nw:nw-acceptance-designer",
+          "ownership": "a3729390eaa59e457",
+          "status": "done",
+          "currentStep": null,
+          "latestUpdate": "completed",
+          "completedSummary": null,
+          "updatedAt": "2026-03-11T13:10:25.116Z"
+        },
+        {
+          "name": "nw:nw-software-crafter:ac25b83",
+          "role": "nw:nw-software-crafter",
+          "ownership": "ac25b83ade57929d0",
+          "status": "done",
+          "currentStep": null,
+          "latestUpdate": "completed",
+          "completedSummary": null,
+          "updatedAt": "2026-03-11T13:20:20.777Z"
+        },
+        {
+          "name": "nw:nw-software-crafter:a2b16e1",
+          "role": "nw:nw-software-crafter",
+          "ownership": "a2b16e17315a3f952",
+          "status": "done",
+          "currentStep": null,
+          "latestUpdate": "completed",
+          "completedSummary": null,
+          "updatedAt": "2026-03-11T13:34:50.291Z"
+        }
+      ],
+      "timeline": [
+        {
+          "id": "session-start:ac25b83ade57929d0:2026-03-11T13:14:22.124Z",
+          "at": "2026-03-11T13:14:22.124Z",
+          "kind": "update",
+          "agent": "nw:nw-software-crafter:ac25b83",
+          "detail": "started nw:nw-software-crafter:ac25b83",
+          "sourceKey": "session-start:ac25b83ade57929d0"
+        },
+        {
+          "id": "session-stop:ac25b83ade57929d0:2026-03-11T13:20:20.777Z",
+          "at": "2026-03-11T13:20:20.777Z",
+          "kind": "completion",
+          "agent": "nw:nw-software-crafter:ac25b83",
+          "detail": "completed",
+          "sourceKey": "session-stop:ac25b83ade57929d0"
+        },
+        {
+          "id": "session-start:a2b16e17315a3f952:2026-03-11T13:22:09.170Z",
+          "at": "2026-03-11T13:22:09.170Z",
+          "kind": "update",
+          "agent": "nw:nw-software-crafter:a2b16e1",
+          "detail": "started nw:nw-software-crafter:a2b16e1",
+          "sourceKey": "session-start:a2b16e17315a3f952"
+        },
+        {
+          "id": "session-stop:a2b16e17315a3f952:2026-03-11T13:34:50.291Z",
+          "at": "2026-03-11T13:34:50.291Z",
+          "kind": "completion",
+          "agent": "nw:nw-software-crafter:a2b16e1",
+          "detail": "completed",
+          "sourceKey": "session-stop:a2b16e17315a3f952"
+        },
+        {
+          "id": "session-stop:a3ce37ddb9c2212e1:2026-03-11T13:36:34.443Z",
+          "at": "2026-03-11T13:36:34.443Z",
+          "kind": "completion",
+          "agent": "Explore:adb9b81",
+          "detail": "completed",
+          "sourceKey": "session-stop:a3ce37ddb9c2212e1"
+        }
+      ]
+    },
+    {
+      "id": "session:c41dcee9-4e64-41e0-9c89-dc3403a03ed7:none",
+      "source": "session",
+      "name": "none",
+      "objective": "Session mission",
+      "createdAt": "2026-03-11T14:37:39.913Z",
+      "updatedAt": "2026-03-11T14:48:09.463Z",
+      "status": "done",
+      "workerCount": 1,
+      "taskCounts": {
+        "total": 1,
+        "pending": 0,
+        "blocked": 0,
+        "inProgress": 0,
+        "completed": 1,
+        "failed": 0
+      },
+      "agents": [
+        {
+          "name": "nw:nw-product-discoverer:af7da52",
+          "role": "nw:nw-product-discoverer",
+          "ownership": "af7da5293f6464333",
+          "status": "done",
+          "currentStep": null,
+          "latestUpdate": "completed",
+          "completedSummary": null,
+          "updatedAt": "2026-03-11T14:48:09.463Z"
+        }
+      ],
+      "timeline": [
+        {
+          "id": "session-start:af7da5293f6464333:2026-03-11T14:37:39.913Z",
+          "at": "2026-03-11T14:37:39.913Z",
+          "kind": "update",
+          "agent": "nw:nw-product-discoverer:af7da52",
+          "detail": "started nw:nw-product-discoverer:af7da52",
+          "sourceKey": "session-start:af7da5293f6464333"
+        },
+        {
+          "id": "session-stop:af7da5293f6464333:2026-03-11T14:48:09.463Z",
+          "at": "2026-03-11T14:48:09.463Z",
+          "kind": "completion",
+          "agent": "nw:nw-product-discoverer:af7da52",
+          "detail": "completed",
+          "sourceKey": "session-stop:af7da5293f6464333"
+        }
+      ]
+    }
+  ]
+}

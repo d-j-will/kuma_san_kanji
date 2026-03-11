@@ -1,0 +1,513 @@
+{
+  "version": "1.0.0",
+  "lastScanned": 1773154624555,
+  "projectRoot": "/Volumes/Personal/Users/davidwilliams/dev/elixir/kuma_san_kanji",
+  "techStack": {
+    "languages": [],
+    "frameworks": [],
+    "packageManager": null,
+    "runtime": null
+  },
+  "build": {
+    "buildCommand": null,
+    "testCommand": null,
+    "lintCommand": null,
+    "devCommand": null,
+    "scripts": {}
+  },
+  "conventions": {
+    "namingStyle": null,
+    "importStyle": null,
+    "testPattern": null,
+    "fileOrganization": null
+  },
+  "structure": {
+    "isMonorepo": false,
+    "workspaces": [],
+    "mainDirectories": [
+      "assets",
+      "docs",
+      "lib",
+      "scripts",
+      "test"
+    ],
+    "gitBranches": {
+      "defaultBranch": "main",
+      "branchingStrategy": null
+    }
+  },
+  "customNotes": [],
+  "directoryMap": {
+    "_build": {
+      "path": "_build",
+      "purpose": null,
+      "fileCount": 2,
+      "lastAccessed": 1773154624541,
+      "keyFiles": [
+        "esbuild-darwin-arm64",
+        "tailwind-macos-arm64"
+      ]
+    },
+    "assets": {
+      "path": "assets",
+      "purpose": "Static assets",
+      "fileCount": 1,
+      "lastAccessed": 1773154624541,
+      "keyFiles": [
+        "tailwind.config.js"
+      ]
+    },
+    "config": {
+      "path": "config",
+      "purpose": "Configuration files",
+      "fileCount": 7,
+      "lastAccessed": 1773154624541,
+      "keyFiles": [
+        "ash.exs",
+        "config.exs",
+        "dev.exs",
+        "dev.secret.exs",
+        "prod.exs"
+      ]
+    },
+    "deps": {
+      "path": "deps",
+      "purpose": null,
+      "fileCount": 0,
+      "lastAccessed": 1773154624543,
+      "keyFiles": []
+    },
+    "docs": {
+      "path": "docs",
+      "purpose": "Documentation",
+      "fileCount": 11,
+      "lastAccessed": 1773154624543,
+      "keyFiles": [
+        "aesthetics.md",
+        "demographics.md",
+        "edge-computing.md",
+        "mobile-improvements.md",
+        "novel.md"
+      ]
+    },
+    "lib": {
+      "path": "lib",
+      "purpose": "Library code",
+      "fileCount": 2,
+      "lastAccessed": 1773154624543,
+      "keyFiles": [
+        "kuma_san_kanji.ex",
+        "kuma_san_kanji_web.ex"
+      ]
+    },
+    "plans": {
+      "path": "plans",
+      "purpose": null,
+      "fileCount": 7,
+      "lastAccessed": 1773154624543,
+      "keyFiles": [
+        "acessability.md",
+        "audio_feedback.md",
+        "audio_plan.md",
+        "interactive_strokes.md",
+        "next_feature.md"
+      ]
+    },
+    "priv": {
+      "path": "priv",
+      "purpose": null,
+      "fileCount": 1,
+      "lastAccessed": 1773154624543,
+      "keyFiles": [
+        "image.png"
+      ]
+    },
+    "references": {
+      "path": "references",
+      "purpose": null,
+      "fileCount": 15,
+      "lastAccessed": 1773154624544,
+      "keyFiles": [
+        "animalkanji.md",
+        "deitykanji.md",
+        "grade1kanji.md",
+        "grade2kanji.md",
+        "grade3kanji.md"
+      ]
+    },
+    "rel": {
+      "path": "rel",
+      "purpose": null,
+      "fileCount": 1,
+      "lastAccessed": 1773154624544,
+      "keyFiles": [
+        "env.sh.eex"
+      ]
+    },
+    "scripts": {
+      "path": "scripts",
+      "purpose": "Build/utility scripts",
+      "fileCount": 16,
+      "lastAccessed": 1773154624544,
+      "keyFiles": [
+        "README.md",
+        "deploy-fly.ps1",
+        "deploy-fly.sh",
+        "deploy-production.sh",
+        "deploy-swarm.sh"
+      ]
+    },
+    "test": {
+      "path": "test",
+      "purpose": "Test files",
+      "fileCount": 1,
+      "lastAccessed": 1773154624544,
+      "keyFiles": [
+        "test_helper.exs"
+      ]
+    },
+    "test_scripts": {
+      "path": "test_scripts",
+      "purpose": null,
+      "fileCount": 43,
+      "lastAccessed": 1773154624545,
+      "keyFiles": [
+        "basic_test.exs",
+        "check_count.exs",
+        "check_counts.exs",
+        "check_duplicates.exs",
+        "check_functions.exs"
+      ]
+    },
+    "_build/test": {
+      "path": "_build/test",
+      "purpose": "Test files",
+      "fileCount": 0,
+      "lastAccessed": 1773154624545,
+      "keyFiles": []
+    },
+    "assets/vendor": {
+      "path": "assets/vendor",
+      "purpose": "Third-party code",
+      "fileCount": 1,
+      "lastAccessed": 1773154624546,
+      "keyFiles": [
+        "topbar.js"
+      ]
+    },
+    "priv/static": {
+      "path": "priv/static",
+      "purpose": "Static files",
+      "fileCount": 6,
+      "lastAccessed": 1773154624547,
+      "keyFiles": [
+        "favicon-91f37b602a111216f1eef3aa337ad763.ico",
+        "favicon.ico",
+        "robots-8d68a542f9e8f1489d80b7c44a87feb9.txt"
+      ]
+    }
+  },
+  "hotPaths": [
+    {
+      "path": "",
+      "accessCount": 53,
+      "lastAccessed": 1773240462359,
+      "type": "directory"
+    },
+    {
+      "path": "lib",
+      "accessCount": 33,
+      "lastAccessed": 1773235643680,
+      "type": "directory"
+    },
+    {
+      "path": "lib/kuma_san_kanji_web/router.ex",
+      "accessCount": 24,
+      "lastAccessed": 1773235342197,
+      "type": "file"
+    },
+    {
+      "path": "lib/kuma_san_kanji_web/live/explore_live.ex",
+      "accessCount": 18,
+      "lastAccessed": 1773243918017,
+      "type": "file"
+    },
+    {
+      "path": "lib/kuma_san_kanji_web/live/quiz_live.ex",
+      "accessCount": 15,
+      "lastAccessed": 1773235365584,
+      "type": "file"
+    },
+    {
+      "path": "docker-compose.prod.yml",
+      "accessCount": 15,
+      "lastAccessed": 1773242395457,
+      "type": "file"
+    },
+    {
+      "path": "lib/kuma_san_kanji/release.ex",
+      "accessCount": 14,
+      "lastAccessed": 1773236291907,
+      "type": "file"
+    },
+    {
+      "path": "DEPLOYMENT.md",
+      "accessCount": 12,
+      "lastAccessed": 1773188303505,
+      "type": "file"
+    },
+    {
+      "path": "lib/kuma_san_kanji/accounts/user.ex",
+      "accessCount": 10,
+      "lastAccessed": 1773229309497,
+      "type": "file"
+    },
+    {
+      "path": "mix.exs",
+      "accessCount": 9,
+      "lastAccessed": 1773229307293,
+      "type": "file"
+    },
+    {
+      "path": "config/runtime.exs",
+      "accessCount": 9,
+      "lastAccessed": 1773229323604,
+      "type": "file"
+    },
+    {
+      "path": "Dockerfile",
+      "accessCount": 8,
+      "lastAccessed": 1773229322805,
+      "type": "file"
+    },
+    {
+      "path": "lib/kuma_san_kanji/domain.ex",
+      "accessCount": 8,
+      "lastAccessed": 1773235652059,
+      "type": "file"
+    },
+    {
+      "path": "lib/kuma_san_kanji_web/controllers/health_controller.ex",
+      "accessCount": 7,
+      "lastAccessed": 1773229357018,
+      "type": "file"
+    },
+    {
+      "path": "test/support/test_helpers.ex",
+      "accessCount": 7,
+      "lastAccessed": 1773235371400,
+      "type": "file"
+    },
+    {
+      "path": "config/dev.exs",
+      "accessCount": 6,
+      "lastAccessed": 1773229338905,
+      "type": "file"
+    },
+    {
+      "path": "CLAUDE.md",
+      "accessCount": 5,
+      "lastAccessed": 1773189171509,
+      "type": "file"
+    },
+    {
+      "path": "config/test.exs",
+      "accessCount": 5,
+      "lastAccessed": 1773229339497,
+      "type": "file"
+    },
+    {
+      "path": "lib/kuma_san_kanji_web/user_live_auth.ex",
+      "accessCount": 5,
+      "lastAccessed": 1773233016360,
+      "type": "file"
+    },
+    {
+      "path": "lib/kuma_san_kanji_web/controllers/auth_controller.ex",
+      "accessCount": 4,
+      "lastAccessed": 1773188434421,
+      "type": "file"
+    },
+    {
+      "path": "lib/kuma_san_kanji/secrets.ex",
+      "accessCount": 4,
+      "lastAccessed": 1773229325921,
+      "type": "file"
+    },
+    {
+      "path": "lib/kuma_san_kanji_web/auth_overrides.ex",
+      "accessCount": 3,
+      "lastAccessed": 1773196187974,
+      "type": "file"
+    },
+    {
+      "path": "priv/repo/migrations/20250624195044_create_initial_tables.exs",
+      "accessCount": 3,
+      "lastAccessed": 1773237052445,
+      "type": "file"
+    },
+    {
+      "path": "lib/kuma_san_kanji_web/live/page_live.ex",
+      "accessCount": 3,
+      "lastAccessed": 1773243918925,
+      "type": "file"
+    },
+    {
+      "path": "scripts/setup-server-env.sh",
+      "accessCount": 2,
+      "lastAccessed": 1773188258242,
+      "type": "file"
+    },
+    {
+      "path": "config/dev.secret.exs",
+      "accessCount": 2,
+      "lastAccessed": 1773188335545,
+      "type": "file"
+    },
+    {
+      "path": "lib/kuma_san_kanji/auth.ex",
+      "accessCount": 2,
+      "lastAccessed": 1773188569654,
+      "type": "file"
+    },
+    {
+      "path": "mix.lock",
+      "accessCount": 2,
+      "lastAccessed": 1773196374910,
+      "type": "directory"
+    },
+    {
+      "path": "lib/kuma_san_kanji/accounts.ex",
+      "accessCount": 2,
+      "lastAccessed": 1773229309012,
+      "type": "file"
+    },
+    {
+      "path": "lib/kuma_san_kanji/accounts/token.ex",
+      "accessCount": 2,
+      "lastAccessed": 1773229310317,
+      "type": "file"
+    },
+    {
+      "path": "README.md",
+      "accessCount": 1,
+      "lastAccessed": 1773154636837,
+      "type": "file"
+    },
+    {
+      "path": "fly.toml",
+      "accessCount": 1,
+      "lastAccessed": 1773154802992,
+      "type": "file"
+    },
+    {
+      "path": "config/prod.exs",
+      "accessCount": 1,
+      "lastAccessed": 1773154866292,
+      "type": "file"
+    },
+    {
+      "path": "lib/kuma_san_kanji_web.ex",
+      "accessCount": 1,
+      "lastAccessed": 1773155371757,
+      "type": "file"
+    },
+    {
+      "path": "Caddyfile",
+      "accessCount": 1,
+      "lastAccessed": 1773155497483,
+      "type": "file"
+    },
+    {
+      "path": "docs/superpowers/specs/2026-03-10-caddy-docker-proxy-migration-design.md",
+      "accessCount": 1,
+      "lastAccessed": 1773158139534,
+      "type": "file"
+    },
+    {
+      "path": "priv/repo/migrations/20250903214437_drop_hashed_password_from_users.exs",
+      "accessCount": 1,
+      "lastAccessed": 1773187941457,
+      "type": "file"
+    },
+    {
+      "path": "priv/repo/migrations/20260311000000_add_hashed_password_to_users.exs",
+      "accessCount": 1,
+      "lastAccessed": 1773188200992,
+      "type": "file"
+    },
+    {
+      "path": "test/kuma_san_kanji/auth_test.exs",
+      "accessCount": 1,
+      "lastAccessed": 1773188549873,
+      "type": "file"
+    },
+    {
+      "path": "test/kuma_san_kanji_web/ash_authentication_test.exs",
+      "accessCount": 1,
+      "lastAccessed": 1773188550166,
+      "type": "file"
+    },
+    {
+      "path": "scripts/hooks/block-no-verify.sh",
+      "accessCount": 1,
+      "lastAccessed": 1773188856732,
+      "type": "file"
+    },
+    {
+      "path": "scripts/hooks/block-bare-docker-pull.sh",
+      "accessCount": 1,
+      "lastAccessed": 1773188863123,
+      "type": "file"
+    },
+    {
+      "path": "scripts/hooks/check-migration-safety.sh",
+      "accessCount": 1,
+      "lastAccessed": 1773188878335,
+      "type": "file"
+    },
+    {
+      "path": "scripts/hooks/check-ci-deploy-patterns.sh",
+      "accessCount": 1,
+      "lastAccessed": 1773188883182,
+      "type": "file"
+    },
+    {
+      "path": ".claude/hookify.ecto-upsert-safety.md",
+      "accessCount": 1,
+      "lastAccessed": 1773188900577,
+      "type": "file"
+    },
+    {
+      "path": ".claude/hookify.silent-rescue-failure.md",
+      "accessCount": 1,
+      "lastAccessed": 1773188905963,
+      "type": "file"
+    },
+    {
+      "path": ".claude/hookify.docker-latest-tag.md",
+      "accessCount": 1,
+      "lastAccessed": 1773188911403,
+      "type": "file"
+    },
+    {
+      "path": ".claude/hookify.library-doc-verification.md",
+      "accessCount": 1,
+      "lastAccessed": 1773188917670,
+      "type": "file"
+    },
+    {
+      "path": ".claude/commands/deploy.md",
+      "accessCount": 1,
+      "lastAccessed": 1773188925770,
+      "type": "file"
+    },
+    {
+      "path": ".claude/commands/new-migration.md",
+      "accessCount": 1,
+      "lastAccessed": 1773188940649,
+      "type": "file"
+    }
+  ],
+  "userDirectives": []
+}

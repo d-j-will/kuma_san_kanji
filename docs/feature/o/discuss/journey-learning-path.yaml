@@ -1,0 +1,221 @@
+journey:
+  name: "Grade 1 Thematic Learning Path"
+  goal: "Complete a structured learn-then-quiz cycle through thematic groups of Grade 1 kanji, bridging from isolated flashcard knowledge to contextual understanding"
+  persona: "Yuki Tanaka -- 34yo developer, JLPT N5, knows ~30 kanji from flashcards but cannot read sentences"
+
+  emotional_arc:
+    start: "Curious but skeptical -- 'Another kanji app?'"
+    middle: "Engaged and building confidence -- 'I SEE how these connect'"
+    end: "Satisfied and motivated -- 'I actually learned something, I want more'"
+
+  feature_flag: "grade1_learning_path"
+
+steps:
+  - id: 1
+    name: "Browse Thematic Groups"
+    route: "/learn"
+    action: "User clicks 'Learn' in main navigation"
+
+    shared_artifacts:
+      - name: "thematic_groups"
+        source: "ThematicGroup resource (Content domain)"
+        displayed_as: "group cards with name, description, kanji preview, count"
+        consumers:
+          - "group card grid on /learn"
+          - "breadcrumb on /learn/:group_slug"
+      - name: "user_group_progress"
+        source: "UserKanjiProgress aggregated per group"
+        displayed_as: "X/Y learned badge on each group card"
+        consumers:
+          - "group card badge"
+          - "overall progress counter"
+
+    emotional_state:
+      entry: "Curious -- exploring a new feature"
+      exit: "Oriented -- can see the full path, knows where to start"
+
+    integration_checkpoint: |
+      All 10 thematic groups display with correct kanji counts.
+      Groups sorted by order_index.
+      Progress badges reflect actual UserKanjiProgress state.
+      Feature flag gate prevents access when disabled.
+
+    gherkin: |
+      Scenario: Authenticated learner sees all thematic groups
+        Given Yuki is signed in
+        And the grade1_learning_path feature flag is enabled
+        When Yuki navigates to /learn
+        Then Yuki sees 10 thematic group cards
+        And each card shows the group name, kanji preview, and kanji count
+        And each card shows "Not started" or "X/Y learned" progress
+
+  - id: 2
+    name: "Enter a Thematic Group"
+    route: "/learn/:group_slug"
+    action: "User clicks a group card"
+
+    shared_artifacts:
+      - name: "group_kanji_list"
+        source: "KanjiThematicGroup join (Content domain) -> Kanji resource"
+        displayed_as: "ordered grid of kanji characters with learned/not-learned state"
+        consumers:
+          - "kanji grid on group detail page"
+          - "learn step navigation (next/previous)"
+          - "quiz question pool"
+      - name: "group_metadata"
+        source: "ThematicGroup resource"
+        displayed_as: "group name, description, color"
+        consumers:
+          - "page header"
+          - "breadcrumb"
+
+    emotional_state:
+      entry: "Motivated -- chose a group, ready to commit"
+      exit: "Oriented -- can see exactly which kanji are learned and which remain"
+
+    integration_checkpoint: |
+      Kanji grid shows all kanji in the group with correct sort order.
+      Learned state per kanji matches UserKanjiProgress.
+      "Continue Learning" button links to next unlearned kanji.
+
+    gherkin: |
+      Scenario: Learner sees group detail with progress
+        Given Yuki has learned 3 kanji in the Numbers group (一, 二, 三)
+        When Yuki opens the Numbers group
+        Then Yuki sees a grid of 12 kanji characters
+        And 一, 二, 三 are marked as learned
+        And the remaining 9 are unmarked
+        And "Continue Learning" links to kanji 四
+
+  - id: 3
+    name: "Learn a Kanji (Teach Step)"
+    route: "/learn/:group_slug/:position"
+    action: "User clicks 'Continue Learning' or a specific kanji"
+
+    shared_artifacts:
+      - name: "kanji_detail"
+        source: "Kanji resource with loaded meanings, pronunciations, example_sentences"
+        displayed_as: "character, meaning, readings (kun/on), example sentence"
+        consumers:
+          - "learn step display"
+          - "quiz feedback display"
+          - "explore page (existing)"
+      - name: "learning_meta"
+        source: "KanjiLearningMeta resource (Content domain)"
+        displayed_as: "learning tips, mnemonic hints"
+        consumers:
+          - "learn step tips section"
+      - name: "stroke_order"
+        source: "KanjiVG data via StrokeOrderEvents"
+        displayed_as: "animated stroke order diagram"
+        consumers:
+          - "learn step stroke order toggle"
+          - "explore page stroke order (existing)"
+
+    emotional_state:
+      entry: "Focused -- studying a specific character"
+      exit: "Confident -- 'I understand this, I am ready to be tested'"
+
+    integration_checkpoint: |
+      Kanji data (meanings, readings, sentences) loads correctly.
+      Stroke order animation works (reuses existing StrokeOrderEvents).
+      Learning meta (tips, mnemonics) displays when available.
+      "I've learned this" button marks kanji in UserKanjiProgress and advances.
+
+    gherkin: |
+      Scenario: Learner studies a kanji before being quizzed
+        Given Yuki is learning the Numbers group
+        And Yuki has not yet learned 四
+        When Yuki opens the learn step for 四
+        Then Yuki sees the character 四 displayed prominently
+        And Yuki sees the meaning "four"
+        And Yuki sees readings: よん, よ, よっつ (kun) and シ (on)
+        And Yuki sees an example sentence: 四月は春です。/ April is spring.
+        And Yuki sees a "Show stroke order" toggle
+        And Yuki sees an "I've learned this -- Quiz me!" button
+
+  - id: 4
+    name: "Quiz on Learned Kanji"
+    route: "/learn/:group_slug/quiz"
+    action: "User clicks 'I've learned this -- Quiz me!' or 'Review Learned'"
+
+    shared_artifacts:
+      - name: "quiz_pool"
+        source: "UserKanjiProgress filtered by thematic group + learned status"
+        displayed_as: "quiz questions drawn only from kanji marked learned in this group"
+        consumers:
+          - "quiz question selection"
+          - "session progress counter"
+      - name: "review_result"
+        source: "SRS.Changes.ApplySm2 (SM-2 algorithm)"
+        displayed_as: "correct/incorrect feedback with next review date"
+        consumers:
+          - "quiz feedback panel"
+          - "UserKanjiProgress update"
+
+    emotional_state:
+      entry: "Engaged -- testing what was just learned"
+      exit: "Satisfied or determined -- correct answers build confidence, incorrect answers motivate review"
+
+    integration_checkpoint: |
+      Quiz only draws from kanji the user has learned in this group.
+      Answer checking reuses existing check_answer_correctness logic.
+      SRS record_review updates UserKanjiProgress.
+      Feedback shows example sentence for contextual reinforcement.
+
+    gherkin: |
+      Scenario: Learner quizzes on learned kanji within a group
+        Given Yuki has learned 四 in the Numbers group
+        When Yuki starts the Numbers quiz
+        Then the quiz presents only kanji Yuki has learned (一, 二, 三, 四)
+        And Yuki types "four" for 四
+        And the quiz shows "Correct!" with the example sentence
+
+  - id: 5
+    name: "Group Progress Summary"
+    route: "/learn/:group_slug (return)"
+    action: "Quiz round completes"
+
+    shared_artifacts:
+      - name: "session_results"
+        source: "Quiz session in-memory state"
+        displayed_as: "X/Y correct this session"
+        consumers:
+          - "session summary display"
+      - name: "group_progress"
+        source: "UserKanjiProgress aggregated for group"
+        displayed_as: "X/12 learned, visual grid with completion markers"
+        consumers:
+          - "group detail page"
+          - "group card badge on /learn"
+
+    emotional_state:
+      entry: "Accomplished -- just finished a quiz round"
+      exit: "Motivated -- clear progress visible, next action obvious"
+
+    integration_checkpoint: |
+      Session results display correctly.
+      Group progress reflects updated UserKanjiProgress.
+      "Continue Learning" links to next unlearned kanji.
+      Overall progress on /learn updates when returning.
+
+    gherkin: |
+      Scenario: Learner sees progress after completing quiz
+        Given Yuki just answered 4/4 correctly in the Numbers quiz
+        When the quiz session ends
+        Then Yuki sees "This session: 4/4 correct"
+        And Yuki sees "Group progress: 4/12 learned"
+        And the kanji grid shows 一, 二, 三, 四 as completed
+        And "Continue Learning" links to 五
+
+integration_validation:
+  shared_artifact_consistency:
+    - artifact: "kanji_detail"
+      must_match_across: [3, 4]
+      failure_message: "Kanji data shown in learn step must match quiz feedback exactly"
+    - artifact: "group_kanji_list"
+      must_match_across: [2, 4, 5]
+      failure_message: "Group membership must be consistent across group detail, quiz pool, and progress"
+    - artifact: "user_group_progress"
+      must_match_across: [1, 2, 5]
+      failure_message: "Progress counts must be consistent across group list, group detail, and summary"

@@ -85,7 +85,9 @@ defmodule KumaSanKanjiWeb.GroupLive do
       <% end %>
 
       <%= if @kanji_list == [] do %>
-        <p class="mt-6 text-base-content/60">This group is being prepared. No kanji have been added yet.</p>
+        <p class="mt-6 text-base-content/60">
+          This group is being prepared. No kanji have been added yet.
+        </p>
       <% else %>
         <div class="mt-6 grid grid-cols-4 sm:grid-cols-6 gap-3">
           <%= for {kanji, idx} <- Enum.with_index(@kanji_list, 1) do %>
