@@ -191,3 +191,39 @@ jobs:
             docker compose -f docker-compose.prod.yml ps 2>&1
             echo "Deploy complete."
           EOF
+
+  notify:
+    name: Discord Notification
+    runs-on: ubuntu-latest
+    needs: [quality, deploy]
+    if: always() && (needs.quality.result == 'failure' || needs.deploy.result == 'failure' || needs.deploy.result == 'success')
+
+    steps:
+      - name: Send Discord notification
+        env:
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          COMMIT_MSG: ${{ github.event.head_commit.message }}
+        run: |
+          # Sanitize commit message for JSON (escape quotes, backslashes, newlines)
+          SAFE_MSG=$(echo "$COMMIT_MSG" | head -1 | sed 's/\\/\\\\/g; s/"/\\"/g' | cut -c1-100)
+
+          if [ "${{ needs.quality.result }}" = "failure" ]; then
+            TITLE="CI Failed: Quality"
+            COLOR=15548997
+          elif [ "${{ needs.deploy.result }}" = "failure" ]; then
+            TITLE="CI Failed: Deploy"
+            COLOR=15548997
+          else
+            TITLE="Deployed: ${{ github.ref_name }}"
+            COLOR=3066993
+          fi
+
+          curl -sf -H "Content-Type: application/json" \
+            -d "{
+              \"embeds\": [{
+                \"title\": \"${TITLE}\",
+                \"description\": \"**Repo:** ${{ github.repository }}\\n**Branch:** ${{ github.ref_name }}\\n**Commit:** \`${GITHUB_SHA::7}\` — ${SAFE_MSG}\\n**Run:** [View logs](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})\",
+                \"color\": ${COLOR}
+              }]
+            }" \
+            "$DISCORD_WEBHOOK_URL"
