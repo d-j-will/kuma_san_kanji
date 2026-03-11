@@ -43,10 +43,13 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
+    networks:
+      default:
 
 volumes:
   pgdata:
 
 networks:
+  default:
   proxy:
     external: true

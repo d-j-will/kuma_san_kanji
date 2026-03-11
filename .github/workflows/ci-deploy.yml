@@ -183,12 +183,12 @@ jobs:
 
             # Run migrations
             echo "Running migrations..."
-            docker compose -f docker-compose.prod.yml run --rm --no-TTY app bin/kuma_san_kanji eval "KumaSanKanji.Release.migrate()" < /dev/null 2>&1
+            docker compose -f docker-compose.prod.yml run --rm --no-TTY --no-deps app bin/kuma_san_kanji eval "KumaSanKanji.Release.migrate()" < /dev/null 2>&1
             echo "Migrations complete."
 
             # Setup admin user
             echo "Setting up admin user..."
-            docker compose -f docker-compose.prod.yml run --rm --no-TTY app bin/kuma_san_kanji eval "KumaSanKanji.Release.setup_admin_user()" < /dev/null 2>&1
+            docker compose -f docker-compose.prod.yml run --rm --no-TTY --no-deps app bin/kuma_san_kanji eval "KumaSanKanji.Release.setup_admin_user()" < /dev/null 2>&1
             echo "Admin setup complete."
 
             # Recreate containers with the new image
