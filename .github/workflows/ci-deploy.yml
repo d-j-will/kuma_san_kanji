@@ -170,9 +170,16 @@ jobs:
               sleep 1
             done
 
+            # Wait for Docker DNS to register postgres on the new network
+            sleep 5
+
+            # Diagnostics: verify network and DNS
+            echo "=== Network Diagnostics ==="
+            docker network inspect kuma_san_kanji_default --format '{{range .Containers}}{{.Name}} {{.IPv4Address}}{{"\n"}}{{end}}' 2>&1
+            docker run --rm --network kuma_san_kanji_default alpine nslookup postgres 2>&1 || true
+            echo "=== End Diagnostics ==="
+
             # Migrate and setup admin
-            # Use docker run on default network only — docker compose run joins
-            # both default+proxy networks, and DNS can't resolve postgres on proxy
             source /root/kuma_san_kanji/.env
             echo "Running migrations..."
             docker run --rm --network kuma_san_kanji_default \
