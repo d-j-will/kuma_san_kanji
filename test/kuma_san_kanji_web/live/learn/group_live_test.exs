@@ -18,7 +18,6 @@ defmodule KumaSanKanjiWeb.GroupLiveTest do
   # ---------------------------------------------------------------
 
   describe "Walking Skeleton: Learner views group detail with progress" do
-
     test "partially completed group shows kanji grid with learned indicators", %{conn: conn} do
       # Given Yuki Tanaka is signed in
       {conn, user} = create_authenticated_learner(conn, "yuki-group")
@@ -53,7 +52,6 @@ defmodule KumaSanKanjiWeb.GroupLiveTest do
   # ---------------------------------------------------------------
 
   describe "Group with no prior progress" do
-
     test "all kanji shown as not yet learned", %{conn: conn} do
       # Given Yuki has not learned any kanji in the Numbers group
       {conn, _user} = create_authenticated_learner(conn, "yuki-no-progress")
@@ -74,7 +72,6 @@ defmodule KumaSanKanjiWeb.GroupLiveTest do
   end
 
   describe "Continue learning resumes at correct position" do
-
     test "continue learning links to the first unlearned kanji", %{conn: conn} do
       # Given Yuki has learned 一, 二, 三 but not 四 in Numbers
       {conn, user} = create_authenticated_learner(conn, "yuki-resume")
@@ -107,7 +104,6 @@ defmodule KumaSanKanjiWeb.GroupLiveTest do
   end
 
   describe "Completed group shows celebration" do
-
     test "fully learned group shows All learned and Review All option", %{conn: conn} do
       # Given Yuki has learned all 4 kanji in the Numbers group
       {conn, user} = create_authenticated_learner(conn, "yuki-celebrate")
@@ -131,7 +127,6 @@ defmodule KumaSanKanjiWeb.GroupLiveTest do
   end
 
   describe "Session results display after quiz" do
-
     test "returning from quiz shows session score", %{conn: conn} do
       # Given Yuki just completed a Numbers quiz session
       {conn, user} = create_authenticated_learner(conn, "yuki-session")
@@ -156,7 +151,6 @@ defmodule KumaSanKanjiWeb.GroupLiveTest do
   # ---------------------------------------------------------------
 
   describe "Non-existent group shows graceful error" do
-
     test "invalid group identifier handles gracefully", %{conn: conn} do
       # Given Yuki is signed in
       {conn, _user} = create_authenticated_learner(conn, "yuki-bad-group")
@@ -174,7 +168,6 @@ defmodule KumaSanKanjiWeb.GroupLiveTest do
   end
 
   describe "Unauthenticated access to group page" do
-
     test "unauthenticated visitor is redirected to sign-in", %{conn: conn} do
       # Given the feature flag is enabled
       enable_learning_path_flag()
@@ -191,7 +184,6 @@ defmodule KumaSanKanjiWeb.GroupLiveTest do
   end
 
   describe "Group with no kanji linked" do
-
     test "empty group shows helpful message", %{conn: conn} do
       # Given the "Colors" thematic group exists but has no kanji linked
       {conn, _user} = create_authenticated_learner(conn, "yuki-empty-group")
@@ -211,7 +203,6 @@ defmodule KumaSanKanjiWeb.GroupLiveTest do
   end
 
   describe "Feature flag disabled prevents group access" do
-
     test "group page redirects to home when flag is disabled", %{conn: conn} do
       # Given the grade1_learning_path feature flag is disabled
       disable_learning_path_flag()
@@ -229,7 +220,6 @@ defmodule KumaSanKanjiWeb.GroupLiveTest do
   end
 
   describe "Overall progress updates across groups" do
-
     test "learn page reflects combined progress from multiple groups", %{conn: conn} do
       # Given Yuki has learned all 4 kanji in Numbers and 1 kanji in Nature
       {conn, user} = create_authenticated_learner(conn, "yuki-overall")

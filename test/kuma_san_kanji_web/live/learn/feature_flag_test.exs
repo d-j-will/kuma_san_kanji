@@ -23,22 +23,18 @@ defmodule KumaSanKanjiWeb.FeatureFlagTest do
       %{conn: conn, user: user}
     end
 
-
     test "GET /learn redirects to home", %{conn: conn} do
       assert {:error, {:redirect, %{to: "/"}}} = live(conn, ~p"/learn")
     end
-
 
     test "GET /learn/:slug redirects to home", %{conn: conn} do
       group = create_thematic_group(%{name: "Numbers", order_index: 1})
       assert {:error, {:redirect, %{to: "/"}}} = live(conn, ~p"/learn/#{group.id}")
     end
 
-
     test "GET /learn/:slug/:position redirects to home", %{conn: conn} do
       assert {:error, {:redirect, %{to: "/"}}} = live(conn, ~p"/learn/some-group/1")
     end
-
 
     test "GET /learn/:slug/quiz redirects to home", %{conn: conn} do
       assert {:error, {:redirect, %{to: "/"}}} = live(conn, ~p"/learn/some-group/quiz")
@@ -58,24 +54,20 @@ defmodule KumaSanKanjiWeb.FeatureFlagTest do
       %{conn: conn, user: user, group: group, kanji_list: kanji_list}
     end
 
-
     test "GET /learn renders the Learn page", %{conn: conn} do
       {:ok, _view, html} = live(conn, ~p"/learn")
       assert html =~ "Numbers"
     end
-
 
     test "GET /learn/:slug renders the group detail", %{conn: conn, group: group} do
       {:ok, _view, html} = live(conn, ~p"/learn/#{group.id}")
       assert html =~ "Numbers"
     end
 
-
     test "GET /learn/:slug/:position renders the teach step", %{conn: conn, group: group} do
       {:ok, _view, html} = live(conn, ~p"/learn/#{group.id}/1")
       assert html =~ "一"
     end
-
 
     test "GET /learn/:slug/quiz renders the group quiz", %{conn: conn, group: group} do
       {:ok, _view, html} = live(conn, ~p"/learn/#{group.id}/quiz")
@@ -89,7 +81,6 @@ defmodule KumaSanKanjiWeb.FeatureFlagTest do
   # ---------------------------------------------------------------
 
   describe "Learn navigation item visibility" do
-
     test "Learn link appears in navigation when flag is enabled", %{conn: conn} do
       enable_learning_path_flag()
       {conn, _user} = create_authenticated_learner(conn, "yuki-nav-on")
@@ -98,7 +89,6 @@ defmodule KumaSanKanjiWeb.FeatureFlagTest do
 
       assert html =~ "Learn"
     end
-
 
     test "Learn link is hidden in navigation when flag is disabled", %{conn: conn} do
       disable_learning_path_flag()
@@ -117,7 +107,6 @@ defmodule KumaSanKanjiWeb.FeatureFlagTest do
   # ---------------------------------------------------------------
 
   describe "Flag toggle takes effect immediately" do
-
     test "disabling flag after page load blocks subsequent navigation", %{conn: conn} do
       # Given the flag is enabled and Yuki accesses /learn
       enable_learning_path_flag()

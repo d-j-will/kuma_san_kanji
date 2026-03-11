@@ -19,7 +19,6 @@ defmodule KumaSanKanjiWeb.GroupQuizLiveTest do
   # ---------------------------------------------------------------
 
   describe "Walking Skeleton: Learner quizzes on learned kanji in a group" do
-
     test "quiz presents only learned kanji from the current group", %{conn: conn} do
       # Given Yuki has learned 一, 二, 三 in the Numbers group
       {conn, user} = create_authenticated_learner(conn, "yuki-quiz")
@@ -52,7 +51,6 @@ defmodule KumaSanKanjiWeb.GroupQuizLiveTest do
   # ---------------------------------------------------------------
 
   describe "Correct answer shows positive feedback" do
-
     test "typing the correct meaning shows Correct feedback", %{conn: conn} do
       # Given Yuki is in the Numbers group quiz
       {conn, user} = create_authenticated_learner(conn, "yuki-correct")
@@ -80,7 +78,6 @@ defmodule KumaSanKanjiWeb.GroupQuizLiveTest do
   end
 
   describe "Incorrect answer shows learning reinforcement" do
-
     test "wrong answer shows the correct meaning and readings", %{conn: conn} do
       # Given Yuki is in the Numbers group quiz
       {conn, user} = create_authenticated_learner(conn, "yuki-incorrect")
@@ -110,7 +107,6 @@ defmodule KumaSanKanjiWeb.GroupQuizLiveTest do
   end
 
   describe "Reading accepted as correct answer" do
-
     test "answering with a reading instead of meaning is accepted", %{conn: conn} do
       # Given Yuki is quizzing on the Numbers group
       {conn, user} = create_authenticated_learner(conn, "yuki-reading")
@@ -135,7 +131,6 @@ defmodule KumaSanKanjiWeb.GroupQuizLiveTest do
   end
 
   describe "SRS record is updated after answering" do
-
     test "correct answer updates the SRS record for the kanji", %{conn: conn} do
       # Given Yuki is in the Numbers group quiz
       {conn, user} = create_authenticated_learner(conn, "yuki-srs")
@@ -164,7 +159,6 @@ defmodule KumaSanKanjiWeb.GroupQuizLiveTest do
   end
 
   describe "Quiz session ends after all learned kanji reviewed" do
-
     test "answering all questions transitions to completion", %{conn: conn} do
       # Given Yuki has learned only 一 in the Numbers group
       {conn, user} = create_authenticated_learner(conn, "yuki-complete-quiz")
@@ -200,7 +194,6 @@ defmodule KumaSanKanjiWeb.GroupQuizLiveTest do
   # ---------------------------------------------------------------
 
   describe "Quiz blocked when no kanji learned in group" do
-
     test "zero learned kanji shows helpful message with link to first teach step", %{conn: conn} do
       # Given Yuki has not learned any kanji in the Numbers group
       {conn, _user} = create_authenticated_learner(conn, "yuki-no-learned")
@@ -220,7 +213,6 @@ defmodule KumaSanKanjiWeb.GroupQuizLiveTest do
   end
 
   describe "Empty answer submission" do
-
     test "submitting an empty answer shows validation message", %{conn: conn} do
       # Given Yuki is in the quiz with a learned kanji
       {conn, user} = create_authenticated_learner(conn, "yuki-empty-answer")
@@ -243,7 +235,6 @@ defmodule KumaSanKanjiWeb.GroupQuizLiveTest do
   end
 
   describe "Quiz for non-existent group" do
-
     test "navigating to quiz for invalid group handles gracefully", %{conn: conn} do
       # Given Yuki is signed in
       {conn, _user} = create_authenticated_learner(conn, "yuki-bad-quiz-group")
@@ -261,7 +252,6 @@ defmodule KumaSanKanjiWeb.GroupQuizLiveTest do
   end
 
   describe "Cross-group isolation" do
-
     test "kanji learned in another group do not appear in this group quiz", %{conn: conn} do
       # Given Yuki has learned 山, 川 in the Nature group
       {conn, user} = create_authenticated_learner(conn, "yuki-isolation")
