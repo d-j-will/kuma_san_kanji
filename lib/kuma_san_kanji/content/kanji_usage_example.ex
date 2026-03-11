@@ -30,7 +30,15 @@ defmodule KumaSanKanji.Content.KanjiUsageExample do
   end
 
   actions do
-    defaults([:create, :read, :update, :destroy])
+    defaults([:read, :destroy])
+
+    create :create do
+      accept([:context, :translation, :difficulty_level, :source, :notes])
+    end
+
+    update :update do
+      accept([:context, :translation, :difficulty_level, :source, :notes])
+    end
 
     read :by_kanji do
       argument(:kanji_id, :uuid, allow_nil?: false)

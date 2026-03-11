@@ -27,7 +27,15 @@ defmodule KumaSanKanji.Content.EducationalContext do
   end
 
   actions do
-    defaults([:create, :read, :update, :destroy])
+    defaults([:read, :destroy])
+
+    create :create do
+      accept([:name, :description, :grade_level, :curriculum_area, :learning_objectives])
+    end
+
+    update :update do
+      accept([:name, :description, :grade_level, :curriculum_area, :learning_objectives])
+    end
 
     read :by_grade_level do
       argument(:grade_level, :integer)

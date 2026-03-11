@@ -16,6 +16,7 @@ defmodule KumaSanKanji.Content.KanjiThematicGroup do
     uuid_primary_key(:id)
     attribute(:kanji_id, :uuid, allow_nil?: false)
     attribute(:relevance_score, :float, default: 1.0)
+    attribute(:position, :integer)
     attribute(:notes, :string)
     timestamps()
   end
@@ -32,7 +33,15 @@ defmodule KumaSanKanji.Content.KanjiThematicGroup do
   end
 
   actions do
-    defaults([:create, :read, :update, :destroy])
+    defaults([:read, :destroy])
+
+    create :create do
+      accept([:kanji_id, :relevance_score, :position, :notes])
+    end
+
+    update :update do
+      accept([:relevance_score, :position, :notes])
+    end
 
     read :by_kanji do
       argument(:kanji_id, :uuid, allow_nil?: false)
@@ -51,7 +60,7 @@ defmodule KumaSanKanji.Content.KanjiThematicGroup do
 
         query
         |> Ash.Query.filter(thematic_group_id == ^group_id_val)
-        |> Ash.Query.sort(relevance_score: :desc)
+        |> Ash.Query.sort([{:position, :asc_nils_last}, {:relevance_score, :desc}])
       end)
     end
   end

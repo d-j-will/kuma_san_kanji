@@ -35,7 +35,27 @@ defmodule KumaSanKanji.Content.KanjiLearningMeta do
   end
 
   actions do
-    defaults([:create, :read, :update, :destroy])
+    defaults([:read, :destroy])
+
+    create :create do
+      accept([
+        :difficulty_score,
+        :prerequisites,
+        :learning_tips,
+        :common_mistakes,
+        :mnemonic_hints
+      ])
+    end
+
+    update :update do
+      accept([
+        :difficulty_score,
+        :prerequisites,
+        :learning_tips,
+        :common_mistakes,
+        :mnemonic_hints
+      ])
+    end
 
     read :by_kanji do
       argument(:kanji_id, :uuid, allow_nil?: false)

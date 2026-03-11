@@ -15,6 +15,7 @@ defmodule KumaSanKanji.Content.ThematicGroup do
   attributes do
     uuid_primary_key(:id)
     attribute(:name, :string, allow_nil?: false)
+    attribute(:slug, :string)
     attribute(:description, :string)
     attribute(:color_code, :string)
     attribute(:icon_name, :string)
@@ -33,7 +34,15 @@ defmodule KumaSanKanji.Content.ThematicGroup do
   end
 
   actions do
-    defaults([:create, :read, :update, :destroy])
+    defaults([:read, :destroy])
+
+    create :create do
+      accept([:name, :slug, :description, :color_code, :icon_name, :order_index])
+    end
+
+    update :update do
+      accept([:name, :slug, :description, :color_code, :icon_name, :order_index])
+    end
 
     read :by_name do
       argument(:name, :string, allow_nil?: false)
@@ -41,6 +50,15 @@ defmodule KumaSanKanji.Content.ThematicGroup do
       prepare(fn query, _context ->
         name_val = Ash.Query.get_argument(query, :name)
         Ash.Query.filter(query, name == ^name_val)
+      end)
+    end
+
+    read :by_slug do
+      argument(:slug, :string, allow_nil?: false)
+
+      prepare(fn query, _context ->
+        slug_val = Ash.Query.get_argument(query, :slug)
+        Ash.Query.filter(query, slug == ^slug_val)
       end)
     end
 
