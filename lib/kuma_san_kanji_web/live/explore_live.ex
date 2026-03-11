@@ -261,7 +261,9 @@ defmodule KumaSanKanjiWeb.ExploreLive do
 
   defp load_radical(kanji) do
     case kanji.radical_id do
-      nil -> nil
+      nil ->
+        nil
+
       radical_id ->
         case KumaSanKanji.Kanji.Radical.get_radical_by_kangxi_index(radical_id) do
           {:ok, radical} -> radical

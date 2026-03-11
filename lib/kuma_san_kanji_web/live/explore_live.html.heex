@@ -96,7 +96,7 @@
             <p class="mt-1 text-lg font-wabi">N{@kanji.jlpt_level || "N/A"}</p>
           </div>
         </div>
-
+        
 <!-- Radical Information -->
         <div :if={@radical && !match?(%Ash.NotLoaded{}, @radical)} class="mb-6">
           <h3 class="text-lg font-semibold text-base-content font-wabi-display mb-2">Radical</h3>
@@ -128,7 +128,7 @@
             </div>
           </div>
         </div>
-
+        
 <!-- Thematic Groups Section -->
         <div :if={@thematic_info.groups != []}>
           <h3 class="text-lg font-semibold wabi-accent-text font-wabi-display mb-2">
@@ -151,7 +151,7 @@
             <% end %>
           </div>
         </div>
-
+        
 <!-- Educational Context Section -->
         <div :if={@thematic_info.edu_context}>
           <h3 class="text-lg font-semibold text-base-content font-wabi-display mb-2">
@@ -173,7 +173,7 @@
             </p>
           </div>
         </div>
-
+        
 <!-- Learning Metadata Section -->
         <div :if={@learning_meta != []}>
           <h3 class="text-lg font-semibold text-base-content font-wabi-display mb-2">
@@ -245,7 +245,7 @@
             </ul>
           </div>
         </div>
-
+        
 <!-- Usage Examples Section -->
         <div :if={@usage_examples != []}>
           <h3 class="text-lg font-semibold text-base-content font-wabi-display mb-2">
@@ -305,7 +305,7 @@
             <% end %>
           </ul>
         </div>
-
+        
 <!-- User Notes Section -->
         <div :if={@is_authenticated} class="mt-8">
           <h3 class="text-lg font-semibold text-base-content font-wabi-display mb-2">
