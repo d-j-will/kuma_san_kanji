@@ -10,7 +10,6 @@ defmodule KumaSanKanjiWeb.MarkLearnedTest do
   """
   use KumaSanKanjiWeb.ConnCase, async: false
   import Phoenix.LiveViewTest
-  import KumaSanKanji.TestHelpers
   import KumaSanKanji.LearningPathHelpers
 
   alias KumaSanKanji.SRS.UserKanjiProgress
@@ -20,7 +19,7 @@ defmodule KumaSanKanjiWeb.MarkLearnedTest do
   # ---------------------------------------------------------------
 
   describe "Walking Skeleton: Learner marks kanji as learned and enters quiz" do
-    @tag :skip
+
     test "marking a new kanji as learned creates progress and navigates to quiz", %{conn: conn} do
       # Given Yuki Tanaka is on the teach step for 四
       {conn, user} = create_authenticated_learner(conn, "yuki-mark")
@@ -59,7 +58,7 @@ defmodule KumaSanKanjiWeb.MarkLearnedTest do
   # ---------------------------------------------------------------
 
   describe "Marking an already-tracked kanji preserves SRS state" do
-    @tag :skip
+
     test "existing progress is not overwritten when re-marking learned", %{conn: conn} do
       # Given Yuki Tanaka is on the teach step for 三
       {conn, user} = create_authenticated_learner(conn, "yuki-preserve")
@@ -105,7 +104,7 @@ defmodule KumaSanKanjiWeb.MarkLearnedTest do
   # ---------------------------------------------------------------
 
   describe "Skipping does not create a progress record" do
-    @tag :skip
+
     test "skip advances to next kanji without creating progress", %{conn: conn} do
       # Given Yuki Tanaka is on the teach step for 四
       {conn, user} = create_authenticated_learner(conn, "yuki-skip")
@@ -128,7 +127,7 @@ defmodule KumaSanKanjiWeb.MarkLearnedTest do
   end
 
   describe "Skip at last position returns to group page" do
-    @tag :skip
+
     test "skipping past the last kanji navigates back to group detail", %{conn: conn} do
       # Given Yuki is on the teach step for the last kanji (position 4 of 4)
       {conn, _user} = create_authenticated_learner(conn, "yuki-skip-last")
@@ -150,7 +149,7 @@ defmodule KumaSanKanjiWeb.MarkLearnedTest do
   end
 
   describe "Multiple kanji can be marked learned sequentially" do
-    @tag :skip
+
     test "marking learned creates independent progress records", %{conn: conn} do
       # Given Yuki is signed in
       {conn, user} = create_authenticated_learner(conn, "yuki-multi")

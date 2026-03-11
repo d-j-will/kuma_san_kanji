@@ -10,7 +10,6 @@ defmodule KumaSanKanjiWeb.FeatureFlagTest do
   """
   use KumaSanKanjiWeb.ConnCase, async: false
   import Phoenix.LiveViewTest
-  import KumaSanKanji.TestHelpers
   import KumaSanKanji.LearningPathHelpers
 
   # ---------------------------------------------------------------
@@ -24,23 +23,23 @@ defmodule KumaSanKanjiWeb.FeatureFlagTest do
       %{conn: conn, user: user}
     end
 
-    @tag :skip
+
     test "GET /learn redirects to home", %{conn: conn} do
       assert {:error, {:redirect, %{to: "/"}}} = live(conn, ~p"/learn")
     end
 
-    @tag :skip
+
     test "GET /learn/:slug redirects to home", %{conn: conn} do
       group = create_thematic_group(%{name: "Numbers", order_index: 1})
       assert {:error, {:redirect, %{to: "/"}}} = live(conn, ~p"/learn/#{group.id}")
     end
 
-    @tag :skip
+
     test "GET /learn/:slug/:position redirects to home", %{conn: conn} do
       assert {:error, {:redirect, %{to: "/"}}} = live(conn, ~p"/learn/some-group/1")
     end
 
-    @tag :skip
+
     test "GET /learn/:slug/quiz redirects to home", %{conn: conn} do
       assert {:error, {:redirect, %{to: "/"}}} = live(conn, ~p"/learn/some-group/quiz")
     end
@@ -59,25 +58,25 @@ defmodule KumaSanKanjiWeb.FeatureFlagTest do
       %{conn: conn, user: user, group: group, kanji_list: kanji_list}
     end
 
-    @tag :skip
+
     test "GET /learn renders the Learn page", %{conn: conn} do
       {:ok, _view, html} = live(conn, ~p"/learn")
       assert html =~ "Numbers"
     end
 
-    @tag :skip
+
     test "GET /learn/:slug renders the group detail", %{conn: conn, group: group} do
       {:ok, _view, html} = live(conn, ~p"/learn/#{group.id}")
       assert html =~ "Numbers"
     end
 
-    @tag :skip
+
     test "GET /learn/:slug/:position renders the teach step", %{conn: conn, group: group} do
       {:ok, _view, html} = live(conn, ~p"/learn/#{group.id}/1")
       assert html =~ "一"
     end
 
-    @tag :skip
+
     test "GET /learn/:slug/quiz renders the group quiz", %{conn: conn, group: group} do
       {:ok, _view, html} = live(conn, ~p"/learn/#{group.id}/quiz")
       # Should show quiz or "learn at least one" message
@@ -90,7 +89,7 @@ defmodule KumaSanKanjiWeb.FeatureFlagTest do
   # ---------------------------------------------------------------
 
   describe "Learn navigation item visibility" do
-    @tag :skip
+
     test "Learn link appears in navigation when flag is enabled", %{conn: conn} do
       enable_learning_path_flag()
       {conn, _user} = create_authenticated_learner(conn, "yuki-nav-on")
@@ -100,7 +99,7 @@ defmodule KumaSanKanjiWeb.FeatureFlagTest do
       assert html =~ "Learn"
     end
 
-    @tag :skip
+
     test "Learn link is hidden in navigation when flag is disabled", %{conn: conn} do
       disable_learning_path_flag()
       {conn, _user} = create_authenticated_learner(conn, "yuki-nav-off")
@@ -118,7 +117,7 @@ defmodule KumaSanKanjiWeb.FeatureFlagTest do
   # ---------------------------------------------------------------
 
   describe "Flag toggle takes effect immediately" do
-    @tag :skip
+
     test "disabling flag after page load blocks subsequent navigation", %{conn: conn} do
       # Given the flag is enabled and Yuki accesses /learn
       enable_learning_path_flag()

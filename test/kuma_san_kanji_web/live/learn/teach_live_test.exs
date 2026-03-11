@@ -17,7 +17,7 @@ defmodule KumaSanKanjiWeb.TeachLiveTest do
   # ---------------------------------------------------------------
 
   describe "Walking Skeleton: Learner studies a kanji in the teach step" do
-    @tag :skip
+
     test "learner sees full kanji detail for a specific position", %{conn: conn} do
       # Given Yuki Tanaka is signed in
       {conn, _user} = create_authenticated_learner(conn, "yuki-teach")
@@ -55,7 +55,7 @@ defmodule KumaSanKanjiWeb.TeachLiveTest do
   # ---------------------------------------------------------------
 
   describe "Position indicator shows group context" do
-    @tag :skip
+
     test "header displays group name and position within group", %{conn: conn} do
       # Given Yuki Tanaka is learning the Numbers group
       {conn, _user} = create_authenticated_learner(conn, "yuki-position")
@@ -73,7 +73,7 @@ defmodule KumaSanKanjiWeb.TeachLiveTest do
   end
 
   describe "Learning tips display when available" do
-    @tag :skip
+
     test "kanji with learning metadata shows tips section", %{conn: conn} do
       # Given Yuki is on the teach step for 四
       {conn, _user} = create_authenticated_learner(conn, "yuki-tips")
@@ -96,7 +96,7 @@ defmodule KumaSanKanjiWeb.TeachLiveTest do
   end
 
   describe "Learning tips hidden when no metadata exists" do
-    @tag :skip
+
     test "kanji without learning metadata omits tips section", %{conn: conn} do
       # Given Yuki is on the teach step for 一
       {conn, _user} = create_authenticated_learner(conn, "yuki-no-tips")
@@ -117,7 +117,7 @@ defmodule KumaSanKanjiWeb.TeachLiveTest do
   end
 
   describe "Learner sees I've learned this button" do
-    @tag :skip
+
     test "teach step shows the mark-learned action button", %{conn: conn} do
       # Given Yuki is on the teach step for a kanji
       {conn, _user} = create_authenticated_learner(conn, "yuki-button")
@@ -138,7 +138,7 @@ defmodule KumaSanKanjiWeb.TeachLiveTest do
   # ---------------------------------------------------------------
 
   describe "Invalid position shows graceful error" do
-    @tag :skip
+
     test "position beyond group size shows helpful message", %{conn: conn} do
       # Given Yuki is learning the Numbers group with 4 kanji
       {conn, _user} = create_authenticated_learner(conn, "yuki-invalid-pos")
@@ -158,7 +158,7 @@ defmodule KumaSanKanjiWeb.TeachLiveTest do
   end
 
   describe "Non-existent group shows graceful error" do
-    @tag :skip
+
     test "invalid group identifier redirects gracefully", %{conn: conn} do
       # Given Yuki is signed in
       {conn, _user} = create_authenticated_learner(conn, "yuki-bad-group")
@@ -176,7 +176,7 @@ defmodule KumaSanKanjiWeb.TeachLiveTest do
   end
 
   describe "Unauthenticated access to teach step" do
-    @tag :skip
+
     test "unauthenticated visitor is redirected to sign-in", %{conn: conn} do
       # Given the feature flag is enabled
       enable_learning_path_flag()
@@ -193,7 +193,7 @@ defmodule KumaSanKanjiWeb.TeachLiveTest do
   end
 
   describe "Kanji without example sentences degrades gracefully" do
-    @tag :skip
+
     test "teach step omits sentence section when kanji has none", %{conn: conn} do
       # Given a kanji exists without example sentences
       {conn, _user} = create_authenticated_learner(conn, "yuki-no-sentence")

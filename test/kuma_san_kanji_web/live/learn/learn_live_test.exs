@@ -17,7 +17,6 @@ defmodule KumaSanKanjiWeb.LearnLiveTest do
   # ---------------------------------------------------------------
 
   describe "Walking Skeleton: Learner browses thematic groups" do
-    @tag :skip
     test "first-time learner sees all thematic groups with kanji counts", %{conn: conn} do
       # Given Yuki Tanaka is signed in
       {conn, _user} = create_authenticated_learner(conn, "yuki")
@@ -49,7 +48,6 @@ defmodule KumaSanKanjiWeb.LearnLiveTest do
   # ---------------------------------------------------------------
 
   describe "Returning learner sees accurate progress" do
-    @tag :skip
     test "progress badges reflect learned kanji per group", %{conn: conn} do
       # Given Yuki Tanaka is signed in
       {conn, user} = create_authenticated_learner(conn, "yuki-progress")
@@ -77,7 +75,6 @@ defmodule KumaSanKanjiWeb.LearnLiveTest do
   end
 
   describe "Groups are ordered by curriculum sequence" do
-    @tag :skip
     test "thematic groups appear in order_index sequence", %{conn: conn} do
       # Given Yuki is signed in
       {conn, _user} = create_authenticated_learner(conn, "yuki-order")
@@ -102,7 +99,6 @@ defmodule KumaSanKanjiWeb.LearnLiveTest do
   end
 
   describe "Completed group shows completion indicator" do
-    @tag :skip
     test "fully learned group displays completion marker", %{conn: conn} do
       # Given Yuki has learned all kanji in a group
       {conn, user} = create_authenticated_learner(conn, "yuki-complete")
@@ -124,7 +120,6 @@ defmodule KumaSanKanjiWeb.LearnLiveTest do
   # ---------------------------------------------------------------
 
   describe "Unauthenticated visitor cannot access learning path" do
-    @tag :skip
     test "visitor is redirected to sign-in page", %{conn: conn} do
       # Given the grade1_learning_path feature flag is enabled
       enable_learning_path_flag()
@@ -141,7 +136,6 @@ defmodule KumaSanKanjiWeb.LearnLiveTest do
   end
 
   describe "Feature flag disabled hides learning path" do
-    @tag :skip
     test "navigation does not show Learn link when flag is disabled", %{conn: conn} do
       # Given the grade1_learning_path feature flag is disabled
       disable_learning_path_flag()
@@ -156,7 +150,6 @@ defmodule KumaSanKanjiWeb.LearnLiveTest do
       refute html =~ ~r/<a[^>]*>Learn<\/a>/
     end
 
-    @tag :skip
     test "direct URL access redirects to home when flag is disabled", %{conn: conn} do
       # Given the grade1_learning_path feature flag is disabled
       disable_learning_path_flag()
@@ -173,7 +166,6 @@ defmodule KumaSanKanjiWeb.LearnLiveTest do
   end
 
   describe "Learn page with no groups seeded" do
-    @tag :skip
     test "shows helpful empty state when no thematic groups exist", %{conn: conn} do
       # Given Yuki is signed in
       {conn, _user} = create_authenticated_learner(conn, "yuki-empty")
