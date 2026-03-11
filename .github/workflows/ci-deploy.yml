@@ -181,14 +181,23 @@ jobs:
               sleep 1
             done
 
-            # Run migrations
+            # Run migrations using docker run on the default network (not docker compose run,
+            # which joins both default+proxy networks and can't resolve postgres hostname)
             echo "Running migrations..."
-            docker compose -f docker-compose.prod.yml run --rm --no-TTY --no-deps app bin/kuma_san_kanji eval "KumaSanKanji.Release.migrate()" < /dev/null 2>&1
+            docker run --rm --env-file .env \
+              --network kuma_san_kanji_default \
+              -e DATABASE_URL="ecto://postgres:$(grep POSTGRES_PASSWORD .env | cut -d= -f2)@postgres/kuma_san_kanji_prod" \
+              ghcr.io/davewil/kuma-san-kanji:latest \
+              bin/kuma_san_kanji eval "KumaSanKanji.Release.migrate()" 2>&1
             echo "Migrations complete."
 
             # Setup admin user
             echo "Setting up admin user..."
-            docker compose -f docker-compose.prod.yml run --rm --no-TTY --no-deps app bin/kuma_san_kanji eval "KumaSanKanji.Release.setup_admin_user()" < /dev/null 2>&1
+            docker run --rm --env-file .env \
+              --network kuma_san_kanji_default \
+              -e DATABASE_URL="ecto://postgres:$(grep POSTGRES_PASSWORD .env | cut -d= -f2)@postgres/kuma_san_kanji_prod" \
+              ghcr.io/davewil/kuma-san-kanji:latest \
+              bin/kuma_san_kanji eval "KumaSanKanji.Release.setup_admin_user()" 2>&1
             echo "Admin setup complete."
 
             # Recreate containers with the new image
