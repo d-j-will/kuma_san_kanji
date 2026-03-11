@@ -288,17 +288,32 @@
           </div>
         </div>
 
-        <h3 class="text-lg font-semibold text-base-content font-wabi-display mb-2">
-          Example Sentences
-        </h3>
+        <div class="flex items-center justify-between mb-2">
+          <h3 class="text-lg font-semibold text-base-content font-wabi-display">
+            Example Sentences
+          </h3>
+          <%= if @mecab_available do %>
+            <button
+              type="button"
+              phx-click="toggle_furigana"
+              class="text-xs px-2 py-1 rounded border border-wabi-border text-wabi-stone/60 hover:text-base-content transition-colors"
+            >
+              {if @show_furigana, do: "Hide Furigana", else: "Show Furigana"}
+            </button>
+          <% end %>
+        </div>
 
         <div class="overflow-hidden bg-wabi-paper-aged sm:rounded-md border border-wabi-border">
           <ul role="list" class="divide-y divide-wabi-border_light">
             <%= for sentence <- @kanji.example_sentences do %>
               <li class="p-4">
-                <p class="font-medium furigana-text wabi-text">
-                  {raw(KumaSanKanji.NLP.Furigana.parse_sentence(sentence.japanese))}
-                </p>
+                <%= if @show_furigana and @mecab_available do %>
+                  <p class="font-medium furigana-text wabi-text">
+                    {raw(KumaSanKanji.NLP.Furigana.parse_sentence(sentence.japanese))}
+                  </p>
+                <% else %>
+                  <p class="font-medium wabi-text">{sentence.japanese}</p>
+                <% end %>
 
                 <p class="wabi-text mt-1 font-wabi">{sentence.translation}</p>
               </li>

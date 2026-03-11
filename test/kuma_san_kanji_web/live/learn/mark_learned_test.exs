@@ -2,11 +2,11 @@ defmodule KumaSanKanjiWeb.MarkLearnedTest do
   @moduledoc """
   Acceptance tests for US-03: Mark a Kanji as Learned.
 
-  Validates that clicking "I've learned this" creates SRS progress,
-  that existing progress is preserved, and that skipping does not
-  create a progress record.
+  Validates that clicking "I've learned this — Quiz me!" on the last tab
+  creates SRS progress, that existing progress is preserved, and that
+  navigating away without marking does not create a progress record.
 
-  Driving port: TeachLive (LiveView events: mark_learned, skip)
+  Driving port: TeachLive (LiveView events: mark_learned, next_tab)
   """
   use KumaSanKanjiWeb.ConnCase, async: false
   import Phoenix.LiveViewTest
@@ -32,6 +32,11 @@ defmodule KumaSanKanjiWeb.MarkLearnedTest do
                UserKanjiProgress.get_user_kanji_progress(user.id, kanji_four.id, actor: user)
 
       {:ok, view, _html} = live(conn, ~p"/learn/#{group.id}/4")
+
+      # Navigate to the last tab where the "Quiz me!" button appears
+      render_click(view, "next_tab")
+      render_click(view, "next_tab")
+      render_click(view, "next_tab")
 
       # When Yuki clicks "I've learned this -- Quiz me!"
       view
@@ -82,6 +87,11 @@ defmodule KumaSanKanjiWeb.MarkLearnedTest do
 
       {:ok, view, _html} = live(conn, ~p"/learn/#{group.id}/3")
 
+      # Navigate to the last tab where the "Quiz me!" button appears
+      render_click(view, "next_tab")
+      render_click(view, "next_tab")
+      render_click(view, "next_tab")
+
       # When Yuki clicks "I've learned this -- Quiz me!"
       view
       |> element("button", ~r/learned|Quiz me/i)
@@ -101,46 +111,40 @@ defmodule KumaSanKanjiWeb.MarkLearnedTest do
   # Error/Edge Path Scenarios
   # ---------------------------------------------------------------
 
-  describe "Skipping does not create a progress record" do
-    test "skip advances to next kanji without creating progress", %{conn: conn} do
-      # Given Yuki Tanaka is on the teach step for 四
+  describe "Navigating away does not create a progress record" do
+    test "viewing teach step without marking learned creates no progress", %{conn: conn} do
+      # Given Yuki Tanaka is on the teach step for 三
       {conn, user} = create_authenticated_learner(conn, "yuki-skip")
       enable_learning_path_flag()
 
       {group, kanji_list} = create_numbers_group()
-      kanji_four = Enum.at(kanji_list, 3)
+      kanji_three = Enum.at(kanji_list, 2)
 
-      {:ok, view, _html} = live(conn, ~p"/learn/#{group.id}/4")
+      # When Yuki views the teach step but does not click "mark learned"
+      {:ok, _view, html} = live(conn, ~p"/learn/#{group.id}/3")
 
-      # When Yuki clicks "Skip to next"
-      view
-      |> element("a", ~r/[Ss]kip/i)
-      |> render_click()
+      # The next kanji arrow is available for navigation
+      assert html =~ "aria-label=\"Next kanji\""
 
-      # Then no UserKanjiProgress record is created for 四
+      # Then no UserKanjiProgress record is created for 三
       assert {:ok, []} =
-               UserKanjiProgress.get_user_kanji_progress(user.id, kanji_four.id, actor: user)
+               UserKanjiProgress.get_user_kanji_progress(user.id, kanji_three.id, actor: user)
     end
   end
 
-  describe "Skip at last position returns to group page" do
-    test "skipping past the last kanji navigates back to group detail", %{conn: conn} do
+  describe "Navigation arrows at boundary positions" do
+    test "next kanji arrow is disabled at last position", %{conn: conn} do
       # Given Yuki is on the teach step for the last kanji (position 4 of 4)
       {conn, _user} = create_authenticated_learner(conn, "yuki-skip-last")
       enable_learning_path_flag()
 
       {group, _kanji_list} = create_numbers_group()
 
-      {:ok, view, _html} = live(conn, ~p"/learn/#{group.id}/4")
+      {:ok, _view, html} = live(conn, ~p"/learn/#{group.id}/4")
 
-      # When Yuki clicks "Skip to next" on the last kanji
-      view
-      |> element("a", ~r/[Ss]kip/i)
-      |> render_click()
-
-      # Then Yuki is navigated back to the group page
-      {path, _flash} = assert_redirect(view)
-      assert path =~ ~r/learn\//
+      # Then the → arrow is disabled (not a clickable link)
+      refute html =~ "aria-label=\"Next kanji\""
+      assert html =~ "aria-disabled"
     end
   end
 
@@ -157,12 +161,22 @@ defmodule KumaSanKanjiWeb.MarkLearnedTest do
       # When Yuki marks 一 as learned from position 1
       {:ok, view, _html} = live(conn, ~p"/learn/#{group.id}/1")
 
+      # Navigate to the last tab where the "Quiz me!" button appears
+      render_click(view, "next_tab")
+      render_click(view, "next_tab")
+      render_click(view, "next_tab")
+
       view
       |> element("button", ~r/learned|Quiz me/i)
       |> render_click()
 
       # And then marks 二 as learned from position 2
       {:ok, view, _html} = live(conn, ~p"/learn/#{group.id}/2")
+
+      # Navigate to the last tab again
+      render_click(view, "next_tab")
+      render_click(view, "next_tab")
+      render_click(view, "next_tab")
 
       view
       |> element("button", ~r/learned|Quiz me/i)

@@ -15,6 +15,8 @@ defmodule KumaSanKanjiWeb.ExploreLive do
       socket
       |> assign(:show_stroke_order, false)
       |> assign(:show_tracing, false)
+      |> assign(:show_furigana, true)
+      |> assign(:mecab_available, System.find_executable("mecab") != nil)
 
     case total_kanji do
       n when n > 0 ->
@@ -190,6 +192,10 @@ defmodule KumaSanKanjiWeb.ExploreLive do
 
   def handle_event("toggle_tracing", _params, socket) do
     {:noreply, StrokeOrderEvents.toggle_tracing(socket)}
+  end
+
+  def handle_event("toggle_furigana", _params, socket) do
+    {:noreply, assign(socket, show_furigana: !socket.assigns.show_furigana)}
   end
 
   def handle_event(event, params = %{"kanji" => _}, socket)
