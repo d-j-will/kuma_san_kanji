@@ -171,12 +171,27 @@ jobs:
             done
 
             # Migrate and setup admin
+            # Use docker run on default network only — docker compose run joins
+            # both default+proxy networks, and DNS can't resolve postgres on proxy
+            source /root/kuma_san_kanji/.env
             echo "Running migrations..."
-            docker compose -f docker-compose.prod.yml run --rm --no-TTY app bin/kuma_san_kanji eval "KumaSanKanji.Release.migrate()" < /dev/null 2>&1
+            docker run --rm --network kuma_san_kanji_default \
+              -e DATABASE_URL="ecto://postgres:${POSTGRES_PASSWORD}@postgres/kuma_san_kanji_prod" \
+              -e SECRET_KEY_BASE="${SECRET_KEY_BASE}" \
+              -e TOKEN_SIGNING_SECRET="${TOKEN_SIGNING_SECRET}" \
+              ghcr.io/davewil/kuma-san-kanji:latest \
+              bin/kuma_san_kanji eval "KumaSanKanji.Release.migrate()" 2>&1
             echo "Migrations complete."
 
             echo "Setting up admin user..."
-            docker compose -f docker-compose.prod.yml run --rm --no-TTY app bin/kuma_san_kanji eval "KumaSanKanji.Release.setup_admin_user()" < /dev/null 2>&1
+            docker run --rm --network kuma_san_kanji_default \
+              -e DATABASE_URL="ecto://postgres:${POSTGRES_PASSWORD}@postgres/kuma_san_kanji_prod" \
+              -e SECRET_KEY_BASE="${SECRET_KEY_BASE}" \
+              -e TOKEN_SIGNING_SECRET="${TOKEN_SIGNING_SECRET}" \
+              -e ADMIN_EMAIL="${ADMIN_EMAIL}" \
+              -e ADMIN_PASSWORD="${ADMIN_PASSWORD}" \
+              ghcr.io/davewil/kuma-san-kanji:latest \
+              bin/kuma_san_kanji eval "KumaSanKanji.Release.setup_admin_user()" 2>&1
             echo "Admin setup complete."
 
             # Start everything
