@@ -141,9 +141,18 @@ jobs:
           ssh root@${{ secrets.DEPLOY_HOST }} "docker pull ghcr.io/davewil/kuma-san-kanji:latest --quiet 2>/dev/null" || \
             echo "${{ secrets.GITHUB_TOKEN }}" | ssh root@${{ secrets.DEPLOY_HOST }} docker login ghcr.io -u ${{ github.actor }} --password-stdin
 
+          # Ensure proxy network exists (caddy-docker-proxy uses it)
+          ssh root@${{ secrets.DEPLOY_HOST }} "docker network create proxy 2>/dev/null || true"
+
           ssh -o StrictHostKeyChecking=accept-new root@${{ secrets.DEPLOY_HOST }} << 'EOF'
             set -e
             cd /root/kuma_san_kanji
+
+            # Clean up stale containers/networks from previous failed deploys
+            echo "=== Cleanup ==="
+            docker compose -f docker-compose.prod.yml down --remove-orphans 2>&1 || true
+            docker container prune -f 2>&1 || true
+            echo "Cleanup complete."
 
             # Pull new image
             echo "Pulling latest image..."

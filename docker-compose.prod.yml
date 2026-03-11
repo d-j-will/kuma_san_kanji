@@ -14,8 +14,20 @@ services:
       TOKEN_SIGNING_SECRET: "${TOKEN_SIGNING_SECRET}"
       ADMIN_EMAIL: "${ADMIN_EMAIL}"
       ADMIN_PASSWORD: "${ADMIN_PASSWORD}"
-    ports:
-      - "4000:4000"
+    expose:
+      - "4000"
+    labels:
+      caddy: kanji.davewil.dev
+      caddy.tls.dns: cloudflare {env.CF_API_TOKEN}
+      caddy.reverse_proxy: "{{upstreams 4000}}"
+      caddy.reverse_proxy.health_uri: /health
+      caddy.reverse_proxy.health_interval: 5s
+      caddy.reverse_proxy.health_timeout: 3s
+      caddy.reverse_proxy.fail_duration: 15s
+      caddy.reverse_proxy.health_headers.X-Forwarded-Proto: https
+    networks:
+      default:
+      proxy:
 
   postgres:
     image: postgres:16
@@ -34,3 +46,7 @@ services:
 
 volumes:
   pgdata:
+
+networks:
+  proxy:
+    external: true
