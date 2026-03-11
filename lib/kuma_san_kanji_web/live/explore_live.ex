@@ -273,7 +273,10 @@ defmodule KumaSanKanjiWeb.ExploreLive do
     end
   rescue
     e ->
-      Logger.warning("Failed to load radical for kanji #{inspect(kanji.character)}: #{inspect(e)}")
+      Logger.warning(
+        "Failed to load radical for kanji #{inspect(kanji.character)}: #{inspect(e)}"
+      )
+
       nil
   end
 
