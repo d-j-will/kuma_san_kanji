@@ -21,6 +21,10 @@ defmodule KumaSanKanjiWeb.Router do
     plug :set_actor, :user
   end
 
+  pipeline :require_admin do
+    plug KumaSanKanjiWeb.Plugs.RequireAdmin
+  end
+
   scope "/", KumaSanKanjiWeb do
     get "/health", HealthController, :check
   end
@@ -60,6 +64,15 @@ defmodule KumaSanKanjiWeb.Router do
       on_mount: {KumaSanKanjiWeb.UserLiveAuth, :live_user_required} do
       live "/quiz", QuizLive
       live "/settings", SettingsLive
+    end
+  end
+
+  # Admin routes that require admin privileges
+  scope "/", KumaSanKanjiWeb do
+    pipe_through [:browser, :require_admin]
+
+    ash_authentication_live_session :admin_routes,
+      on_mount: {KumaSanKanjiWeb.UserLiveAuth, :live_admin_required} do
       live "/admin", Admin.DashboardLive
       live "/admin/users", Admin.UserAdminLive
     end
@@ -67,7 +80,7 @@ defmodule KumaSanKanjiWeb.Router do
 
   # Feature flags admin UI (admin-only)
   scope path: "/admin/feature-flags" do
-    pipe_through :browser
+    pipe_through [:browser, :require_admin]
 
     forward "/", FunWithFlags.UI.Router, namespace: "admin/feature-flags"
   end

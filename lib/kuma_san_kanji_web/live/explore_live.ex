@@ -1,5 +1,6 @@
 defmodule KumaSanKanjiWeb.ExploreLive do
   use KumaSanKanjiWeb, :live_view
+  require Logger
   alias KumaSanKanji.Domain
   alias KumaSanKanjiWeb.StrokeOrderEvents
   alias KumaSanKanji.SRS.Logic
@@ -271,7 +272,9 @@ defmodule KumaSanKanjiWeb.ExploreLive do
         end
     end
   rescue
-    _ -> nil
+    e ->
+      Logger.warning("Failed to load radical for kanji #{inspect(kanji.character)}: #{inspect(e)}")
+      nil
   end
 
   defp load_user_progress(user_id, kanji_id) do
