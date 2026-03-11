@@ -145,84 +145,37 @@ jobs:
             set -e
             cd /root/kuma_san_kanji
 
-            # Ensure external proxy network exists (first deploy)
-            docker network inspect proxy >/dev/null 2>&1 || docker network create proxy
-            echo "Proxy network ready."
-
-            # Backup database (best-effort, skip if postgres not running yet)
-            mkdir -p /root/kuma_san_kanji/backups
-            echo "Creating pre-deploy database backup..."
-            docker compose -f docker-compose.prod.yml exec -T postgres \
-              pg_dump -U postgres -Fc kuma_san_kanji_prod < /dev/null > /root/kuma_san_kanji/backups/pre_deploy_$(date +%Y%m%d_%H%M%S).dump \
-              && echo "Backup complete." || echo "Backup skipped (non-fatal), continuing deploy..."
-
-            # Prune old backups, keep last 10
-            ls -t /root/kuma_san_kanji/backups/pre_deploy_*.dump 2>/dev/null | tail -n +11 | xargs -r rm --
-
-            # Docker cleanup
-            echo "=== Docker Cleanup ==="
-            docker image prune -af --filter "until=168h" 2>&1 || true
-            echo "Cleanup complete."
-
-            # Pull new image via Compose
+            # Pull new image
             echo "Pulling latest image..."
             docker compose -f docker-compose.prod.yml pull app 2>&1
             echo "Pull complete."
 
-            # Start postgres first so migrations can connect
-            echo "Ensuring postgres is running..."
+            # Start postgres, wait for healthy
+            echo "Starting postgres..."
             docker compose -f docker-compose.prod.yml up -d postgres 2>&1
-            echo "Waiting for postgres to be healthy..."
             for i in $(seq 1 30); do
               if docker compose -f docker-compose.prod.yml exec -T postgres pg_isready -U postgres < /dev/null >/dev/null 2>&1; then
-                echo "Postgres is ready."
+                echo "Postgres ready."
                 break
               fi
               sleep 1
             done
 
-            # Run migrations using docker run on the default network (not docker compose run,
-            # which joins both default+proxy networks and can't resolve postgres hostname)
+            # Migrate and setup admin
             echo "Running migrations..."
-            docker run --rm --env-file .env \
-              --network kuma_san_kanji_default \
-              -e DATABASE_URL="ecto://postgres:$(grep POSTGRES_PASSWORD .env | cut -d= -f2)@postgres/kuma_san_kanji_prod" \
-              ghcr.io/davewil/kuma-san-kanji:latest \
-              bin/kuma_san_kanji eval "KumaSanKanji.Release.migrate()" 2>&1
+            docker compose -f docker-compose.prod.yml run --rm --no-TTY app bin/kuma_san_kanji eval "KumaSanKanji.Release.migrate()" < /dev/null 2>&1
             echo "Migrations complete."
 
-            # Setup admin user
             echo "Setting up admin user..."
-            docker run --rm --env-file .env \
-              --network kuma_san_kanji_default \
-              -e DATABASE_URL="ecto://postgres:$(grep POSTGRES_PASSWORD .env | cut -d= -f2)@postgres/kuma_san_kanji_prod" \
-              ghcr.io/davewil/kuma-san-kanji:latest \
-              bin/kuma_san_kanji eval "KumaSanKanji.Release.setup_admin_user()" 2>&1
+            docker compose -f docker-compose.prod.yml run --rm --no-TTY app bin/kuma_san_kanji eval "KumaSanKanji.Release.setup_admin_user()" < /dev/null 2>&1
             echo "Admin setup complete."
 
-            # Recreate containers with the new image
-            echo "Recreating containers..."
+            # Start everything
+            echo "Starting app..."
             docker compose -f docker-compose.prod.yml up -d --force-recreate --no-build --remove-orphans 2>&1
-            echo "Containers started."
+            sleep 5
 
-            # Wait for startup
-            echo "Waiting for app to start..."
-            sleep 10
-
-            echo "=== Container Status ==="
+            echo "=== Status ==="
             docker compose -f docker-compose.prod.yml ps 2>&1
-
-            # Smoke test
-            echo "=== Smoke Test ==="
-            HEALTH=$(docker compose -f docker-compose.prod.yml exec -T app curl -sf http://localhost:4000/health < /dev/null 2>&1) || {
-              echo "WARN: Health check unreachable (app may still be starting)"
-              HEALTH=""
-            }
-            if echo "$HEALTH" | grep -q '"status"'; then
-              echo "PASS: App health check"
-            else
-              echo "WARN: Health check did not return ok (may need manual verification)"
-            fi
-
             echo "Deploy complete."
           EOF
