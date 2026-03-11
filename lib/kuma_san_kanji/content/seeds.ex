@@ -64,19 +64,25 @@ defmodule KumaSanKanji.Content.Seeds do
     ]
 
     Enum.map(groups, fn group_attrs ->
-      params =
-        group_attrs
-        |> Map.take([:name, :description, :color_code, :icon_name, :order_index, :parent_id])
-        |> Map.put(
-          :slug,
-          group_attrs[:name]
-          |> String.downcase()
-          |> String.replace(~r/[^a-z0-9]+/, "-")
-          |> String.trim("-")
-        )
+      slug =
+        group_attrs[:name]
+        |> String.downcase()
+        |> String.replace(~r/[^a-z0-9]+/, "-")
+        |> String.trim("-")
 
-      {:ok, created} = Content.create_thematic_group(params)
-      created
+      case Content.get_group_by_slug(slug) do
+        {:ok, existing} ->
+          existing
+
+        {:error, _} ->
+          params =
+            group_attrs
+            |> Map.take([:name, :description, :color_code, :icon_name, :order_index, :parent_id])
+            |> Map.put(:slug, slug)
+
+          {:ok, created} = Content.create_thematic_group(params)
+          created
+      end
     end)
   end
 
@@ -115,8 +121,14 @@ defmodule KumaSanKanji.Content.Seeds do
     ]
 
     Enum.map(contexts, fn context ->
-      {:ok, created} = Content.create_educational_context(context)
-      created
+      case Content.get_educational_context_by_grade(context[:grade_level]) do
+        {:ok, existing} ->
+          existing
+
+        {:error, _} ->
+          {:ok, created} = Content.create_educational_context(context)
+          created
+      end
     end)
   end
 
@@ -168,12 +180,14 @@ defmodule KumaSanKanji.Content.Seeds do
         group = Map.get(thematic_groups_map, group_name)
 
         if group do
-          {:ok, _} =
-            Content.create_kanji_thematic_group(%{
-              kanji_id: kanji.id,
-              thematic_group_id: group.id,
-              relevance_score: 1.0
-            })
+          case Content.create_kanji_thematic_group(%{
+                 kanji_id: kanji.id,
+                 thematic_group_id: group.id,
+                 relevance_score: 1.0
+               }) do
+            {:ok, _} -> :ok
+            {:error, _} -> :already_exists
+          end
         else
           IO.puts(
             "Warning: Thematic group '#{group_name}' not found for kanji '#{kanji.character}'."
@@ -185,11 +199,13 @@ defmodule KumaSanKanji.Content.Seeds do
         contexts = Enum.filter(educational_contexts, &(&1.grade_level == kanji.grade))
 
         Enum.each(contexts, fn context ->
-          {:ok, _} =
-            Content.create_kanji_learning_meta(%{
-              kanji_id: kanji.id,
-              educational_context_id: context.id
-            })
+          case Content.create_kanji_learning_meta(%{
+                 kanji_id: kanji.id,
+                 educational_context_id: context.id
+               }) do
+            {:ok, _} -> :ok
+            {:error, _} -> :already_exists
+          end
         end)
       else
         IO.puts(
