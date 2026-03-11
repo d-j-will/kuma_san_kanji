@@ -121,6 +121,12 @@ jobs:
           tags: tag:ci
 
       - name: Deploy to Docker host
+        env:
+          DEPLOY_POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+          DEPLOY_SECRET_KEY_BASE: ${{ secrets.SECRET_KEY_BASE }}
+          DEPLOY_TOKEN_SIGNING_SECRET: ${{ secrets.TOKEN_SIGNING_SECRET }}
+          DEPLOY_ADMIN_EMAIL: ${{ secrets.ADMIN_EMAIL }}
+          DEPLOY_ADMIN_PASSWORD: ${{ secrets.ADMIN_PASSWORD }}
         run: |
           mkdir -p ~/.ssh
           echo "${{ secrets.DEPLOY_SSH_KEY }}" > ~/.ssh/id_ed25519
@@ -130,6 +136,13 @@ jobs:
           # Copy deployment files to the server
           ssh root@${{ secrets.DEPLOY_HOST }} "mkdir -p /root/kuma_san_kanji"
           scp docker-compose.prod.yml root@${{ secrets.DEPLOY_HOST }}:/root/kuma_san_kanji/docker-compose.prod.yml
+
+          # Write .env from GitHub secrets (always overwrite to stay in sync)
+          printf 'POSTGRES_PASSWORD=%s\nSECRET_KEY_BASE=%s\nTOKEN_SIGNING_SECRET=%s\nADMIN_EMAIL=%s\nADMIN_PASSWORD=%s\n' \
+            "$DEPLOY_POSTGRES_PASSWORD" "$DEPLOY_SECRET_KEY_BASE" "$DEPLOY_TOKEN_SIGNING_SECRET" \
+            "$DEPLOY_ADMIN_EMAIL" "$DEPLOY_ADMIN_PASSWORD" > /tmp/.env.deploy
+          scp /tmp/.env.deploy root@${{ secrets.DEPLOY_HOST }}:/root/kuma_san_kanji/.env
+          rm -f /tmp/.env.deploy
 
           # Fix DNS if broken (Tailscale DNS issue on VM reboots)
           ssh root@${{ secrets.DEPLOY_HOST }} "
