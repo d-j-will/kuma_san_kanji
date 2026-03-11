@@ -148,18 +148,12 @@ jobs:
             set -e
             cd /root/kuma_san_kanji
 
-            # Clean up stale containers/networks from previous failed deploys
-            echo "=== Cleanup ==="
-            docker compose -f docker-compose.prod.yml down --remove-orphans 2>&1 || true
-            docker container prune -f 2>&1 || true
-            echo "Cleanup complete."
-
             # Pull new image
             echo "Pulling latest image..."
             docker compose -f docker-compose.prod.yml pull app 2>&1
             echo "Pull complete."
 
-            # Start postgres, wait for healthy
+            # Ensure postgres is running and healthy
             echo "Starting postgres..."
             docker compose -f docker-compose.prod.yml up -d postgres 2>&1
             for i in $(seq 1 30); do
@@ -170,38 +164,16 @@ jobs:
               sleep 1
             done
 
-            # Wait for Docker DNS to register postgres on the new network
-            sleep 5
-
-            # Diagnostics: verify network and DNS
-            echo "=== Network Diagnostics ==="
-            docker network inspect kuma_san_kanji_default --format '{{range .Containers}}{{.Name}} {{.IPv4Address}}{{"\n"}}{{end}}' 2>&1
-            docker run --rm --network kuma_san_kanji_default alpine nslookup postgres 2>&1 || true
-            echo "=== End Diagnostics ==="
-
-            # Migrate and setup admin
-            source /root/kuma_san_kanji/.env
+            # Migrate (same pattern as slackex)
             echo "Running migrations..."
-            docker run --rm --network kuma_san_kanji_default \
-              -e DATABASE_URL="ecto://postgres:${POSTGRES_PASSWORD}@postgres/kuma_san_kanji_prod" \
-              -e SECRET_KEY_BASE="${SECRET_KEY_BASE}" \
-              -e TOKEN_SIGNING_SECRET="${TOKEN_SIGNING_SECRET}" \
-              ghcr.io/davewil/kuma-san-kanji:latest \
-              bin/kuma_san_kanji eval "KumaSanKanji.Release.migrate()" 2>&1
+            docker compose -f docker-compose.prod.yml run --rm --no-TTY app bin/kuma_san_kanji eval "KumaSanKanji.Release.migrate()" < /dev/null 2>&1
             echo "Migrations complete."
 
             echo "Setting up admin user..."
-            docker run --rm --network kuma_san_kanji_default \
-              -e DATABASE_URL="ecto://postgres:${POSTGRES_PASSWORD}@postgres/kuma_san_kanji_prod" \
-              -e SECRET_KEY_BASE="${SECRET_KEY_BASE}" \
-              -e TOKEN_SIGNING_SECRET="${TOKEN_SIGNING_SECRET}" \
-              -e ADMIN_EMAIL="${ADMIN_EMAIL}" \
-              -e ADMIN_PASSWORD="${ADMIN_PASSWORD}" \
-              ghcr.io/davewil/kuma-san-kanji:latest \
-              bin/kuma_san_kanji eval "KumaSanKanji.Release.setup_admin_user()" 2>&1
+            docker compose -f docker-compose.prod.yml run --rm --no-TTY app bin/kuma_san_kanji eval "KumaSanKanji.Release.setup_admin_user()" < /dev/null 2>&1
             echo "Admin setup complete."
 
-            # Start everything
+            # Recreate app with new image
             echo "Starting app..."
             docker compose -f docker-compose.prod.yml up -d --force-recreate --no-build --remove-orphans 2>&1
             sleep 5
