@@ -84,7 +84,9 @@ defmodule Mix.Tasks.Srs.Run do
     UserKanjiProgress
     |> Query.for_read(
       :due_for_review,
-      %{user_id: user_id, limit: limit, horizon_seconds: horizon}, actor: actor)
+      %{user_id: user_id, limit: limit, horizon_seconds: horizon},
+      actor: actor
+    )
     |> Ash.read!(authorize?: true)
   end
 
