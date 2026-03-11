@@ -19,10 +19,9 @@ defmodule KumaSanKanji.Application do
       {Finch, name: KumaSanKanji.Finch},
       # Start the Ash SQLite repository
       KumaSanKanji.Repo,
-      # Start the Quiz Session manager
-      KumaSanKanji.Quiz.Session,
-      # KanjiVG SVG cache
-      KumaSanKanji.KanjiVG.Cache,
+      # Non-essential caches — :temporary so they can't cascade-crash the app
+      Supervisor.child_spec(KumaSanKanji.Quiz.Session, restart: :temporary),
+      Supervisor.child_spec(KumaSanKanji.KanjiVG.Cache, restart: :temporary),
       # Start to serve requests, typically the last entry
       KumaSanKanjiWeb.Endpoint
     ]
