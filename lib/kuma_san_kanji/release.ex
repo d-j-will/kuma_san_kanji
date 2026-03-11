@@ -169,6 +169,10 @@ defmodule KumaSanKanji.Release do
 
     IO.puts("Migrations completed")
 
+    IO.puts("Seeding reference data...")
+    KumaSanKanji.Seeds.seed_all()
+    IO.puts("Seeding completed")
+
     if System.get_env("ADMIN_EMAIL") not in [nil, ""] do
       IO.puts("Setting up admin user...")
       setup_admin_user()
