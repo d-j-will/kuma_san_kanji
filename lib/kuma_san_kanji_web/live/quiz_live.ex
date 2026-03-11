@@ -32,6 +32,7 @@ defmodule KumaSanKanjiWeb.QuizLive do
     socket =
       socket
       |> assign(:show_stroke_order, false)
+      |> assign(:show_tracing, false)
 
     quiz_state =
       case restore_session_if_exists(user.id, params["session_id"], user) do
@@ -97,7 +98,11 @@ defmodule KumaSanKanjiWeb.QuizLive do
           |> assign(:show_feedback, false)
           |> assign(:feedback_message, "")
           |> assign(:feedback_type, :info)
-          |> assign(:session_start_time, System.system_time(:millisecond))
+          |> assign(:feedback_details_expanded, false)
+          |> assign(
+            :session_start_time,
+            quiz_state[:session_start_time] || System.system_time(:millisecond)
+          )
           |> assign(:answers_count, quiz_state[:answers_count] || 0)
           |> assign(:last_answer_times, quiz_state[:last_answer_times] || [])
           |> assign(:quiz_complete, false)
@@ -186,6 +191,12 @@ defmodule KumaSanKanjiWeb.QuizLive do
   @impl true
   def handle_event("toggle_mobile_help", _params, socket) do
     {:noreply, assign(socket, :mobile_help_visible, !socket.assigns.mobile_help_visible)}
+  end
+
+  @impl true
+  def handle_event("toggle_feedback_details", _params, socket) do
+    {:noreply,
+     assign(socket, :feedback_details_expanded, !socket.assigns.feedback_details_expanded)}
   end
 
   @impl true
@@ -335,9 +346,29 @@ defmodule KumaSanKanjiWeb.QuizLive do
     {:noreply, socket}
   end
 
+  def handle_event("toggle_tracing", _params, socket) do
+    {:noreply, StrokeOrderEvents.toggle_tracing(socket)}
+  end
+
   def handle_event(event, params = %{"kanji" => _}, socket)
       when event in ["stroke_order_restart", "stroke_order_step", "stroke_order_toggle_style"] do
     {:noreply, StrokeOrderEvents.handle(socket, event, params)}
+  end
+
+  @impl true
+  def handle_event("japanese_voice_missing", _params, socket) do
+    # Only show the flash if it hasn't been shown recently (e.g., within the last minute)
+    # or if there's no existing flash about it.
+    if !Phoenix.Flash.get(socket.assigns.flash, :info) =~ "Japanese voice pack" do
+      {:noreply,
+       put_flash(
+         socket,
+         :info,
+         "Japanese voice pack not found. Please install a Japanese voice in your OS settings for audio pronunciation. (e.g., Windows: Settings > Time & Language > Speech; macOS: System Settings > Accessibility > Spoken Content)"
+       )}
+    else
+      {:noreply, socket}
+    end
   end
 
   # Handle test messages
@@ -417,10 +448,9 @@ defmodule KumaSanKanjiWeb.QuizLive do
     session_data = %{
       user_id: user_id,
       current_kanji_id: current_kanji_id,
-      current_kanji: socket.assigns.current_kanji,
-      current_progress: socket.assigns.current_progress,
       answers_count: socket.assigns.answers_count,
-      last_answer_times: socket.assigns.last_answer_times
+      last_answer_times: socket.assigns.last_answer_times,
+      session_start_time: socket.assigns.session_start_time
     }
 
     # Save session asynchronously to avoid blocking the LiveView
@@ -517,9 +547,15 @@ defmodule KumaSanKanjiWeb.QuizLive do
   defp validate_and_sanitize_answer(_), do: {:error, :invalid_format}
 
   defp check_rate_limit(socket) do
+    user = socket.assigns.current_user
     current_time = System.system_time(:millisecond)
-    _session_start = socket.assigns.session_start_time
-    last_times = socket.assigns.last_answer_times
+
+    # Fetch latest timestamps from persistent session to prevent multi-tab bypass
+    last_times =
+      case KumaSanKanji.Quiz.Session.get_for_user(user.id) do
+        {:ok, session} -> session.last_answer_times || []
+        _ -> socket.assigns.last_answer_times
+      end
 
     # Remove old timestamps outside the window
     recent_times =
@@ -569,6 +605,13 @@ defmodule KumaSanKanjiWeb.QuizLive do
           |> assign(:results, results)
           |> assign(:next_review_at, next_review_dt)
 
+        socket =
+          if is_correct do
+            push_event(socket, "play_audio", %{text: current_kanji.character, lang: "ja-JP"})
+          else
+            socket
+          end
+
         save_session_state(socket, user.id)
         {:noreply, socket}
 
@@ -596,8 +639,10 @@ defmodule KumaSanKanjiWeb.QuizLive do
           # Save the progress record
           |> assign(:current_progress, progress)
           |> assign(:show_feedback, false)
+          |> assign(:show_tracing, false)
           |> assign(:feedback_message, "")
           |> assign(:feedback_type, :info)
+          |> assign(:feedback_details_expanded, false)
           |> assign(:user_answer, "")
           |> assign(:quiz_complete, false)
 
@@ -752,4 +797,15 @@ defmodule KumaSanKanjiWeb.QuizLive do
       end
     end
   end
+
+  defp format_duration(start_time) when is_integer(start_time) do
+    diff = System.system_time(:millisecond) - start_time
+    seconds = div(diff, 1000)
+    minutes = div(seconds, 60)
+    seconds = rem(seconds, 60)
+
+    "#{minutes}:#{String.pad_leading(Integer.to_string(seconds), 2, "0")}"
+  end
+
+  defp format_duration(_), do: "0:00"
 end

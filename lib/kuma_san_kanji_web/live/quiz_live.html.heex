@@ -1,4 +1,5 @@
 <div class="px-4 py-10 sm:px-6 sm:py-20 lg:px-8 xl:px-20 xl:py-24">
+  <div id="audio-feedback-global" phx-hook="AudioFeedback" class="hidden"></div>
   <div class="mx-auto max-w-2xl">
     <!-- Skip to content link for keyboard navigation -->
     <a
@@ -9,7 +10,7 @@
     </a>
     <!-- Header -->
     <div class="mb-8">
-      <h1 class="text-3xl font-wabi-display tracking-tight text-wabi-hok_blue_dark sm:text-4xl">
+      <h1 class="text-3xl font-wabi-display tracking-tight text-base-content sm:text-4xl">
         Kanji Review Quiz <span class="kanji-highlight">漢字</span>
       </h1>
 
@@ -283,14 +284,26 @@
                   <div class="kanji-container flex items-center justify-center w-32 h-32 rounded-lg">
                     <span class="kanji-display select-none">{@current_kanji.character}</span>
                   </div>
-                  <button
-                    type="button"
-                    class="mt-2 text-xs underline text-wabi-accent"
-                    phx-click="toggle_stroke_order"
-                    aria-expanded={@show_stroke_order || false}
-                  >
-                    {if @show_stroke_order, do: "Hide Stroke Order", else: "Show Stroke Order"}
-                  </button>
+                  <div class="flex gap-2">
+                    <button
+                      type="button"
+                      class="mt-2 text-xs underline text-wabi-accent"
+                      phx-click="toggle_stroke_order"
+                      aria-expanded={@show_stroke_order || false}
+                    >
+                      {if @show_stroke_order, do: "Hide Stroke Order", else: "Show Stroke Order"}
+                    </button>
+                    <%= if @show_stroke_order do %>
+                      <button
+                        type="button"
+                        class="mt-2 text-xs underline text-wabi-hok_blue"
+                        phx-click="toggle_tracing"
+                        aria-expanded={@show_tracing}
+                      >
+                        {if @show_tracing, do: "Disable Tracing", else: "Practice Writing"}
+                      </button>
+                    <% end %>
+                  </div>
                   <span
                     id="stroke-order-toggle-quiz"
                     data-scope="quiz"
@@ -311,6 +324,7 @@
                     id="quiz-stroke-order"
                     kanji={@current_kanji.character}
                     animate?={true}
+                    mode={if @show_tracing, do: :trace, else: :view}
                   />
                   <p class="mt-2 text-[10px] text-wabi-stone/60">
                     Stroke order data © KanjiVG (CC BY-SA 3.0)
@@ -444,6 +458,117 @@
 
                 <p class="text-wabi-rust font-wabi mb-6 leading-relaxed">{@feedback_message}</p>
 
+                <%= if @current_progress && @current_progress.notes do %>
+                  <div class="mb-6 p-4 bg-wabi-paper-aged rounded-md border border-wabi-border text-left">
+                    <span class="text-xs font-semibold text-wabi-charcoal/60 uppercase tracking-wider block mb-1">
+                      Your Notes
+                    </span>
+                    <p class="text-sm font-wabi text-wabi-charcoal whitespace-pre-wrap">
+                      {@current_progress.notes}
+                    </p>
+                  </div>
+                <% end %>
+                <%!-- Expandable Details Section --%>
+                <%= if @current_kanji do %>
+                  <div class="mb-6">
+                    <button
+                      type="button"
+                      phx-click="toggle_feedback_details"
+                      class="w-full flex items-center justify-between p-4 bg-wabi-paper-aged/50 hover:bg-wabi-paper-aged rounded-lg border border-wabi-border transition-colors text-left group"
+                      aria-expanded={to_string(@feedback_details_expanded)}
+                      aria-controls="feedback-details-panel"
+                    >
+                      <span class="text-sm font-wabi-display font-semibold text-wabi-rust">
+                        {if @feedback_details_expanded, do: "Hide", else: "Show"} Details
+                      </span>
+                      <svg
+                        class={[
+                          "w-5 h-5 text-wabi-rust transition-transform",
+                          @feedback_details_expanded && "rotate-180"
+                        ]}
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                        aria-hidden="true"
+                      >
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          d="M19 9l-7 7-7-7"
+                        />
+                      </svg>
+                    </button>
+
+                    <%= if @feedback_details_expanded do %>
+                      <div
+                        id="feedback-details-panel"
+                        class="mt-3 p-4 bg-wabi-paper rounded-lg border border-wabi-border space-y-4 text-left"
+                        role="region"
+                        aria-label="Kanji details"
+                      >
+                        <%!-- Meanings --%>
+                        <%= if @current_kanji.meanings && length(@current_kanji.meanings) > 0 do %>
+                          <div>
+                            <h3 class="text-xs font-semibold text-wabi-charcoal/60 uppercase tracking-wider mb-2">
+                              Meanings
+                            </h3>
+                            <div class="flex flex-wrap gap-2">
+                              <%= for meaning <- @current_kanji.meanings do %>
+                                <span class="px-3 py-1 bg-wabi-cream/30 text-wabi-charcoal rounded-full text-sm font-wabi">
+                                  {meaning.value}
+                                </span>
+                              <% end %>
+                            </div>
+                          </div>
+                        <% end %>
+                        <%!-- Pronunciations --%>
+                        <%= if @current_kanji.pronunciations && length(@current_kanji.pronunciations) > 0 do %>
+                          <div>
+                            <h3 class="text-xs font-semibold text-wabi-charcoal/60 uppercase tracking-wider mb-2">
+                              Pronunciations
+                            </h3>
+                            <div class="flex flex-wrap gap-2">
+                              <%= for pronunciation <- @current_kanji.pronunciations do %>
+                                <span class={[
+                                  "px-3 py-1 rounded-full text-sm font-wabi",
+                                  pronunciation.type == "on" && "bg-blue-100 text-blue-800",
+                                  pronunciation.type == "kun" && "bg-green-100 text-green-800"
+                                ]}>
+                                  <span class="text-xs opacity-70 uppercase">
+                                    {pronunciation.type}
+                                  </span>
+                                  {pronunciation.value}
+                                </span>
+                              <% end %>
+                            </div>
+                          </div>
+                        <% end %>
+                        <%!-- Example Sentences --%>
+                        <%= if @current_kanji.example_sentences && length(@current_kanji.example_sentences) > 0 do %>
+                          <div>
+                            <h3 class="text-xs font-semibold text-wabi-charcoal/60 uppercase tracking-wider mb-2">
+                              Example Sentences
+                            </h3>
+                            <div class="space-y-3">
+                              <%= for example <- Enum.take(@current_kanji.example_sentences, 2) do %>
+                                <div class="p-3 bg-wabi-cream/20 rounded-md border border-wabi-border_light">
+                                  <p class="font-katakana text-base text-wabi-charcoal mb-2">
+                                    {example.japanese}
+                                  </p>
+                                  <p class="text-sm text-wabi-charcoal/70 font-wabi">
+                                    {example.translation}
+                                  </p>
+                                </div>
+                              <% end %>
+                            </div>
+                          </div>
+                        <% end %>
+                      </div>
+                    <% end %>
+                  </div>
+                <% end %>
+
                 <.button
                   type="button"
                   phx-click="next_kanji"
@@ -522,7 +647,9 @@
           <!-- Session progress -->
           <div class="wabi-paper wabi-texture border border-wabi-border p-4 text-center">
             <p class="text-sm font-wabi text-wabi-charcoal/70">
-              Session: {@answers_count} answers submitted
+              Session: {@answers_count} answers submitted • Time: {format_duration(
+                @session_start_time
+              )}
             </p>
           </div>
         </div>

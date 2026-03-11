@@ -9,8 +9,21 @@ defmodule KumaSanKanji.MixProject do
       elixirc_paths: elixirc_paths(Mix.env()),
       start_permanent: Mix.env() == :prod,
       consolidate_protocols: Mix.env() != :dev,
+      test_coverage: [tool: ExCoveralls],
       aliases: aliases(),
       deps: deps()
+    ]
+  end
+
+  def cli do
+    [
+      preferred_envs: [
+        coveralls: :test,
+        "coveralls.detail": :test,
+        "coveralls.post": :test,
+        "coveralls.html": :test,
+        "coveralls.cobertura": :test
+      ]
     ]
   end
 
@@ -44,16 +57,16 @@ defmodule KumaSanKanji.MixProject do
     [
       {:picosat_elixir, "~> 0.2"},
       {:ash_authentication_phoenix, "~> 2.0"},
-      {:phoenix, "~> 1.7.21"},
+      {:phoenix, "~> 1.8"},
       {:phoenix_html, "~> 4.1"},
       {:phoenix_live_reload, "~> 1.2", only: :dev},
       {:phoenix_live_view, "~> 1.0"},
       # Floki needed at runtime for KanjiVG SVG sanitization (was test-only)
       {:floki, ">= 0.36.0"},
-      {:mimic, "~> 1.7", only: :test},
+      {:mimic, "~> 2.2", only: :test},
       {:phoenix_live_dashboard, "~> 0.8.3"},
       {:esbuild, "~> 0.8", runtime: Mix.env() == :dev},
-      {:tailwind, "~> 0.2.0", runtime: Mix.env() == :dev},
+      {:tailwind, "~> 0.4", runtime: Mix.env() == :dev},
       {:heroicons,
        github: "tailwindlabs/heroicons",
        tag: "v2.1.1",
@@ -65,9 +78,9 @@ defmodule KumaSanKanji.MixProject do
       {:finch, "~> 0.13"},
       {:telemetry_metrics, "~> 1.0"},
       {:telemetry_poller, "~> 1.0"},
-      {:gettext, "~> 0.26"},
+      {:gettext, "~> 1.0"},
       {:jason, "~> 1.2"},
-      {:dns_cluster, "~> 0.1.1"},
+      {:dns_cluster, "~> 0.2"},
       {:bandit, "~> 1.5"},
 
       # Ash Framework dependencies
@@ -85,6 +98,9 @@ defmodule KumaSanKanji.MixProject do
       {:stream_data, "~> 1.0"},
       {:tidewave, "~> 0.5", only: [:dev]},
       {:lazy_html, ">= 0.1.0", only: :test},
+      {:credo, "~> 1.7", only: [:dev, :test], runtime: false},
+      {:dialyxir, "~> 1.4", only: [:dev, :test], runtime: false},
+      {:excoveralls, "~> 0.18", only: :test},
 
       # Feature flags
       {:fun_with_flags, "~> 1.13"},
@@ -108,11 +124,18 @@ defmodule KumaSanKanji.MixProject do
         """
         |> String.trim()
       ],
-      setup: ["deps.get", "assets.setup", "assets.build"],
-      "assets.setup": ["tailwind.install --if-missing", "esbuild.install --if-missing"],
-      "assets.build": ["tailwind kuma_san_kanji", "esbuild kuma_san_kanji"],
+      "ecto.setup": ["ecto.create", "ecto.migrate"],
+      setup: ["deps.get", "assets.setup", "assets.build", "ecto.setup", "run priv/repo/seeds.exs"],
+      quality: ["format --check-formatted", "credo --strict"],
+      "test.coverage": ["coveralls.html"],
+      "assets.setup": [
+        "tailwind.install --if-missing",
+        "esbuild.install --if-missing",
+        "cmd npm install --prefix assets"
+      ],
+      "assets.build": ["cmd npm run deploy --prefix assets", "esbuild kuma_san_kanji"],
       "assets.deploy": [
-        "tailwind kuma_san_kanji --minify",
+        "cmd npm run deploy --prefix assets",
         "esbuild kuma_san_kanji --minify",
         "phx.digest"
       ],

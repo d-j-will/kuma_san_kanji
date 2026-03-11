@@ -83,7 +83,8 @@ defmodule KumaSanKanji.Quiz.Session do
                %{
                  current_kanji: kanji,
                  answers_count: session.answers_count,
-                 last_answer_times: session.last_answer_times
+                 last_answer_times: session.last_answer_times,
+                 session_start_time: Map.get(session, :session_start_time)
                }}
 
             {:error, reason} ->
@@ -170,7 +171,7 @@ defmodule KumaSanKanji.Quiz.Session do
   # Private helpers
 
   defp validate_session_data(session_data) do
-    required_fields = [:user_id, :current_kanji_id, :answers_count]
+    required_fields = [:user_id, :current_kanji_id, :answers_count, :session_start_time]
 
     if Enum.all?(required_fields, &Map.has_key?(session_data, &1)) do
       :ok
@@ -185,21 +186,10 @@ defmodule KumaSanKanji.Quiz.Session do
   end
 
   defp get_kanji_for_session(session) do
-    # Use the domain to get the kanji by ID
-    case Domain.get_kanji_by_id(%{id: session.current_kanji_id}) do
+    # Use the domain to get the kanji by ID - it already loads relationships
+    case Domain.get_kanji_by_id(session.current_kanji_id) do
       {:ok, kanji} when not is_nil(kanji) ->
-        # Load meanings and pronunciations to match quiz state format
-        try do
-          # Use Ash.Query to load the relationships
-          {:ok, kanji_with_relations} =
-            kanji
-            |> Ash.Query.load([:meanings, :pronunciations])
-            |> Ash.read_one()
-
-          {:ok, kanji_with_relations}
-        rescue
-          e -> {:error, Exception.message(e)}
-        end
+        {:ok, kanji}
 
       _ ->
         {:error, :kanji_not_found}

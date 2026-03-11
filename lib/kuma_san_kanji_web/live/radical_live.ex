@@ -1,25 +1,26 @@
 defmodule KumaSanKanjiWeb.RadicalLive do
   use KumaSanKanjiWeb, :live_view
   alias KumaSanKanji.Domain
-  require Ash.Query
 
   @impl true
   def mount(%{"id" => id}, _session, socket) do
     kangxi_index = parse_int(id)
-    radical = if kangxi_index, do: Domain.get_radical_by_kangxi_index!(kangxi_index), else: nil
+    # Use code interface that handles loading kanjis
+    radical = if kangxi_index, do: Domain.get_radical_with_kanjis(kangxi_index), else: nil
+
+    # Handle case where get_radical_with_kanjis returns {:ok, radical} or just radical if bang version
+    # The interface returns {:ok, ...} by default unless we used get?: true with bang or bang function
+    # Domain definition used `get?: true` but defined function `get_radical_with_kanjis` without bang.
+    # Wait, Domain definition: `define :get_radical_with_kanjis, ... get?: true`
+    # This means it returns `{:ok, result}` or `{:error, ...}`.
+    # However, `Domain.get_radical_with_kanjis` is generated. If I call it without !, it returns tuple.
+    # But `get_radical_by_kangxi_index!` was used before? No, `Domain.get_radical_by_kangxi_index!` was used.
+    # I should handle the tuple.
 
     radical =
-      if radical do
-        # Limit to first 50 kanji using this radical for performance
-        kanji_query =
-          KumaSanKanji.Kanji.Kanji
-          |> Ash.Query.sort(character: :asc)
-          |> Ash.Query.limit(50)
-          |> Ash.Query.select([:id, :character, :grade, :stroke_count, :jlpt_level])
-
-        Ash.load!(radical, kanjis: kanji_query)
-      else
-        radical
+      case radical do
+        {:ok, r} -> r
+        _ -> nil
       end
 
     {:ok, assign(socket, radical: radical)}
@@ -39,7 +40,7 @@ defmodule KumaSanKanjiWeb.RadicalLive do
     ~H"""
     <div class="px-4 py-10 sm:px-6 sm:py-16 lg:px-8">
       <div class="mx-auto max-w-2xl">
-        <h1 class="text-3xl font-wabi-display mb-6 text-wabi-hok_blue_dark">Radical Details</h1>
+        <h1 class="text-3xl font-wabi-display mb-6 text-base-content">Radical Details</h1>
         <%= if @radical do %>
           <div class="wabi-paper wabi-texture border border-wabi-border rounded p-6">
             <div class="flex items-start gap-6">
@@ -49,7 +50,7 @@ defmodule KumaSanKanjiWeb.RadicalLive do
               <div class="flex-1">
                 <h2 class="text-2xl font-wabi-display mb-2">{@radical.meaning}</h2>
                 <p class="text-sm wabi-text mb-2">
-                  Kangxi # {@radical.kangxi_index} • Strokes: {@radical.stroke_count}
+                  Bushu # {@radical.kangxi_index} • Strokes: {@radical.stroke_count}
                 </p>
                 <p :if={@radical.japanese_name} class="text-sm wabi-text mb-2">
                   Japanese: {@radical.japanese_name}
@@ -63,14 +64,14 @@ defmodule KumaSanKanjiWeb.RadicalLive do
                 <p :if={@radical.notes} class="text-xs wabi-text mb-2">{@radical.notes}</p>
                 <p
                   :if={@radical.high_yield}
-                  class="inline-block text-xs font-semibold px-2 py-1 bg-wabi-hok_blue/10 border border-wabi-hok_blue rounded text-wabi-hok_blue_dark"
+                  class="inline-block text-xs font-semibold px-2 py-1 bg-wabi-hok_blue/10 border border-wabi-hok_blue rounded text-base-content"
                 >
                   High Yield
                 </p>
               </div>
             </div>
             <div :if={@radical.kanjis != []} class="mt-8">
-              <h3 class="text-xl font-wabi-display mb-3 text-wabi-indigo">
+              <h3 class="text-xl font-wabi-display mb-3 text-base-content">
                 Kanji Using This Radical (showing up to 50)
               </h3>
               <div class="flex flex-wrap gap-2">
@@ -88,7 +89,7 @@ defmodule KumaSanKanjiWeb.RadicalLive do
           </div>
         <% end %>
         <div class="mt-6">
-          <.link navigate={~p"/explore"} class="text-wabi-accent underline">Back to Explore</.link>
+          <.link navigate={~p"/explore"} class="text-primary underline">Back to Explore</.link>
         </div>
       </div>
     </div>

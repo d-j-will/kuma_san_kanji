@@ -1,0 +1,162 @@
+<div class="container mx-auto px-4 py-8 max-w-4xl">
+  <h1 class="text-3xl font-bold mb-6 text-primary">Settings</h1>
+
+  <div class="flex flex-col md:flex-row gap-8">
+    <!-- Sidebar Navigation -->
+    <div class="md:w-1/4">
+      <ul class="menu bg-base-200 w-full rounded-box">
+        <li>
+          <a
+            class={if @active_tab == "profile", do: "active", else: ""}
+            phx-click="change_tab"
+            phx-value-tab="profile"
+          >
+            <div class="flex items-center gap-2">
+              <.icon name="hero-user" class="w-5 h-5" />
+              <span>Profile</span>
+            </div>
+          </a>
+        </li>
+        <li>
+          <a
+            class={if @active_tab == "theme", do: "active", else: ""}
+            phx-click="change_tab"
+            phx-value-tab="theme"
+          >
+            <div class="flex items-center gap-2">
+              <.icon name="hero-swatch" class="w-5 h-5" />
+              <span>Appearance</span>
+            </div>
+          </a>
+        </li>
+        <li>
+          <a
+            class={if @active_tab == "notifications", do: "active", else: ""}
+            phx-click="change_tab"
+            phx-value-tab="notifications"
+          >
+            <div class="flex items-center gap-2">
+              <.icon name="hero-bell" class="w-5 h-5" />
+              <span>Notifications</span>
+            </div>
+          </a>
+        </li>
+      </ul>
+    </div>
+    
+<!-- Main Content Area -->
+    <div class="md:w-3/4">
+      <div class="card bg-base-100 shadow-xl">
+        <div class="card-body">
+          
+<!-- Profile Section -->
+          <div :if={@active_tab == "profile"}>
+            <h2 class="card-title text-2xl mb-4">Profile Settings</h2>
+
+            <.form for={@form} phx-change="validate" phx-submit="save" class="space-y-4">
+              <div class="form-control w-full">
+                <label class="label">
+                  <span class="label-text">Username</span>
+                </label>
+                <.input field={@form[:username]} type="text" class="input input-bordered w-full" />
+              </div>
+
+              <div class="form-control w-full">
+                <label class="label">
+                  <span class="label-text">Email</span>
+                </label>
+                <div class="input input-bordered w-full flex items-center bg-base-200 text-base-content/70 cursor-not-allowed">
+                  {@current_user.email}
+                </div>
+                <label class="label">
+                  <span class="label-text-alt text-warning">
+                    Email cannot be changed directly
+                  </span>
+                </label>
+              </div>
+
+              <div class="card-actions justify-end mt-6">
+                <button class="btn btn-primary" type="submit" phx-disable-with="Saving...">
+                  Save Profile
+                </button>
+              </div>
+            </.form>
+          </div>
+          
+<!-- Theme Section -->
+          <div :if={@active_tab == "theme"}>
+            <h2 class="card-title text-2xl mb-4">Appearance</h2>
+            <p class="mb-6 text-base-content/70">Choose a theme that fits your vibe.</p>
+
+            <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+              <%= for theme <- @themes do %>
+                <button
+                  class={"btn h-auto py-4 flex flex-col items-center gap-2 border-2 " <> if(@current_user.theme == theme, do: "border-primary bg-base-200", else: "border-base-200 bg-base-100 hover:border-base-300")}
+                  phx-click="set_theme"
+                  phx-value-theme={theme}
+                  data-theme={theme}
+                >
+                  <div
+                    class="w-full h-8 flex gap-1 justify-center pointer-events-none"
+                    data-theme={theme}
+                  >
+                    <div class="w-2 h-8 bg-primary rounded"></div>
+                    <div class="w-2 h-8 bg-secondary rounded"></div>
+                    <div class="w-2 h-8 bg-accent rounded"></div>
+                    <div class="w-2 h-8 bg-neutral rounded"></div>
+                  </div>
+                  <span class="capitalize">{theme}</span>
+                </button>
+              <% end %>
+            </div>
+          </div>
+          
+<!-- Notifications Section -->
+          <div :if={@active_tab == "notifications"}>
+            <h2 class="card-title text-2xl mb-4">Notification Preferences</h2>
+
+            <.form for={@form} phx-change="validate" phx-submit="save" class="space-y-6">
+              <div class="form-control">
+                <label class="label cursor-pointer justify-start gap-4">
+                  <.input
+                    field={@form[:study_reminders]}
+                    type="checkbox"
+                    class="toggle toggle-primary"
+                  />
+                  <div>
+                    <span class="label-text font-semibold text-lg block">Study Reminders</span>
+                    <span class="label-text-alt block text-base-content/70">
+                      Receive daily reminders to practice your kanji reviews.
+                    </span>
+                  </div>
+                </label>
+              </div>
+
+              <div class="form-control">
+                <label class="label cursor-pointer justify-start gap-4">
+                  <.input
+                    field={@form[:marketing_emails]}
+                    type="checkbox"
+                    class="toggle toggle-secondary"
+                  />
+                  <div>
+                    <span class="label-text font-semibold text-lg block">Product Updates</span>
+                    <span class="label-text-alt block text-base-content/70">
+                      Stay informed about new features and improvements.
+                    </span>
+                  </div>
+                </label>
+              </div>
+
+              <div class="card-actions justify-end mt-6">
+                <button class="btn btn-primary" type="submit" phx-disable-with="Saving...">
+                  Save Preferences
+                </button>
+              </div>
+            </.form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -74,6 +74,11 @@ defmodule KumaSanKanji.Accounts.User do
       change(set_attribute(:dev_mode_enabled, arg(:enabled)))
     end
 
+    # Action for users to update their own settings
+    update :update_settings do
+      accept([:username, :theme, :marketing_emails, :study_reminders])
+    end
+
     # Generic update action for admin operations
     update :update do
       accept([:admin, :dev_mode_enabled])
@@ -139,9 +144,13 @@ defmodule KumaSanKanji.Accounts.User do
       authorize_if(always())
     end
 
-    # Temporarily allow all read operations for debugging
+    # Users can read their own data, admins can read all users
     policy action_type(:read) do
-      authorize_if(always())
+      # Admins can read any user
+      authorize_if(actor_attribute_equals(:admin, true))
+
+      # Users can read their own user record
+      authorize_if(expr(id == ^actor(:id)))
     end
 
     # Only admins can toggle dev mode for users
@@ -149,9 +158,14 @@ defmodule KumaSanKanji.Accounts.User do
       authorize_if(actor_attribute_equals(:admin, true))
     end
 
-    # Allow create_for_test for testing purposes
+    # Users can update their own settings
+    policy action(:update_settings) do
+      authorize_if(expr(id == ^actor(:id)))
+    end
+
+    # Allow create_for_test only for admins (internal tasks use authorize?: false to bypass)
     policy action(:create_for_test) do
-      authorize_if(always())
+      authorize_if(actor_attribute_equals(:admin, true))
     end
 
     # Allow generic update for admin operations
@@ -171,6 +185,21 @@ defmodule KumaSanKanji.Accounts.User do
     attribute(:username, :ci_string, allow_nil?: false, public?: true)
     attribute(:email, :ci_string, allow_nil?: false, public?: true)
     attribute(:hashed_password, :string, allow_nil?: true, sensitive?: true)
+
+    attribute :theme, :string do
+      default("cupcake")
+      public?(true)
+    end
+
+    attribute :marketing_emails, :boolean do
+      default(false)
+      public?(true)
+    end
+
+    attribute :study_reminders, :boolean do
+      default(true)
+      public?(true)
+    end
 
     attribute :dev_mode_enabled, :boolean do
       default(false)

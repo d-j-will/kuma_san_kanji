@@ -31,7 +31,7 @@ config :kuma_san_kanji, KumaSanKanjiWeb.Endpoint,
   secret_key_base: "bQsNOQYbw3Ju7J7yYn7BttLahgBuesIKB1pQ60sOksrH8IWNGlCGwnhakvLlxXFD",
   watchers: [
     esbuild: {Esbuild, :install_and_run, [:kuma_san_kanji, ~w(--sourcemap=inline --watch)]},
-    tailwind: {Tailwind, :install_and_run, [:kuma_san_kanji, ~w(--watch)]}
+    npm: ["run", "watch", cd: Path.expand("../assets", __DIR__)]
   ]
 
 # ## SSL Support
@@ -89,14 +89,7 @@ config :phoenix_live_view,
 # Disable swoosh api client as it is only required for production adapters.
 config :swoosh, :api_client, false
 
-# Import secret configuration if it exists (not in CI)
-if File.exists?(Path.join(__DIR__, "dev.secret.exs")) do
-  import_config "dev.secret.exs"
-end
-
-# Optional: disable live reload & watchers (e.g. for mix kanjivg.ingest in CI or headless envs)
-if System.get_env("DISABLE_LIVE_RELOAD") == "1" do
-  config :kuma_san_kanji, KumaSanKanjiWeb.Endpoint,
-    live_reload: [patterns: []],
-    watchers: []
+# Import secret configuration if it exists (for local overrides)
+if File.exists?(Path.join(__DIR__, "dev.secrets.exs")) do
+  import_config "dev.secrets.exs"
 end

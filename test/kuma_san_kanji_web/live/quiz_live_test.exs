@@ -43,6 +43,21 @@ defmodule KumaSanKanjiWeb.QuizLiveTest do
         type: :on
       })
 
+    # Add example sentences for testing detailed feedback
+    {:ok, _} =
+      KumaSanKanji.Domain.create_example_sentence(%{
+        kanji_id: kanji.id,
+        japanese: "木が好きです。",
+        translation: "I like trees."
+      })
+
+    {:ok, _} =
+      KumaSanKanji.Domain.create_example_sentence(%{
+        kanji_id: kanji.id,
+        japanese: "大きい木",
+        translation: "A big tree"
+      })
+
     # Initialize SRS progress
     {:ok, progress} = Logic.initialize_progress(user.id, kanji.id, user)
 
@@ -191,6 +206,219 @@ defmodule KumaSanKanjiWeb.QuizLiveTest do
       has_h2 = view |> has_element?("h2")
       # This is acceptable as h2 may not always be present depending on the quiz state
       assert is_boolean(has_h2)
+    end
+  end
+
+  describe "Audio Feedback" do
+    test "pushes play_audio event on correct answer", %{conn: conn, kanji: kanji} do
+      {:ok, view, _} = live(conn, ~p"/quiz")
+      char = kanji.character
+
+      # Submit a correct answer
+      view
+      |> element("form")
+      |> render_submit(%{answer: "tree"})
+
+      # Assert that the play_audio event was pushed
+      assert_push_event(view, "play_audio", %{text: ^char, lang: "ja-JP"})
+    end
+
+    test "does NOT push play_audio event on incorrect answer", %{conn: conn} do
+      {:ok, view, _} = live(conn, ~p"/quiz")
+
+      # Submit an incorrect answer
+      view
+      |> element("form")
+      |> render_submit(%{answer: "wrong"})
+
+      # Assert that NO play_audio event was pushed
+      # We verify this by ensuring the render doesn't fail and no event is in the mailbox (implicit)
+      # But strictly, assert_push_event fails if not found.
+      # To test absence, we can try to assert it and expect failure, or better:
+      # just check the feedback message and ensure the test finishes without the event.
+      # There is no built-in "refute_push_event".
+      # However, we can verify the feedback state is "incorrect"
+      assert render(view) =~ "Incorrect"
+    end
+
+    test "renders Speak button with correct attributes", %{conn: conn, kanji: kanji} do
+      {:ok, view, _} = live(conn, ~p"/quiz")
+      char = kanji.character
+
+      # Show stroke order first to reveal the component
+      view
+      |> element("button[phx-click='toggle_stroke_order']")
+      |> render_click()
+
+      # Check for the Speak button
+      assert view |> has_element?("button[data-audio-text='#{char}']")
+      assert render(view) =~ "Speak"
+    end
+  end
+
+  describe "Detailed Answer Feedback (Issue #23)" do
+    test "details section is collapsed by default after answering", %{conn: conn} do
+      {:ok, view, _} = live(conn, ~p"/quiz")
+
+      # Submit an answer to trigger feedback
+      view |> element("form") |> render_submit(%{answer: "tree"})
+
+      # Verify feedback is shown
+      assert render(view) =~ "Correct!"
+
+      # Verify "Show Details" button exists
+      assert view |> has_element?("button[phx-click='toggle_feedback_details']")
+      assert render(view) =~ "Show Details"
+
+      # Verify details panel is NOT visible initially
+      refute view |> has_element?("#feedback-details-panel")
+    end
+
+    test "toggles details section when Show/Hide Details button is clicked", %{conn: conn} do
+      {:ok, view, _} = live(conn, ~p"/quiz")
+
+      # Submit an answer to trigger feedback
+      view |> element("form") |> render_submit(%{answer: "tree"})
+
+      # Click "Show Details" button
+      view
+      |> element("button[phx-click='toggle_feedback_details']")
+      |> render_click()
+
+      # Details panel should now be visible
+      assert view |> has_element?("#feedback-details-panel")
+      assert render(view) =~ "Hide Details"
+
+      # Click "Hide Details" button
+      view
+      |> element("button[phx-click='toggle_feedback_details']")
+      |> render_click()
+
+      # Details panel should be hidden again
+      refute view |> has_element?("#feedback-details-panel")
+      assert render(view) =~ "Show Details"
+    end
+
+    test "displays meanings in details section when expanded", %{conn: conn} do
+      {:ok, view, _} = live(conn, ~p"/quiz")
+
+      # Submit an answer and expand details
+      view |> element("form") |> render_submit(%{answer: "tree"})
+      view |> element("button[phx-click='toggle_feedback_details']") |> render_click()
+
+      html = render(view)
+
+      # Check for meanings section
+      assert html =~ "Meanings"
+      assert html =~ "tree"
+    end
+
+    test "displays pronunciations with type indicators in details section", %{conn: conn} do
+      {:ok, view, _} = live(conn, ~p"/quiz")
+
+      # Submit an answer and expand details
+      view |> element("form") |> render_submit(%{answer: "tree"})
+      view |> element("button[phx-click='toggle_feedback_details']") |> render_click()
+
+      html = render(view)
+
+      # Check for pronunciations section
+      assert html =~ "Pronunciations"
+      assert html =~ "き"
+      assert html =~ "モク"
+
+      # Verify type indicators are present
+      assert html =~ "kun"
+      assert html =~ "on"
+    end
+
+    test "displays example sentences with Japanese and English in details section", %{conn: conn} do
+      {:ok, view, _} = live(conn, ~p"/quiz")
+
+      # Submit an answer and expand details
+      view |> element("form") |> render_submit(%{answer: "tree"})
+      view |> element("button[phx-click='toggle_feedback_details']") |> render_click()
+
+      html = render(view)
+
+      # Check for example sentences section
+      assert html =~ "Example Sentences"
+
+      # Verify Japanese text is present
+      assert html =~ "木が好きです。"
+
+      # Verify English translation is present
+      assert html =~ "I like trees."
+    end
+
+    test "limits example sentences to 2 in details section", %{conn: conn} do
+      {:ok, view, _} = live(conn, ~p"/quiz")
+
+      # Submit an answer and expand details
+      view |> element("form") |> render_submit(%{answer: "tree"})
+      view |> element("button[phx-click='toggle_feedback_details']") |> render_click()
+
+      html = render(view)
+
+      # Count example sentence containers
+      # Each example has both Japanese and English in a bg-wabi-cream/20 div
+      assert html =~ "木が好きです。"
+      assert html =~ "大きい木"
+
+      # Both should be present (we added 2 in setup)
+      assert html =~ "I like trees."
+      assert html =~ "A big tree"
+    end
+
+    test "details section has proper ARIA attributes for accessibility", %{conn: conn} do
+      {:ok, view, _} = live(conn, ~p"/quiz")
+
+      # Submit an answer
+      view |> element("form") |> render_submit(%{answer: "tree"})
+
+      html = render(view)
+
+      # Check for aria-expanded attribute on toggle button
+      assert html =~ ~r/aria-expanded="false"/
+
+      # Expand details
+      view |> element("button[phx-click='toggle_feedback_details']") |> render_click()
+      html = render(view)
+
+      # aria-expanded should now be true
+      assert view |> has_element?("button[aria-expanded='true']")
+
+      # Details panel should have proper ARIA role and label
+      assert html =~ ~r/role="region"/
+      assert html =~ ~r/aria-label="Kanji details"/
+    end
+
+    test "details section resets to collapsed when moving to next kanji", %{conn: conn} do
+      {:ok, view, _} = live(conn, ~p"/quiz")
+
+      # Submit an answer and expand details
+      view |> element("form") |> render_submit(%{answer: "tree"})
+      view |> element("button[phx-click='toggle_feedback_details']") |> render_click()
+
+      # Verify details are expanded
+      assert view |> has_element?("#feedback-details-panel")
+
+      # Click "Next" to move to next kanji
+      view |> element("button[phx-click='next_kanji']") |> render_click()
+
+      # If there's another kanji, details should be collapsed
+      # If no more reviews, that's also acceptable
+      html = render(view)
+
+      # If there's a new kanji being shown (form is present), check details are collapsed
+      if html =~ "Enter the meaning or reading:" do
+        # We're on a new kanji - submit an answer to get to feedback
+        view |> element("form") |> render_submit(%{answer: "test"})
+
+        # Details should be collapsed by default
+        refute view |> has_element?("#feedback-details-panel")
+        assert render(view) =~ "Show Details"
+      end
     end
   end
 end

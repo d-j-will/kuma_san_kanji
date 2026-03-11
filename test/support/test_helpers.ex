@@ -43,6 +43,34 @@ defmodule KumaSanKanji.TestHelpers do
   end
 
   @doc """
+  Creates a session for testing purposes using the test user lookup.
+  """
+  def create_test_session(_conn, user) do
+    {:ok, token, _claims} = AshAuthentication.Jwt.token_for_user(user)
+
+    %{
+      "user_id" => user.id,
+      "token" => token
+    }
+  end
+
+  @doc """
+  Gets user from session for testing, bypassing authorization.
+  """
+  def get_test_user_from_session(user_id, token) when is_binary(user_id) and is_binary(token) do
+    with {:ok, %{"sub" => subject}, _signer} <-
+           AshAuthentication.Jwt.verify(token, KumaSanKanji.Accounts.User),
+         true <- String.contains?(subject, user_id),
+         {:ok, user} <- get_test_user(user_id) do
+      {:ok, user}
+    else
+      _ -> {:error, :invalid_session}
+    end
+  end
+
+  def get_test_user_from_session(_user_id, _token), do: {:error, :invalid_session}
+
+  @doc """
   Logs in a user for ConnTest by setting up proper session and assigns.
   Generates a real AshAuthentication JWT so LiveSession on_mount works.
   """

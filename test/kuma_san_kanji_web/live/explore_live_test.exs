@@ -86,7 +86,7 @@ defmodule KumaSanKanjiWeb.ExploreLiveTest do
       html = render(view)
       assert html =~ "Radical"
       assert html =~ radical.glyph
-      assert html =~ "Kangxi # 85"
+      assert html =~ "Bushu # 85"
       assert html =~ created.character
     end
 

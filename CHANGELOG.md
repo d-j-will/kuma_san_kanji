@@ -1,5 +1,33 @@
 # Changelog
 
+## [Unreleased]
+
+### Added
+- **Detailed Answer Feedback (Issue #23):** Enhanced quiz feedback with rich contextual information.
+  - Added expandable "Show Details" section in quiz feedback.
+  - Displays example sentences (up to 2) with Japanese text and English translations.
+  - Shows all kanji meanings as visual tags.
+  - Displays pronunciations with on/kun reading type indicators.
+  - Updated `SRS.Logic` to load example sentences alongside kanji data.
+  - Implemented progressive disclosure pattern (collapsed by default, expandable on click).
+  - Maintains clean UX with toggle animation and proper ARIA attributes for accessibility.
+  - **Testing:** Added 8 comprehensive behavioral tests for feedback details functionality:
+    - Collapse/expand toggle behavior
+    - Meanings, pronunciations, and example sentences rendering
+    - ARIA accessibility attributes
+    - State reset when navigating to next kanji
+  - All tests passing: 153 tests (increased from 143), 0 failures.
+- **Furigana Generation:** Implemented dynamic furigana display for Japanese text.
+  - Uses `System.cmd("mecab")` for morphological analysis.
+  - Updates `ExploreLive` to show furigana in example sentences and common words.
+  - Adds dedicated unit tests for `KumaSanKanji.NLP.Furigana` module.
+  - Configures `Dockerfile` and CI/CD to ensure `mecab` is installed.
+- **Audio Feedback:** Implemented Text-to-Speech (TTS) for Kanji pronunciation.
+  - Added "Speak" button to `KanjiStrokeOrderComponent`.
+  - Added auto-play audio on correct answers in `QuizLive`.
+  - Created `AudioFeedback` JavaScript hook using the Web Speech API.
+  - **Testing:** Added comprehensive tests for server-side audio events and UI component rendering.
+
 ## [2025-06-24] - Database Migration to PostgreSQL
 
 ### ✅ MAJOR: Successfully Migrated from SQLite to PostgreSQL

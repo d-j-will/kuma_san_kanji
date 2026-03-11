@@ -21,7 +21,9 @@ ARG RUNNER_IMAGE="debian:${DEBIAN_VERSION}"
 FROM ${BUILDER_IMAGE} AS builder
 
 # install build dependencies
-RUN apt-get update -y && apt-get install -y build-essential git \
+RUN apt-get update -y && apt-get install -y build-essential git mecab libmecab-dev mecab-ipadic-utf8 curl \
+    && curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
+    && apt-get install -y nodejs \
     && apt-get clean && rm -f /var/lib/apt/lists/*_*
 
 # prepare build dir
@@ -50,12 +52,11 @@ COPY priv priv
 COPY lib lib
 
 COPY assets assets
+RUN npm ci --prefix assets
+RUN mix esbuild.install --if-missing
 
 COPY scripts scripts
 RUN chmod +x scripts/seed.sh
-
-# Copy admin setup script
-COPY admin_setup.exs ./
 
 # compile assets
 RUN mix assets.deploy
@@ -74,7 +75,7 @@ RUN mix release
 FROM ${RUNNER_IMAGE}
 
 RUN apt-get update -y && \
-  apt-get install -y --no-install-recommends libstdc++6 openssl libncurses5 locales ca-certificates curl \
+  apt-get install -y --no-install-recommends libstdc++6 openssl libncurses5 locales ca-certificates curl mecab libmecab-dev mecab-ipadic-utf8 \
   && apt-get clean && rm -f /var/lib/apt/lists/*_*
 
 # Set the locale
@@ -98,9 +99,6 @@ COPY --from=builder --chown=nobody:root /app/_build/${MIX_ENV}/rel/kuma_san_kanj
 COPY --from=builder --chown=nobody:root /app/priv ./priv
 
 COPY --from=builder --chown=nobody:root /app/scripts ./scripts
-
-# Copy admin setup script
-COPY --from=builder --chown=nobody:root /app/admin_setup.exs ./admin_setup.exs
 
  # Reinforce execute bits on release scripts (some environments lose them, causing Permission denied)
 RUN chmod 755 /app/bin/* || true

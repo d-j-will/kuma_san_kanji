@@ -5,11 +5,6 @@ defmodule KumaSanKanjiWeb.Router do
 
   import AshAuthentication.Plug.Helpers
 
-  # Health check endpoint (no session, no auth)
-  scope "/health", KumaSanKanjiWeb do
-    get "/", HealthController, :index
-  end
-
   pipeline :browser do
     plug :accepts, ["html"]
     plug :fetch_session
@@ -24,6 +19,10 @@ defmodule KumaSanKanjiWeb.Router do
     plug :accepts, ["json"]
     plug :load_from_bearer
     plug :set_actor, :user
+  end
+
+  scope "/", KumaSanKanjiWeb do
+    get "/health", HealthController, :check
   end
 
   scope "/", KumaSanKanjiWeb do
@@ -60,6 +59,7 @@ defmodule KumaSanKanjiWeb.Router do
     ash_authentication_live_session :authenticated_routes,
       on_mount: {KumaSanKanjiWeb.UserLiveAuth, :live_user_required} do
       live "/quiz", QuizLive
+      live "/settings", SettingsLive
       live "/admin", Admin.DashboardLive
       live "/admin/users", Admin.UserAdminLive
     end

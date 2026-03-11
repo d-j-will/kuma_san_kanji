@@ -8,7 +8,6 @@ defmodule KumaSanKanji.Kanji.Pronunciation do
     attribute(:value, :string, allow_nil?: false)
     # "on" or "kun"
     attribute(:type, :string, allow_nil?: false)
-    attribute(:romaji, :string, default: nil)
   end
 
   relationships do
@@ -22,7 +21,7 @@ defmodule KumaSanKanji.Kanji.Pronunciation do
     defaults([:read, :update, :destroy])
 
     create :create do
-      accept([:value, :type, :romaji, :kanji_id])
+      accept([:value, :type, :kanji_id])
     end
 
     read :by_kanji_and_value do

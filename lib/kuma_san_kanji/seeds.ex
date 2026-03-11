@@ -947,8 +947,8 @@ defmodule KumaSanKanji.Seeds do
           %{value: "liquid"}
         ],
         pronunciations: [
-          %{value: "みず", type: "kun", romaji: "mizu"},
-          %{value: "スイ", type: "on", romaji: "sui"}
+          %{value: "みず", type: "kun"},
+          %{value: "スイ", type: "on"}
         ],
         example_sentences: [
           %{
@@ -971,8 +971,8 @@ defmodule KumaSanKanji.Seeds do
           %{value: "flame"}
         ],
         pronunciations: [
-          %{value: "ひ", type: "kun", romaji: "hi"},
-          %{value: "カ", type: "on", romaji: "ka"}
+          %{value: "ひ", type: "kun"},
+          %{value: "カ", type: "on"}
         ],
         example_sentences: [
           %{
@@ -995,8 +995,8 @@ defmodule KumaSanKanji.Seeds do
           %{value: "wood"}
         ],
         pronunciations: [
-          %{value: "き", type: "kun", romaji: "ki"},
-          %{value: "モク", type: "on", romaji: "moku"}
+          %{value: "き", type: "kun"},
+          %{value: "モク", type: "on"}
         ],
         example_sentences: [
           %{
@@ -1020,8 +1020,8 @@ defmodule KumaSanKanji.Seeds do
           %{value: "hill"}
         ],
         pronunciations: [
-          %{value: "やま", type: "kun", romaji: "yama"},
-          %{value: "サン", type: "on", romaji: "san"}
+          %{value: "やま", type: "kun"},
+          %{value: "サン", type: "on"}
         ],
         example_sentences: [
           %{
@@ -1044,8 +1044,8 @@ defmodule KumaSanKanji.Seeds do
           %{value: "stream"}
         ],
         pronunciations: [
-          %{value: "かわ", type: "kun", romaji: "kawa"},
-          %{value: "セン", type: "on", romaji: "sen"}
+          %{value: "かわ", type: "kun"},
+          %{value: "セン", type: "on"}
         ],
         example_sentences: [
           %{
@@ -1069,9 +1069,9 @@ defmodule KumaSanKanji.Seeds do
           %{value: "Japan"}
         ],
         pronunciations: [
-          %{value: "ひ", type: "kun", romaji: "hi"},
-          %{value: "ニチ", type: "on", romaji: "nichi"},
-          %{value: "ジツ", type: "on", romaji: "jitsu"}
+          %{value: "ひ", type: "kun"},
+          %{value: "ニチ", type: "on"},
+          %{value: "ジツ", type: "on"}
         ],
         example_sentences: [
           %{
@@ -1094,9 +1094,9 @@ defmodule KumaSanKanji.Seeds do
           %{value: "moon"}
         ],
         pronunciations: [
-          %{value: "つき", type: "kun", romaji: "tsuki"},
-          %{value: "ゲツ", type: "on", romaji: "getsu"},
-          %{value: "ガツ", type: "on", romaji: "gatsu"}
+          %{value: "つき", type: "kun"},
+          %{value: "ゲツ", type: "on"},
+          %{value: "ガツ", type: "on"}
         ],
         example_sentences: [
           %{
@@ -1119,9 +1119,9 @@ defmodule KumaSanKanji.Seeds do
           %{value: "human being"}
         ],
         pronunciations: [
-          %{value: "ひと", type: "kun", romaji: "hito"},
-          %{value: "ジン", type: "on", romaji: "jin"},
-          %{value: "ニン", type: "on", romaji: "nin"}
+          %{value: "ひと", type: "kun"},
+          %{value: "ジン", type: "on"},
+          %{value: "ニン", type: "on"}
         ],
         example_sentences: [
           %{
@@ -1144,8 +1144,8 @@ defmodule KumaSanKanji.Seeds do
           %{value: "first"}
         ],
         pronunciations: [
-          %{value: "ひと", type: "kun", romaji: "hito"},
-          %{value: "イチ", type: "on", romaji: "ichi"}
+          %{value: "ひと", type: "kun"},
+          %{value: "イチ", type: "on"}
         ],
         example_sentences: [
           %{
@@ -1168,8 +1168,8 @@ defmodule KumaSanKanji.Seeds do
           %{value: "second"}
         ],
         pronunciations: [
-          %{value: "ふた", type: "kun", romaji: "futa"},
-          %{value: "ニ", type: "on", romaji: "ni"}
+          %{value: "ふた", type: "kun"},
+          %{value: "ニ", type: "on"}
         ],
         example_sentences: [
           %{
@@ -1191,9 +1191,9 @@ defmodule KumaSanKanji.Seeds do
           %{value: "three", is_primary: true}
         ],
         pronunciations: [
-          %{value: "み", type: "kun", romaji: "mi"},
-          %{value: "みっ", type: "kun", romaji: "mit"},
-          %{value: "サン", type: "on", romaji: "san"}
+          %{value: "み", type: "kun"},
+          %{value: "みっ", type: "kun"},
+          %{value: "サン", type: "on"}
         ],
         example_sentences: [
           %{
@@ -1215,9 +1215,9 @@ defmodule KumaSanKanji.Seeds do
           %{value: "four", is_primary: true}
         ],
         pronunciations: [
-          %{value: "よ", type: "kun", romaji: "yo"},
-          %{value: "よん", type: "kun", romaji: "yon"},
-          %{value: "シ", type: "on", romaji: "shi"}
+          %{value: "よ", type: "kun"},
+          %{value: "よん", type: "kun"},
+          %{value: "シ", type: "on"}
         ],
         example_sentences: [
           %{
@@ -1239,8 +1239,8 @@ defmodule KumaSanKanji.Seeds do
           %{value: "five", is_primary: true}
         ],
         pronunciations: [
-          %{value: "いつ", type: "kun", romaji: "itsu"},
-          %{value: "ゴ", type: "on", romaji: "go"}
+          %{value: "いつ", type: "kun"},
+          %{value: "ゴ", type: "on"}
         ],
         example_sentences: [
           %{
@@ -1262,9 +1262,9 @@ defmodule KumaSanKanji.Seeds do
           %{value: "six", is_primary: true}
         ],
         pronunciations: [
-          %{value: "む", type: "kun", romaji: "mu"},
-          %{value: "むっ", type: "kun", romaji: "mut"},
-          %{value: "ロク", type: "on", romaji: "roku"}
+          %{value: "む", type: "kun"},
+          %{value: "むっ", type: "kun"},
+          %{value: "ロク", type: "on"}
         ],
         example_sentences: [
           %{
@@ -1286,8 +1286,8 @@ defmodule KumaSanKanji.Seeds do
           %{value: "seven", is_primary: true}
         ],
         pronunciations: [
-          %{value: "なな", type: "kun", romaji: "nana"},
-          %{value: "シチ", type: "on", romaji: "shichi"}
+          %{value: "なな", type: "kun"},
+          %{value: "シチ", type: "on"}
         ],
         example_sentences: [
           %{
@@ -1309,9 +1309,9 @@ defmodule KumaSanKanji.Seeds do
           %{value: "eight", is_primary: true}
         ],
         pronunciations: [
-          %{value: "や", type: "kun", romaji: "ya"},
-          %{value: "よう", type: "kun", romaji: "you"},
-          %{value: "ハチ", type: "on", romaji: "hachi"}
+          %{value: "や", type: "kun"},
+          %{value: "よう", type: "kun"},
+          %{value: "ハチ", type: "on"}
         ],
         example_sentences: [
           %{
@@ -1333,9 +1333,9 @@ defmodule KumaSanKanji.Seeds do
           %{value: "nine", is_primary: true}
         ],
         pronunciations: [
-          %{value: "ここの", type: "kun", romaji: "kokono"},
-          %{value: "キュウ", type: "on", romaji: "kyuu"},
-          %{value: "ク", type: "on", romaji: "ku"}
+          %{value: "ここの", type: "kun"},
+          %{value: "キュウ", type: "on"},
+          %{value: "ク", type: "on"}
         ],
         example_sentences: [
           %{
@@ -1357,8 +1357,8 @@ defmodule KumaSanKanji.Seeds do
           %{value: "ten", is_primary: true}
         ],
         pronunciations: [
-          %{value: "とお", type: "kun", romaji: "too"},
-          %{value: "ジュウ", type: "on", romaji: "juu"}
+          %{value: "とお", type: "kun"},
+          %{value: "ジュウ", type: "on"}
         ],
         example_sentences: [
           %{
@@ -1381,9 +1381,9 @@ defmodule KumaSanKanji.Seeds do
           %{value: "opening"}
         ],
         pronunciations: [
-          %{value: "くち", type: "kun", romaji: "kuchi"},
-          %{value: "コウ", type: "on", romaji: "kou"},
-          %{value: "ク", type: "on", romaji: "ku"}
+          %{value: "くち", type: "kun"},
+          %{value: "コウ", type: "on"},
+          %{value: "ク", type: "on"}
         ],
         example_sentences: [
           %{
@@ -1406,8 +1406,8 @@ defmodule KumaSanKanji.Seeds do
           %{value: "sight"}
         ],
         pronunciations: [
-          %{value: "め", type: "kun", romaji: "me"},
-          %{value: "モク", type: "on", romaji: "moku"}
+          %{value: "め", type: "kun"},
+          %{value: "モク", type: "on"}
         ],
         example_sentences: [
           %{
@@ -1429,8 +1429,8 @@ defmodule KumaSanKanji.Seeds do
           %{value: "ear", is_primary: true}
         ],
         pronunciations: [
-          %{value: "みみ", type: "kun", romaji: "mimi"},
-          %{value: "ジ", type: "on", romaji: "ji"}
+          %{value: "みみ", type: "kun"},
+          %{value: "ジ", type: "on"}
         ],
         example_sentences: [
           %{
@@ -1453,9 +1453,9 @@ defmodule KumaSanKanji.Seeds do
           %{value: "arm"}
         ],
         pronunciations: [
-          %{value: "て", type: "kun", romaji: "te"},
-          %{value: "た", type: "kun", romaji: "ta"},
-          %{value: "シュ", type: "on", romaji: "shu"}
+          %{value: "て", type: "kun"},
+          %{value: "た", type: "kun"},
+          %{value: "シュ", type: "on"}
         ],
         example_sentences: [
           %{
@@ -1478,9 +1478,9 @@ defmodule KumaSanKanji.Seeds do
           %{value: "leg"}
         ],
         pronunciations: [
-          %{value: "あし", type: "kun", romaji: "ashi"},
-          %{value: "た", type: "kun", romaji: "ta"},
-          %{value: "ソク", type: "on", romaji: "soku"}
+          %{value: "あし", type: "kun"},
+          %{value: "た", type: "kun"},
+          %{value: "ソク", type: "on"}
         ],
         example_sentences: [
           %{
@@ -1504,11 +1504,11 @@ defmodule KumaSanKanji.Seeds do
           %{value: "top"}
         ],
         pronunciations: [
-          %{value: "うえ", type: "kun", romaji: "ue"},
-          %{value: "あ", type: "kun", romaji: "a"},
-          %{value: "のぼ", type: "kun", romaji: "nobo"},
-          %{value: "ジョウ", type: "on", romaji: "jou"},
-          %{value: "ショウ", type: "on", romaji: "shou"}
+          %{value: "うえ", type: "kun"},
+          %{value: "あ", type: "kun"},
+          %{value: "のぼ", type: "kun"},
+          %{value: "ジョウ", type: "on"},
+          %{value: "ショウ", type: "on"}
         ],
         example_sentences: [
           %{
@@ -1532,10 +1532,10 @@ defmodule KumaSanKanji.Seeds do
           %{value: "under"}
         ],
         pronunciations: [
-          %{value: "した", type: "kun", romaji: "shita"},
-          %{value: "さ", type: "kun", romaji: "sa"},
-          %{value: "カ", type: "on", romaji: "ka"},
-          %{value: "ゲ", type: "on", romaji: "ge"}
+          %{value: "した", type: "kun"},
+          %{value: "さ", type: "kun"},
+          %{value: "カ", type: "on"},
+          %{value: "ゲ", type: "on"}
         ],
         example_sentences: [
           %{
@@ -1558,9 +1558,9 @@ defmodule KumaSanKanji.Seeds do
           %{value: "right side"}
         ],
         pronunciations: [
-          %{value: "みぎ", type: "kun", romaji: "migi"},
-          %{value: "ウ", type: "on", romaji: "u"},
-          %{value: "ユウ", type: "on", romaji: "yuu"}
+          %{value: "みぎ", type: "kun"},
+          %{value: "ウ", type: "on"},
+          %{value: "ユウ", type: "on"}
         ],
         example_sentences: [
           %{
@@ -1583,9 +1583,9 @@ defmodule KumaSanKanji.Seeds do
           %{value: "left side"}
         ],
         pronunciations: [
-          %{value: "ひだり", type: "kun", romaji: "hidari"},
-          %{value: "サ", type: "on", romaji: "sa"},
-          %{value: "シャ", type: "on", romaji: "sha"}
+          %{value: "ひだり", type: "kun"},
+          %{value: "サ", type: "on"},
+          %{value: "シャ", type: "on"}
         ],
         example_sentences: [
           %{
@@ -1609,8 +1609,8 @@ defmodule KumaSanKanji.Seeds do
           %{value: "center"}
         ],
         pronunciations: [
-          %{value: "なか", type: "kun", romaji: "naka"},
-          %{value: "チュウ", type: "on", romaji: "chuu"}
+          %{value: "なか", type: "kun"},
+          %{value: "チュウ", type: "on"}
         ],
         example_sentences: [
           %{
@@ -1636,9 +1636,9 @@ defmodule KumaSanKanji.Seeds do
           %{value: "large"}
         ],
         pronunciations: [
-          %{value: "おお", type: "kun", romaji: "oo"},
-          %{value: "ダイ", type: "on", romaji: "dai"},
-          %{value: "タイ", type: "on", romaji: "tai"}
+          %{value: "おお", type: "kun"},
+          %{value: "ダイ", type: "on"},
+          %{value: "タイ", type: "on"}
         ],
         example_sentences: [
           %{
@@ -1661,9 +1661,9 @@ defmodule KumaSanKanji.Seeds do
           %{value: "little"}
         ],
         pronunciations: [
-          %{value: "ちい", type: "kun", romaji: "chii"},
-          %{value: "こ", type: "kun", romaji: "ko"},
-          %{value: "ショウ", type: "on", romaji: "shou"}
+          %{value: "ちい", type: "kun"},
+          %{value: "こ", type: "kun"},
+          %{value: "ショウ", type: "on"}
         ],
         example_sentences: [
           %{
@@ -1685,8 +1685,8 @@ defmodule KumaSanKanji.Seeds do
           %{value: "year", is_primary: true}
         ],
         pronunciations: [
-          %{value: "とし", type: "kun", romaji: "toshi"},
-          %{value: "ネン", type: "on", romaji: "nen"}
+          %{value: "とし", type: "kun"},
+          %{value: "ネン", type: "on"}
         ],
         example_sentences: [
           %{
@@ -1710,9 +1710,9 @@ defmodule KumaSanKanji.Seeds do
           %{value: "go out"}
         ],
         pronunciations: [
-          %{value: "で", type: "kun", romaji: "de"},
-          %{value: "だ", type: "kun", romaji: "da"},
-          %{value: "シュツ", type: "on", romaji: "shutsu"}
+          %{value: "で", type: "kun"},
+          %{value: "だ", type: "kun"},
+          %{value: "シュツ", type: "on"}
         ],
         example_sentences: [
           %{
@@ -1735,9 +1735,9 @@ defmodule KumaSanKanji.Seeds do
           %{value: "insert"}
         ],
         pronunciations: [
-          %{value: "い", type: "kun", romaji: "i"},
-          %{value: "はい", type: "kun", romaji: "hai"},
-          %{value: "ニュウ", type: "on", romaji: "nyuu"}
+          %{value: "い", type: "kun"},
+          %{value: "はい", type: "kun"},
+          %{value: "ニュウ", type: "on"}
         ],
         example_sentences: [
           %{
@@ -1761,12 +1761,12 @@ defmodule KumaSanKanji.Seeds do
           %{value: "raw"}
         ],
         pronunciations: [
-          %{value: "い", type: "kun", romaji: "i"},
-          %{value: "う", type: "kun", romaji: "u"},
-          %{value: "は", type: "kun", romaji: "ha"},
-          %{value: "なま", type: "kun", romaji: "nama"},
-          %{value: "セイ", type: "on", romaji: "sei"},
-          %{value: "ショウ", type: "on", romaji: "shou"}
+          %{value: "い", type: "kun"},
+          %{value: "う", type: "kun"},
+          %{value: "は", type: "kun"},
+          %{value: "なま", type: "kun"},
+          %{value: "セイ", type: "on"},
+          %{value: "ショウ", type: "on"}
         ],
         example_sentences: [
           %{
@@ -1789,8 +1789,8 @@ defmodule KumaSanKanji.Seeds do
           %{value: "blossom"}
         ],
         pronunciations: [
-          %{value: "はな", type: "kun", romaji: "hana"},
-          %{value: "カ", type: "on", romaji: "ka"}
+          %{value: "はな", type: "kun"},
+          %{value: "カ", type: "on"}
         ],
         example_sentences: [
           %{
@@ -1812,7 +1812,7 @@ defmodule KumaSanKanji.Seeds do
           %{value: "hundred", is_primary: true}
         ],
         pronunciations: [
-          %{value: "ひゃく", type: "on", romaji: "hyaku"}
+          %{value: "ひゃく", type: "on"}
         ],
         example_sentences: [
           %{
@@ -1836,8 +1836,8 @@ defmodule KumaSanKanji.Seeds do
           %{value: "real"}
         ],
         pronunciations: [
-          %{value: "もと", type: "kun", romaji: "moto"},
-          %{value: "ホン", type: "on", romaji: "hon"}
+          %{value: "もと", type: "kun"},
+          %{value: "ホン", type: "on"}
         ],
         example_sentences: [
           %{
@@ -1860,9 +1860,9 @@ defmodule KumaSanKanji.Seeds do
           %{value: "famous"}
         ],
         pronunciations: [
-          %{value: "な", type: "kun", romaji: "na"},
-          %{value: "メイ", type: "on", romaji: "mei"},
-          %{value: "ミョウ", type: "on", romaji: "myou"}
+          %{value: "な", type: "kun"},
+          %{value: "メイ", type: "on"},
+          %{value: "ミョウ", type: "on"}
         ],
         example_sentences: [
           %{
@@ -1888,8 +1888,8 @@ defmodule KumaSanKanji.Seeds do
           %{value: "paddy"}
         ],
         pronunciations: [
-          %{value: "た", type: "kun", romaji: "ta"},
-          %{value: "デン", type: "on", romaji: "den"}
+          %{value: "た", type: "kun"},
+          %{value: "デン", type: "on"}
         ],
         example_sentences: [
           %{
@@ -1913,9 +1913,9 @@ defmodule KumaSanKanji.Seeds do
           %{value: "energy"}
         ],
         pronunciations: [
-          %{value: "ちから", type: "kun", romaji: "chikara"},
-          %{value: "リョク", type: "on", romaji: "ryoku"},
-          %{value: "リキ", type: "on", romaji: "riki"}
+          %{value: "ちから", type: "kun"},
+          %{value: "リョク", type: "on"},
+          %{value: "リキ", type: "on"}
         ],
         example_sentences: [
           %{
@@ -1939,8 +1939,8 @@ defmodule KumaSanKanji.Seeds do
           %{value: "set up"}
         ],
         pronunciations: [
-          %{value: "た", type: "kun", romaji: "ta"},
-          %{value: "リツ", type: "on", romaji: "ritsu"}
+          %{value: "た", type: "kun"},
+          %{value: "リツ", type: "on"}
         ],
         example_sentences: [
           %{
@@ -1964,9 +1964,9 @@ defmodule KumaSanKanji.Seeds do
           %{value: "literature"}
         ],
         pronunciations: [
-          %{value: "ふみ", type: "kun", romaji: "fumi"},
-          %{value: "ブン", type: "on", romaji: "bun"},
-          %{value: "モン", type: "on", romaji: "mon"}
+          %{value: "ふみ", type: "kun"},
+          %{value: "ブン", type: "on"},
+          %{value: "モン", type: "on"}
         ],
         example_sentences: [
           %{
@@ -1989,9 +1989,9 @@ defmodule KumaSanKanji.Seeds do
           %{value: "rock"}
         ],
         pronunciations: [
-          %{value: "いし", type: "kun", romaji: "ishi"},
-          %{value: "セキ", type: "on", romaji: "seki"},
-          %{value: "シャク", type: "on", romaji: "shaku"}
+          %{value: "いし", type: "kun"},
+          %{value: "セキ", type: "on"},
+          %{value: "シャク", type: "on"}
         ],
         example_sentences: [
           %{
@@ -2015,10 +2015,10 @@ defmodule KumaSanKanji.Seeds do
           %{value: "air"}
         ],
         pronunciations: [
-          %{value: "そら", type: "kun", romaji: "sora"},
-          %{value: "から", type: "kun", romaji: "kara"},
-          %{value: "あ", type: "kun", romaji: "a"},
-          %{value: "クウ", type: "on", romaji: "kuu"}
+          %{value: "そら", type: "kun"},
+          %{value: "から", type: "kun"},
+          %{value: "あ", type: "kun"},
+          %{value: "クウ", type: "on"}
         ],
         example_sentences: [
           %{
@@ -2042,8 +2042,8 @@ defmodule KumaSanKanji.Seeds do
           %{value: "wheel"}
         ],
         pronunciations: [
-          %{value: "くるま", type: "kun", romaji: "kuruma"},
-          %{value: "シャ", type: "on", romaji: "sha"}
+          %{value: "くるま", type: "kun"},
+          %{value: "シャ", type: "on"}
         ],
         example_sentences: [
           %{
@@ -2066,8 +2066,8 @@ defmodule KumaSanKanji.Seeds do
           %{value: "woods"}
         ],
         pronunciations: [
-          %{value: "もり", type: "kun", romaji: "mori"},
-          %{value: "シン", type: "on", romaji: "shin"}
+          %{value: "もり", type: "kun"},
+          %{value: "シン", type: "on"}
         ],
         example_sentences: [
           %{
@@ -2091,10 +2091,10 @@ defmodule KumaSanKanji.Seeds do
           %{value: "metal"}
         ],
         pronunciations: [
-          %{value: "かね", type: "kun", romaji: "kane"},
-          %{value: "かな", type: "kun", romaji: "kana"},
-          %{value: "キン", type: "on", romaji: "kin"},
-          %{value: "コン", type: "on", romaji: "kon"}
+          %{value: "かね", type: "kun"},
+          %{value: "かな", type: "kun"},
+          %{value: "キン", type: "on"},
+          %{value: "コン", type: "on"}
         ],
         example_sentences: [
           %{
@@ -2116,9 +2116,9 @@ defmodule KumaSanKanji.Seeds do
           %{value: "rain", is_primary: true}
         ],
         pronunciations: [
-          %{value: "あめ", type: "kun", romaji: "ame"},
-          %{value: "あま", type: "kun", romaji: "ama"},
-          %{value: "ウ", type: "on", romaji: "u"}
+          %{value: "あめ", type: "kun"},
+          %{value: "あま", type: "kun"},
+          %{value: "ウ", type: "on"}
         ],
         example_sentences: [
           %{
@@ -2144,9 +2144,9 @@ defmodule KumaSanKanji.Seeds do
           %{value: "sky"}
         ],
         pronunciations: [
-          %{value: "あめ", type: "kun", romaji: "ame"},
-          %{value: "あま", type: "kun", romaji: "ama"},
-          %{value: "テン", type: "on", romaji: "ten"}
+          %{value: "あめ", type: "kun"},
+          %{value: "あま", type: "kun"},
+          %{value: "テン", type: "on"}
         ],
         example_sentences: [
           %{
@@ -2170,8 +2170,8 @@ defmodule KumaSanKanji.Seeds do
           %{value: "land"}
         ],
         pronunciations: [
-          %{value: "チ", type: "on", romaji: "chi"},
-          %{value: "ジ", type: "on", romaji: "ji"}
+          %{value: "チ", type: "on"},
+          %{value: "ジ", type: "on"}
         ],
         example_sentences: [
           %{
@@ -2195,10 +2195,10 @@ defmodule KumaSanKanji.Seeds do
           %{value: "justice"}
         ],
         pronunciations: [
-          %{value: "ただ", type: "kun", romaji: "tada"},
-          %{value: "まさ", type: "kun", romaji: "masa"},
-          %{value: "セイ", type: "on", romaji: "sei"},
-          %{value: "ショウ", type: "on", romaji: "shou"}
+          %{value: "ただ", type: "kun"},
+          %{value: "まさ", type: "kun"},
+          %{value: "セイ", type: "on"},
+          %{value: "ショウ", type: "on"}
         ],
         example_sentences: [
           %{
@@ -2222,8 +2222,8 @@ defmodule KumaSanKanji.Seeds do
           %{value: "before"}
         ],
         pronunciations: [
-          %{value: "さき", type: "kun", romaji: "saki"},
-          %{value: "せん", type: "on", romaji: "sen"}
+          %{value: "さき", type: "kun"},
+          %{value: "せん", type: "on"}
         ],
         example_sentences: [
           %{
@@ -2246,9 +2246,9 @@ defmodule KumaSanKanji.Seeds do
           %{value: "fast"}
         ],
         pronunciations: [
-          %{value: "はや", type: "kun", romaji: "haya"},
-          %{value: "サッ", type: "on", romaji: "sa"},
-          %{value: "ソウ", type: "on", romaji: "sou"}
+          %{value: "はや", type: "kun"},
+          %{value: "サッ", type: "on"},
+          %{value: "ソウ", type: "on"}
         ],
         example_sentences: [
           %{
@@ -2271,8 +2271,8 @@ defmodule KumaSanKanji.Seeds do
           %{value: "bug"}
         ],
         pronunciations: [
-          %{value: "むし", type: "kun", romaji: "mushi"},
-          %{value: "チュウ", type: "on", romaji: "chuu"}
+          %{value: "むし", type: "kun"},
+          %{value: "チュウ", type: "on"}
         ],
         example_sentences: [
           %{
@@ -2296,8 +2296,8 @@ defmodule KumaSanKanji.Seeds do
           %{value: "word"}
         ],
         pronunciations: [
-          %{value: "あざ", type: "kun", romaji: "aza"},
-          %{value: "ジ", type: "on", romaji: "ji"}
+          %{value: "あざ", type: "kun"},
+          %{value: "ジ", type: "on"}
         ],
         example_sentences: [
           %{
@@ -2320,8 +2320,8 @@ defmodule KumaSanKanji.Seeds do
           %{value: "block"}
         ],
         pronunciations: [
-          %{value: "まち", type: "kun", romaji: "machi"},
-          %{value: "チョウ", type: "on", romaji: "chou"}
+          %{value: "まち", type: "kun"},
+          %{value: "チョウ", type: "on"}
         ],
         example_sentences: [
           %{
@@ -2343,8 +2343,8 @@ defmodule KumaSanKanji.Seeds do
           %{value: "village", is_primary: true}
         ],
         pronunciations: [
-          %{value: "むら", type: "kun", romaji: "mura"},
-          %{value: "ソン", type: "on", romaji: "son"}
+          %{value: "むら", type: "kun"},
+          %{value: "ソン", type: "on"}
         ],
         example_sentences: [
           %{
@@ -2367,9 +2367,9 @@ defmodule KumaSanKanji.Seeds do
           %{value: "male"}
         ],
         pronunciations: [
-          %{value: "おとこ", type: "kun", romaji: "otoko"},
-          %{value: "ダン", type: "on", romaji: "dan"},
-          %{value: "ナン", type: "on", romaji: "nan"}
+          %{value: "おとこ", type: "kun"},
+          %{value: "ダン", type: "on"},
+          %{value: "ナン", type: "on"}
         ],
         example_sentences: [
           %{
@@ -2395,11 +2395,11 @@ defmodule KumaSanKanji.Seeds do
           %{value: "female"}
         ],
         pronunciations: [
-          %{value: "おんな", type: "kun", romaji: "onna"},
-          %{value: "め", type: "kun", romaji: "me"},
-          %{value: "ジョ", type: "on", romaji: "jo"},
-          %{value: "ニョ", type: "on", romaji: "nyo"},
-          %{value: "ニョウ", type: "on", romaji: "nyou"}
+          %{value: "おんな", type: "kun"},
+          %{value: "め", type: "kun"},
+          %{value: "ジョ", type: "on"},
+          %{value: "ニョ", type: "on"},
+          %{value: "ニョウ", type: "on"}
         ],
         example_sentences: [
           %{
@@ -2422,9 +2422,9 @@ defmodule KumaSanKanji.Seeds do
           %{value: "kid"}
         ],
         pronunciations: [
-          %{value: "こ", type: "kun", romaji: "ko"},
-          %{value: "シ", type: "on", romaji: "shi"},
-          %{value: "ス", type: "on", romaji: "su"}
+          %{value: "こ", type: "kun"},
+          %{value: "シ", type: "on"},
+          %{value: "ス", type: "on"}
         ],
         example_sentences: [
           %{
@@ -2448,8 +2448,8 @@ defmodule KumaSanKanji.Seeds do
           %{value: "science"}
         ],
         pronunciations: [
-          %{value: "まな", type: "kun", romaji: "mana"},
-          %{value: "ガク", type: "on", romaji: "gaku"}
+          %{value: "まな", type: "kun"},
+          %{value: "ガク", type: "on"}
         ],
         example_sentences: [
           %{
@@ -2473,10 +2473,10 @@ defmodule KumaSanKanji.Seeds do
           %{value: "air"}
         ],
         pronunciations: [
-          %{value: "き", type: "kun", romaji: "ki"},
-          %{value: "け", type: "kun", romaji: "ke"},
-          %{value: "キ", type: "on", romaji: "ki"},
-          %{value: "ケ", type: "on", romaji: "ke"}
+          %{value: "き", type: "kun"},
+          %{value: "け", type: "kun"},
+          %{value: "キ", type: "on"},
+          %{value: "ケ", type: "on"}
         ],
         example_sentences: [
           %{
@@ -2500,8 +2500,8 @@ defmodule KumaSanKanji.Seeds do
           %{value: "holiday"}
         ],
         pronunciations: [
-          %{value: "やす", type: "kun", romaji: "yasu"},
-          %{value: "キュウ", type: "on", romaji: "kyuu"}
+          %{value: "やす", type: "kun"},
+          %{value: "キュウ", type: "on"}
         ],
         example_sentences: [
           %{
@@ -2524,8 +2524,8 @@ defmodule KumaSanKanji.Seeds do
           %{value: "ball"}
         ],
         pronunciations: [
-          %{value: "たま", type: "kun", romaji: "tama"},
-          %{value: "ギョク", type: "on", romaji: "gyoku"}
+          %{value: "たま", type: "kun"},
+          %{value: "ギョク", type: "on"}
         ],
         example_sentences: [
           %{
@@ -2547,8 +2547,8 @@ defmodule KumaSanKanji.Seeds do
           %{value: "dog", is_primary: true}
         ],
         pronunciations: [
-          %{value: "いぬ", type: "kun", romaji: "inu"},
-          %{value: "ケン", type: "on", romaji: "ken"}
+          %{value: "いぬ", type: "kun"},
+          %{value: "ケン", type: "on"}
         ],
         example_sentences: [
           %{
@@ -2571,9 +2571,9 @@ defmodule KumaSanKanji.Seeds do
           %{value: "green"}
         ],
         pronunciations: [
-          %{value: "あお", type: "kun", romaji: "ao"},
-          %{value: "セイ", type: "on", romaji: "sei"},
-          %{value: "ショウ", type: "on", romaji: "shou"}
+          %{value: "あお", type: "kun"},
+          %{value: "セイ", type: "on"},
+          %{value: "ショウ", type: "on"}
         ],
         example_sentences: [
           %{
@@ -2595,9 +2595,9 @@ defmodule KumaSanKanji.Seeds do
           %{value: "red", is_primary: true}
         ],
         pronunciations: [
-          %{value: "あか", type: "kun", romaji: "aka"},
-          %{value: "セキ", type: "on", romaji: "seki"},
-          %{value: "シャク", type: "on", romaji: "shaku"}
+          %{value: "あか", type: "kun"},
+          %{value: "セキ", type: "on"},
+          %{value: "シャク", type: "on"}
         ],
         example_sentences: [
           %{
@@ -2619,10 +2619,10 @@ defmodule KumaSanKanji.Seeds do
           %{value: "white", is_primary: true}
         ],
         pronunciations: [
-          %{value: "しろ", type: "kun", romaji: "shiro"},
-          %{value: "しら", type: "kun", romaji: "shira"},
-          %{value: "ハク", type: "on", romaji: "haku"},
-          %{value: "ビャク", type: "on", romaji: "byaku"}
+          %{value: "しろ", type: "kun"},
+          %{value: "しら", type: "kun"},
+          %{value: "ハク", type: "on"},
+          %{value: "ビャク", type: "on"}
         ],
         example_sentences: [
           %{
@@ -2649,8 +2649,8 @@ defmodule KumaSanKanji.Seeds do
           %{value: "round"}
         ],
         pronunciations: [
-          %{value: "まる", type: "kun", romaji: "maru"},
-          %{value: "エン", type: "on", romaji: "en"}
+          %{value: "まる", type: "kun"},
+          %{value: "エン", type: "on"}
         ],
         example_sentences: [
           %{
@@ -2673,7 +2673,7 @@ defmodule KumaSanKanji.Seeds do
           %{value: "ruler"}
         ],
         pronunciations: [
-          %{value: "オウ", type: "on", romaji: "ou"}
+          %{value: "オウ", type: "on"}
         ],
         example_sentences: [
           %{
@@ -2696,9 +2696,9 @@ defmodule KumaSanKanji.Seeds do
           %{value: "noise"}
         ],
         pronunciations: [
-          %{value: "おと", type: "kun", romaji: "oto"},
-          %{value: "ね", type: "kun", romaji: "ne"},
-          %{value: "オン", type: "on", romaji: "on"}
+          %{value: "おと", type: "kun"},
+          %{value: "ね", type: "kun"},
+          %{value: "オン", type: "on"}
         ],
         example_sentences: [
           %{
@@ -2721,8 +2721,8 @@ defmodule KumaSanKanji.Seeds do
           %{value: "shellfish"}
         ],
         pronunciations: [
-          %{value: "かい", type: "kun", romaji: "kai"},
-          %{value: "バイ", type: "on", romaji: "bai"}
+          %{value: "かい", type: "kun"},
+          %{value: "バイ", type: "on"}
         ],
         example_sentences: [
           %{
@@ -2745,7 +2745,7 @@ defmodule KumaSanKanji.Seeds do
           %{value: "exam"}
         ],
         pronunciations: [
-          %{value: "コウ", type: "on", romaji: "kou"}
+          %{value: "コウ", type: "on"}
         ],
         example_sentences: [
           %{
@@ -2768,8 +2768,8 @@ defmodule KumaSanKanji.Seeds do
           %{value: "string"}
         ],
         pronunciations: [
-          %{value: "いと", type: "kun", romaji: "ito"},
-          %{value: "シ", type: "on", romaji: "shi"}
+          %{value: "いと", type: "kun"},
+          %{value: "シ", type: "on"}
         ],
         example_sentences: [
           %{
@@ -2793,8 +2793,8 @@ defmodule KumaSanKanji.Seeds do
           %{value: "watch"}
         ],
         pronunciations: [
-          %{value: "み", type: "kun", romaji: "mi"},
-          %{value: "ケン", type: "on", romaji: "ken"}
+          %{value: "み", type: "kun"},
+          %{value: "ケン", type: "on"}
         ],
         example_sentences: [
           %{
@@ -2816,8 +2816,8 @@ defmodule KumaSanKanji.Seeds do
           %{value: "thousand", is_primary: true}
         ],
         pronunciations: [
-          %{value: "ち", type: "kun", romaji: "chi"},
-          %{value: "セン", type: "on", romaji: "sen"}
+          %{value: "ち", type: "kun"},
+          %{value: "セン", type: "on"}
         ],
         example_sentences: [
           %{
@@ -2839,8 +2839,8 @@ defmodule KumaSanKanji.Seeds do
           %{value: "evening", is_primary: true}
         ],
         pronunciations: [
-          %{value: "ゆう", type: "kun", romaji: "yuu"},
-          %{value: "セキ", type: "on", romaji: "seki"}
+          %{value: "ゆう", type: "kun"},
+          %{value: "セキ", type: "on"}
         ],
         example_sentences: [
           %{
@@ -2864,8 +2864,8 @@ defmodule KumaSanKanji.Seeds do
           %{value: "herb"}
         ],
         pronunciations: [
-          %{value: "くさ", type: "kun", romaji: "kusa"},
-          %{value: "ソウ", type: "on", romaji: "sou"}
+          %{value: "くさ", type: "kun"},
+          %{value: "ソウ", type: "on"}
         ],
         example_sentences: [
           %{
@@ -2887,8 +2887,8 @@ defmodule KumaSanKanji.Seeds do
           %{value: "bamboo", is_primary: true}
         ],
         pronunciations: [
-          %{value: "たけ", type: "kun", romaji: "take"},
-          %{value: "チク", type: "on", romaji: "chiku"}
+          %{value: "たけ", type: "kun"},
+          %{value: "チク", type: "on"}
         ],
         example_sentences: [
           %{
@@ -2912,9 +2912,9 @@ defmodule KumaSanKanji.Seeds do
           %{value: "ground"}
         ],
         pronunciations: [
-          %{value: "つち", type: "kun", romaji: "tsuchi"},
-          %{value: "ド", type: "on", romaji: "do"},
-          %{value: "ト", type: "on", romaji: "to"}
+          %{value: "つち", type: "kun"},
+          %{value: "ド", type: "on"},
+          %{value: "ト", type: "on"}
         ],
         example_sentences: [
           %{
@@ -2937,8 +2937,8 @@ defmodule KumaSanKanji.Seeds do
           %{value: "forest"}
         ],
         pronunciations: [
-          %{value: "はやし", type: "kun", romaji: "hayashi"},
-          %{value: "リン", type: "on", romaji: "rin"}
+          %{value: "はやし", type: "kun"},
+          %{value: "リン", type: "on"}
         ],
         example_sentences: [
           %{

@@ -82,6 +82,16 @@ defmodule KumaSanKanji.Kanji.Kanji do
         |> Ash.Query.limit(1)
       end)
     end
+
+    read :list_for_init do
+      argument(:limit, :integer, default: 10)
+
+      prepare(fn query, _context ->
+        query
+        |> Ash.Query.sort(grade: :asc)
+        |> Ash.Query.limit(Ash.Query.get_argument(query, :limit))
+      end)
+    end
   end
 
   postgres do

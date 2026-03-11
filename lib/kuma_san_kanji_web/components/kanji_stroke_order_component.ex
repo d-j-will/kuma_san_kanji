@@ -21,6 +21,7 @@ defmodule KumaSanKanjiWeb.KanjiStrokeOrderComponent do
   attr :animate?, :boolean, default: true
   attr :class, :string, default: ""
   attr :style_mode, :string, default: "brush"
+  attr :mode, :atom, default: :view, values: [:view, :trace]
 
   def stroke_order(assigns) do
     assigns = assign(assigns, :svg_markup, load_svg(assigns.kanji))
@@ -37,9 +38,14 @@ defmodule KumaSanKanjiWeb.KanjiStrokeOrderComponent do
       data-kanji={@kanji}
       data-animate={@animate?}
       data-style={@style_mode}
+      data-mode={@mode}
       phx-hook={@animate? && "KanjiStrokeOrderAnimate"}
       role="img"
-      aria-label={"Stroke order diagram for kanji #{@kanji}"}
+      aria-label={
+        if @mode == :trace,
+          do: "Canvas for tracing kanji strokes",
+          else: "Stroke order diagram for kanji #{@kanji}"
+      }
     >
       <%= if @svg_markup do %>
         <div class="relative">
@@ -64,8 +70,33 @@ defmodule KumaSanKanjiWeb.KanjiStrokeOrderComponent do
             </defs>
           </svg>
           <div class="sr-only">Stroke order diagram for kanji {@kanji}</div>
+
+          <%= if @mode == :trace do %>
+            <canvas
+              id={"#{@id}-canvas"}
+              class="absolute top-0 left-0 w-full h-full z-10 cursor-crosshair touch-none"
+              width="109"
+              height="109"
+              phx-hook="KanjiStrokeTracing"
+              data-kanji={@kanji}
+              aria-label={"Drawing area for #{@kanji}"}
+            >
+            </canvas>
+          <% end %>
         </div>
-        <div class="mt-2 flex gap-2 items-center justify-center text-xs">
+        <div
+          class="mt-2 flex gap-2 items-center justify-center text-xs"
+          id={"controls-#{@kanji}"}
+          phx-hook="AudioFeedback"
+        >
+          <button
+            type="button"
+            class="px-2 py-1 rounded bg-wabi-stone/20 hover:bg-wabi-stone/30"
+            data-audio-text={@kanji}
+            aria-label={"Pronounce #{@kanji}"}
+          >
+            Speak
+          </button>
           <button
             type="button"
             class="px-2 py-1 rounded bg-wabi-stone/20 hover:bg-wabi-stone/30"

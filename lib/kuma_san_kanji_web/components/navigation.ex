@@ -15,8 +15,8 @@ defmodule KumaSanKanjiWeb.Components.Navigation do
         <div class="flex h-16 items-center justify-between">
           <div class="flex items-center">
             <div class="flex-shrink-0">
-              <.link navigate={~p"/"} class="text-2xl font-wabi-display text-wabi-hok_blue">
-                Kuma-san Kanji <span class="text-wabi-rust jp-title-wabi">漢字</span>
+              <.link navigate={~p"/"} class="text-2xl font-wabi-display text-base-content">
+                Kuma-san Kanji <span class="text-base-content font-bold jp-title-wabi">漢字</span>
               </.link>
             </div>
 
@@ -43,6 +43,13 @@ defmodule KumaSanKanjiWeb.Components.Navigation do
                   Quiz
                 </.link>
 
+                <.link
+                  navigate={~p"/settings"}
+                  class="nav-item-wabi inline-flex items-center border-b-2 border-transparent px-1 pt-1 text-sm font-wabi font-medium text-wabi-charcoal hover:border-wabi-rust hover:text-wabi-rust"
+                >
+                  Settings
+                </.link>
+
                 <%= if admin?(@current_user) do %>
                   <.link
                     navigate={~p"/admin/users"}
@@ -58,9 +65,9 @@ defmodule KumaSanKanjiWeb.Components.Navigation do
           <div class="hidden md:ml-6 md:flex md:items-center">
             <div class="flex items-center space-x-4">
               <%= if @current_user do %>
-                <div class="text-sm font-wabi text-wabi-charcoal/70">
+                <div class="text-sm font-wabi text-base-content/70">
                   Hello,
-                  <span class="font-bold text-wabi-hok_blue">
+                  <span class="font-bold text-base-content">
                     {@current_user.username || @current_user.email || "User"}
                   </span>
                 </div>
@@ -132,6 +139,13 @@ defmodule KumaSanKanjiWeb.Components.Navigation do
               class="block border-l-4 border-transparent py-2 pl-3 pr-4 text-base font-wabi font-medium text-wabi-charcoal hover:border-wabi-rust hover:bg-wabi-cream hover:text-wabi-rust"
             >
               Quiz
+            </.link>
+
+            <.link
+              navigate={~p"/settings"}
+              class="block border-l-4 border-transparent py-2 pl-3 pr-4 text-base font-wabi font-medium text-wabi-charcoal hover:border-wabi-rust hover:bg-wabi-cream hover:text-wabi-rust"
+            >
+              Settings
             </.link>
           <% end %>
         </div>

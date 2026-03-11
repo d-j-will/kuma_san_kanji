@@ -22,10 +22,14 @@ import {Socket} from "phoenix"
 import {LiveSocket} from "phoenix_live_view"
 import topbar from "../vendor/topbar"
 import { KanjiStrokeOrderAnimate } from "./hooks/kanji_stroke_order"
+import { KanjiStrokeTracing } from "./hooks/kanji_tracing"
+import AudioFeedback from "./hooks/audio_feedback"
 
 // Define JS hooks for UI components
 const Hooks = {
+  AudioFeedback: AudioFeedback,
   KanjiStrokeOrderAnimate: KanjiStrokeOrderAnimate,
+  KanjiStrokeTracing: KanjiStrokeTracing,
   StrokeOrderToggle: {
     mounted() {
       const scope = this.el.dataset.scope || "global";
@@ -122,6 +126,11 @@ let liveSocket = new LiveSocket("/live", Socket, {
 topbar.config({barColors: {0: "#29d"}, shadowColor: "rgba(0, 0, 0, .3)"})
 window.addEventListener("phx:page-loading-start", _info => topbar.show(300))
 window.addEventListener("phx:page-loading-stop", _info => topbar.hide())
+
+// Listen for theme changes from the server
+window.addEventListener("phx:theme-changed", (e) => {
+  document.documentElement.setAttribute("data-theme", e.detail.theme);
+})
 
 // connect if there are any LiveViews on the page
 liveSocket.connect()

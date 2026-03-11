@@ -14,7 +14,6 @@ defmodule KumaSanKanji.Kanji.PronunciationTest do
       params = %{
         type: "on",
         value: "オン",
-        romaji: "on",
         kanji_id: kanji.id
       }
 
@@ -23,7 +22,6 @@ defmodule KumaSanKanji.Kanji.PronunciationTest do
       assert pronunciation.id
       assert pronunciation.type == "on"
       assert pronunciation.value == "オン"
-      assert pronunciation.romaji == "on"
       assert pronunciation.kanji_id == kanji.id
 
       # Verify it can be read back via the relationship
@@ -34,7 +32,7 @@ defmodule KumaSanKanji.Kanji.PronunciationTest do
     end
 
     test "create action requires a kanji_id" do
-      params = %{type: "kun", value: "いぬ", romaji: "inu"}
+      params = %{type: "kun", value: "いぬ"}
       {:error, changeset} = Pronunciation.create(params)
 
       assert Enum.any?(changeset.errors, fn error ->

@@ -1,0 +1,263 @@
+     warning: variable "current_kanji_id" is unused (if the variable is not meant to be used, prefix it with an underscore)
+     │
+ 431 │     current_kanji_id =
+     │     ~~~~~~~~~~~~~~~~
+     │
+     └─ lib/kuma_san_kanji_web/live/quiz_live.ex:431:5: KumaSanKanjiWeb.QuizLive.save_session_state/2
+
+     warning: clauses with the same name and arity (number of arguments) should be grouped together, "defp format_relative_time/1" was previously defined (lib/kuma_san_kanji_web/live/quiz_live.ex:758)
+     │
+ 771 │   defp format_relative_time(%DateTime{} = dt) do
+     │        ~
+     │
+     └─ lib/kuma_san_kanji_web/live/quiz_live.ex:771:8
+
+warning: the following files do not match any of the configured `:test_load_filters` / `:test_ignore_filters`:
+
+test/kuma_san_kanji_web/live/admin/user_admin_live_test_new.exs
+
+This might indicate a typo in a test file name (for example, using "foo_tests.exs" instead of "foo_test.exs").
+
+See the configuration for `:test_pattern` under `mix help test` for more information.
+
+Running ExUnit with seed: 321139, max_cases: 16
+
+......................................................................................................00:07:34.790 [error] GenServer #PID<0.993.0> terminating
+** (BadMapError) expected a map, got:
+
+    nil
+
+    (kuma_san_kanji 0.1.0) lib/kuma_san_kanji_web/live/quiz_live.ex:440: KumaSanKanjiWeb.QuizLive.save_session_state/2
+    (kuma_san_kanji 0.1.0) lib/kuma_san_kanji_web/live/quiz_live.ex:669: KumaSanKanjiWeb.QuizLive.load_next_kanji/1
+    (phoenix_live_view 1.1.19) lib/phoenix_live_view/channel.ex:530: anonymous fn/3 in Phoenix.LiveView.Channel.view_handle_event/3
+    (telemetry 1.3.0) /mnt/usb-drive/Development/elixir/kuma_san_kanji/deps/telemetry/src/telemetry.erl:324: :telemetry.span/3
+    (phoenix_live_view 1.1.19) lib/phoenix_live_view/channel.ex:260: Phoenix.LiveView.Channel.handle_info/2
+    (stdlib 7.1) gen_server.erl:2434: :gen_server.try_handle_info/3
+    (stdlib 7.1) gen_server.erl:2420: :gen_server.handle_msg/3
+    (stdlib 7.1) proc_lib.erl:333: :proc_lib.init_p_do_apply/3
+Process Label: {Phoenix.LiveView, KumaSanKanjiWeb.QuizLive, "lv:phx-GIhKNzWAFJfMGwkh"}
+Last message: %Phoenix.Socket.Message{topic: "lv:phx-GIhKNzWAFJfMGwkh", event: "event", payload: %{"event" => "skip_kanji", "type" => "click", "value" => %{}}, ref: "1", join_ref: 0}
+00:07:34.848 [error] GenServer #PID<0.991.0> terminating
+** (BadMapError) expected a map, got:
+
+    nil
+
+    (kuma_san_kanji 0.1.0) lib/kuma_san_kanji_web/live/quiz_live.ex:440: KumaSanKanjiWeb.QuizLive.save_session_state/2
+    (kuma_san_kanji 0.1.0) lib/kuma_san_kanji_web/live/quiz_live.ex:669: KumaSanKanjiWeb.QuizLive.load_next_kanji/1
+    (phoenix_live_view 1.1.19) lib/phoenix_live_view/channel.ex:530: anonymous fn/3 in Phoenix.LiveView.Channel.view_handle_event/3
+    (telemetry 1.3.0) /mnt/usb-drive/Development/elixir/kuma_san_kanji/deps/telemetry/src/telemetry.erl:324: :telemetry.span/3
+    (phoenix_live_view 1.1.19) lib/phoenix_live_view/channel.ex:260: Phoenix.LiveView.Channel.handle_info/2
+    (stdlib 7.1) gen_server.erl:2434: :gen_server.try_handle_info/3
+    (stdlib 7.1) gen_server.erl:2420: :gen_server.handle_msg/3
+    (stdlib 7.1) proc_lib.erl:333: :proc_lib.init_p_do_apply/3
+Last message: {:EXIT, #PID<0.980.0>, {{:badmap, nil}, [{KumaSanKanjiWeb.QuizLive, :save_session_state, 2, [file: ~c"lib/kuma_san_kanji_web/live/quiz_live.ex", line: 440]}, {KumaSanKanjiWeb.QuizLive, :load_next_kanji, 1, [file: ~c"lib/kuma_san_kanji_web/live/quiz_live.ex", line: 669]}, {Phoenix.LiveView.Channel, :"-view_handle_event/3-fun-0-", 3, [file: ~c"lib/phoenix_live_view/channel.ex", line: 530]}, {:telemetry, :span, 3, [file: ~c"/mnt/usb-drive/Development/elixir/kuma_san_kanji/deps/telemetry/src/telemetry.erl", line: 324]}, {Phoenix.LiveView.Channel, :handle_info, 2, [file: ~c"lib/phoenix_live_view/channel.ex", line: 260]}, {:gen_server, :try_handle_info, 3, [file: ~c"gen_server.erl", line: 2434]}, {:gen_server, :handle_msg, 3, [file: ~c"gen_server.erl", line: 2420]}, {:proc_lib, :init_p_do_apply, 3, [file: ~c"proc_lib.erl", line: 333]}]}}
+
+
+  1) test SRS quiz integration tests skipping a kanji works correctly (KumaSanKanji.SRS.IntegrationTest)
+     test/kuma_san_kanji/srs/integration_test.exs:163
+     ** (EXIT from #PID<0.980.0>) an exception was raised:
+         ** (BadMapError) expected a map, got:
+
+         nil
+
+             (kuma_san_kanji 0.1.0) lib/kuma_san_kanji_web/live/quiz_live.ex:440: KumaSanKanjiWeb.QuizLive.save_session_state/2
+             (kuma_san_kanji 0.1.0) lib/kuma_san_kanji_web/live/quiz_live.ex:669: KumaSanKanjiWeb.QuizLive.load_next_kanji/1
+             (phoenix_live_view 1.1.19) lib/phoenix_live_view/channel.ex:530: anonymous fn/3 in Phoenix.LiveView.Channel.view_handle_event/3
+             (telemetry 1.3.0) /mnt/usb-drive/Development/elixir/kuma_san_kanji/deps/telemetry/src/telemetry.erl:324: :telemetry.span/3
+             (phoenix_live_view 1.1.19) lib/phoenix_live_view/channel.ex:260: Phoenix.LiveView.Channel.handle_info/2
+             (stdlib 7.1) gen_server.erl:2434: :gen_server.try_handle_info/3
+             (stdlib 7.1) gen_server.erl:2420: :gen_server.handle_msg/3
+             (stdlib 7.1) proc_lib.erl:333: :proc_lib.init_p_do_apply/3
+
+.00:07:35.092 [error] GenServer #PID<0.1028.0> terminating
+** (BadMapError) expected a map, got:
+
+    nil
+
+    (kuma_san_kanji 0.1.0) lib/kuma_san_kanji_web/live/quiz_live.ex:440: KumaSanKanjiWeb.QuizLive.save_session_state/2
+    (kuma_san_kanji 0.1.0) lib/kuma_san_kanji_web/live/quiz_live.ex:669: KumaSanKanjiWeb.QuizLive.load_next_kanji/1
+    (phoenix_live_view 1.1.19) lib/phoenix_live_view/channel.ex:530: anonymous fn/3 in Phoenix.LiveView.Channel.view_handle_event/3
+    (telemetry 1.3.0) /mnt/usb-drive/Development/elixir/kuma_san_kanji/deps/telemetry/src/telemetry.erl:324: :telemetry.span/3
+    (phoenix_live_view 1.1.19) lib/phoenix_live_view/channel.ex:260: Phoenix.LiveView.Channel.handle_info/2
+    (stdlib 7.1) gen_server.erl:2434: :gen_server.try_handle_info/3
+    (stdlib 7.1) gen_server.erl:2420: :gen_server.handle_msg/3
+    (stdlib 7.1) proc_lib.erl:333: :proc_lib.init_p_do_apply/3
+Process Label: {Phoenix.LiveView, KumaSanKanjiWeb.QuizLive, "lv:phx-GIhKN0XsFs9qAQoB"}
+Last message: %Phoenix.Socket.Message{topic: "lv:phx-GIhKN0XsFs9qAQoB", event: "event", payload: %{"event" => "next_kanji", "type" => "click", "value" => %{}}, ref: "2", join_ref: 0}
+00:07:35.096 [error] GenServer #PID<0.1026.0> terminating
+** (BadMapError) expected a map, got:
+
+    nil
+
+    (kuma_san_kanji 0.1.0) lib/kuma_san_kanji_web/live/quiz_live.ex:440: KumaSanKanjiWeb.QuizLive.save_session_state/2
+    (kuma_san_kanji 0.1.0) lib/kuma_san_kanji_web/live/quiz_live.ex:669: KumaSanKanjiWeb.QuizLive.load_next_kanji/1
+    (phoenix_live_view 1.1.19) lib/phoenix_live_view/channel.ex:530: anonymous fn/3 in Phoenix.LiveView.Channel.view_handle_event/3
+    (telemetry 1.3.0) /mnt/usb-drive/Development/elixir/kuma_san_kanji/deps/telemetry/src/telemetry.erl:324: :telemetry.span/3
+    (phoenix_live_view 1.1.19) lib/phoenix_live_view/channel.ex:260: Phoenix.LiveView.Channel.handle_info/2
+    (stdlib 7.1) gen_server.erl:2434: :gen_server.try_handle_info/3
+    (stdlib 7.1) gen_server.erl:2420: :gen_server.handle_msg/3
+    (stdlib 7.1) proc_lib.erl:333: :proc_lib.init_p_do_apply/3
+Last message: {:EXIT, #PID<0.1015.0>, {{:badmap, nil}, [{KumaSanKanjiWeb.QuizLive, :save_session_state, 2, [file: ~c"lib/kuma_san_kanji_web/live/quiz_live.ex", line: 440]}, {KumaSanKanjiWeb.QuizLive, :load_next_kanji, 1, [file: ~c"lib/kuma_san_kanji_web/live/quiz_live.ex", line: 669]}, {Phoenix.LiveView.Channel, :"-view_handle_event/3-fun-0-", 3, [file: ~c"lib/phoenix_live_view/channel.ex", line: 530]}, {:telemetry, :span, 3, [file: ~c"/mnt/usb-drive/Development/elixir/kuma_san_kanji/deps/telemetry/src/telemetry.erl", line: 324]}, {Phoenix.LiveView.Channel, :handle_info, 2, [file: ~c"lib/phoenix_live_view/channel.ex", line: 260]}, {:gen_server, :try_handle_info, 3, [file: ~c"gen_server.erl", line: 2434]}, {:gen_server, :handle_msg, 3, [file: ~c"gen_server.erl", line: 2420]}, {:proc_lib, :init_p_do_apply, 3, [file: ~c"proc_lib.erl", line: 333]}]}}
+
+
+  2) test SRS quiz integration tests end-to-end quiz flow - submission to progression (KumaSanKanji.SRS.IntegrationTest)
+     test/kuma_san_kanji/srs/integration_test.exs:85
+     ** (EXIT from #PID<0.1015.0>) an exception was raised:
+         ** (BadMapError) expected a map, got:
+
+         nil
+
+             (kuma_san_kanji 0.1.0) lib/kuma_san_kanji_web/live/quiz_live.ex:440: KumaSanKanjiWeb.QuizLive.save_session_state/2
+             (kuma_san_kanji 0.1.0) lib/kuma_san_kanji_web/live/quiz_live.ex:669: KumaSanKanjiWeb.QuizLive.load_next_kanji/1
+             (phoenix_live_view 1.1.19) lib/phoenix_live_view/channel.ex:530: anonymous fn/3 in Phoenix.LiveView.Channel.view_handle_event/3
+             (telemetry 1.3.0) /mnt/usb-drive/Development/elixir/kuma_san_kanji/deps/telemetry/src/telemetry.erl:324: :telemetry.span/3
+             (phoenix_live_view 1.1.19) lib/phoenix_live_view/channel.ex:260: Phoenix.LiveView.Channel.handle_info/2
+             (stdlib 7.1) gen_server.erl:2434: :gen_server.try_handle_info/3
+             (stdlib 7.1) gen_server.erl:2420: :gen_server.handle_msg/3
+             (stdlib 7.1) proc_lib.erl:333: :proc_lib.init_p_do_apply/3
+
+00:07:35.220 [error] GenServer #PID<0.1047.0> terminating
+** (BadMapError) expected a map, got:
+
+    nil
+
+    (kuma_san_kanji 0.1.0) lib/kuma_san_kanji_web/live/quiz_live.ex:440: KumaSanKanjiWeb.QuizLive.save_session_state/2
+    (kuma_san_kanji 0.1.0) lib/kuma_san_kanji_web/live/quiz_live.ex:669: KumaSanKanjiWeb.QuizLive.load_next_kanji/1
+    (phoenix_live_view 1.1.19) lib/phoenix_live_view/channel.ex:530: anonymous fn/3 in Phoenix.LiveView.Channel.view_handle_event/3
+    (telemetry 1.3.0) /mnt/usb-drive/Development/elixir/kuma_san_kanji/deps/telemetry/src/telemetry.erl:324: :telemetry.span/3
+    (phoenix_live_view 1.1.19) lib/phoenix_live_view/channel.ex:260: Phoenix.LiveView.Channel.handle_info/2
+    (stdlib 7.1) gen_server.erl:2434: :gen_server.try_handle_info/3
+    (stdlib 7.1) gen_server.erl:2420: :gen_server.handle_msg/3
+    (stdlib 7.1) proc_lib.erl:333: :proc_lib.init_p_do_apply/3
+Process Label: {Phoenix.LiveView, KumaSanKanjiWeb.QuizLive, "lv:phx-GIhKN06qYH1fxARC"}
+Last message: %Phoenix.Socket.Message{topic: "lv:phx-GIhKN06qYH1fxARC", event: "event", payload: %{"event" => "next_kanji", "type" => "click", "value" => %{}}, ref: "2", join_ref: 0}
+00:07:35.225 [error] GenServer #PID<0.1045.0> terminating
+** (BadMapError) expected a map, got:
+
+    nil
+
+    (kuma_san_kanji 0.1.0) lib/kuma_san_kanji_web/live/quiz_live.ex:440: KumaSanKanjiWeb.QuizLive.save_session_state/2
+    (kuma_san_kanji 0.1.0) lib/kuma_san_kanji_web/live/quiz_live.ex:669: KumaSanKanjiWeb.QuizLive.load_next_kanji/1
+    (phoenix_live_view 1.1.19) lib/phoenix_live_view/channel.ex:530: anonymous fn/3 in Phoenix.LiveView.Channel.view_handle_event/3
+    (telemetry 1.3.0) /mnt/usb-drive/Development/elixir/kuma_san_kanji/deps/telemetry/src/telemetry.erl:324: :telemetry.span/3
+    (phoenix_live_view 1.1.19) lib/phoenix_live_view/channel.ex:260: Phoenix.LiveView.Channel.handle_info/2
+    (stdlib 7.1) gen_server.erl:2434: :gen_server.try_handle_info/3
+    (stdlib 7.1) gen_server.erl:2420: :gen_server.handle_msg/3
+    (stdlib 7.1) proc_lib.erl:333: :proc_lib.init_p_do_apply/3
+Last message: {:EXIT, #PID<0.1034.0>, {{:badmap, nil}, [{KumaSanKanjiWeb.QuizLive, :save_session_state, 2, [file: ~c"lib/kuma_san_kanji_web/live/quiz_live.ex", line: 440]}, {KumaSanKanjiWeb.QuizLive, :load_next_kanji, 1, [file: ~c"lib/kuma_san_kanji_web/live/quiz_live.ex", line: 669]}, {Phoenix.LiveView.Channel, :"-view_handle_event/3-fun-0-", 3, [file: ~c"lib/phoenix_live_view/channel.ex", line: 530]}, {:telemetry, :span, 3, [file: ~c"/mnt/usb-drive/Development/elixir/kuma_san_kanji/deps/telemetry/src/telemetry.erl", line: 324]}, {Phoenix.LiveView.Channel, :handle_info, 2, [file: ~c"lib/phoenix_live_view/channel.ex", line: 260]}, {:gen_server, :try_handle_info, 3, [file: ~c"gen_server.erl", line: 2434]}, {:gen_server, :handle_msg, 3, [file: ~c"gen_server.erl", line: 2420]}, {:proc_lib, :init_p_do_apply, 3, [file: ~c"proc_lib.erl", line: 333]}]}}
+
+
+  3) test SRS quiz integration tests quiz handles incorrect answers properly (KumaSanKanji.SRS.IntegrationTest)
+     test/kuma_san_kanji/srs/integration_test.exs:131
+     ** (EXIT from #PID<0.1034.0>) an exception was raised:
+         ** (BadMapError) expected a map, got:
+
+         nil
+
+             (kuma_san_kanji 0.1.0) lib/kuma_san_kanji_web/live/quiz_live.ex:440: KumaSanKanjiWeb.QuizLive.save_session_state/2
+             (kuma_san_kanji 0.1.0) lib/kuma_san_kanji_web/live/quiz_live.ex:669: KumaSanKanjiWeb.QuizLive.load_next_kanji/1
+             (phoenix_live_view 1.1.19) lib/phoenix_live_view/channel.ex:530: anonymous fn/3 in Phoenix.LiveView.Channel.view_handle_event/3
+             (telemetry 1.3.0) /mnt/usb-drive/Development/elixir/kuma_san_kanji/deps/telemetry/src/telemetry.erl:324: :telemetry.span/3
+             (phoenix_live_view 1.1.19) lib/phoenix_live_view/channel.ex:260: Phoenix.LiveView.Channel.handle_info/2
+             (stdlib 7.1) gen_server.erl:2434: :gen_server.try_handle_info/3
+             (stdlib 7.1) gen_server.erl:2420: :gen_server.handle_msg/3
+             (stdlib 7.1) proc_lib.erl:333: :proc_lib.init_p_do_apply/3
+
+..................00:07:35.900 [error] [SRS.Logic] Kanji not found with ID: 1e881977-c314-4031-b5a1-9bfc84d40146
+..............00:07:36.651 [error] GenServer #PID<0.1312.0> terminating
+** (BadMapError) expected a map, got:
+
+    nil
+
+    (kuma_san_kanji 0.1.0) lib/kuma_san_kanji_web/live/quiz_live.ex:440: KumaSanKanjiWeb.QuizLive.save_session_state/2
+    (kuma_san_kanji 0.1.0) lib/kuma_san_kanji_web/live/quiz_live.ex:669: KumaSanKanjiWeb.QuizLive.load_next_kanji/1
+    (phoenix_live_view 1.1.19) lib/phoenix_live_view/channel.ex:530: anonymous fn/3 in Phoenix.LiveView.Channel.view_handle_event/3
+    (telemetry 1.3.0) /mnt/usb-drive/Development/elixir/kuma_san_kanji/deps/telemetry/src/telemetry.erl:324: :telemetry.span/3
+    (phoenix_live_view 1.1.19) lib/phoenix_live_view/channel.ex:260: Phoenix.LiveView.Channel.handle_info/2
+    (stdlib 7.1) gen_server.erl:2434: :gen_server.try_handle_info/3
+    (stdlib 7.1) gen_server.erl:2420: :gen_server.handle_msg/3
+    (stdlib 7.1) proc_lib.erl:333: :proc_lib.init_p_do_apply/3
+Process Label: {Phoenix.LiveView, KumaSanKanjiWeb.QuizLive, "lv:phx-GIhKN6G4v9vd6RBh"}
+Last message: %Phoenix.Socket.Message{topic: "lv:phx-GIhKN6G4v9vd6RBh", event: "event", payload: %{"event" => "Escape", "type" => "keydown", "value" => %{}}, ref: "2", join_ref: 0}
+00:07:36.655 [error] GenServer #PID<0.1310.0> terminating
+** (BadMapError) expected a map, got:
+
+    nil
+
+    (kuma_san_kanji 0.1.0) lib/kuma_san_kanji_web/live/quiz_live.ex:440: KumaSanKanjiWeb.QuizLive.save_session_state/2
+    (kuma_san_kanji 0.1.0) lib/kuma_san_kanji_web/live/quiz_live.ex:669: KumaSanKanjiWeb.QuizLive.load_next_kanji/1
+    (phoenix_live_view 1.1.19) lib/phoenix_live_view/channel.ex:530: anonymous fn/3 in Phoenix.LiveView.Channel.view_handle_event/3
+    (telemetry 1.3.0) /mnt/usb-drive/Development/elixir/kuma_san_kanji/deps/telemetry/src/telemetry.erl:324: :telemetry.span/3
+    (phoenix_live_view 1.1.19) lib/phoenix_live_view/channel.ex:260: Phoenix.LiveView.Channel.handle_info/2
+    (stdlib 7.1) gen_server.erl:2434: :gen_server.try_handle_info/3
+    (stdlib 7.1) gen_server.erl:2420: :gen_server.handle_msg/3
+    (stdlib 7.1) proc_lib.erl:333: :proc_lib.init_p_do_apply/3
+Last message: {:EXIT, #PID<0.1301.0>, {{:badmap, nil}, [{KumaSanKanjiWeb.QuizLive, :save_session_state, 2, [file: ~c"lib/kuma_san_kanji_web/live/quiz_live.ex", line: 440]}, {KumaSanKanjiWeb.QuizLive, :load_next_kanji, 1, [file: ~c"lib/kuma_san_kanji_web/live/quiz_live.ex", line: 669]}, {Phoenix.LiveView.Channel, :"-view_handle_event/3-fun-0-", 3, [file: ~c"lib/phoenix_live_view/channel.ex", line: 530]}, {:telemetry, :span, 3, [file: ~c"/mnt/usb-drive/Development/elixir/kuma_san_kanji/deps/telemetry/src/telemetry.erl", line: 324]}, {Phoenix.LiveView.Channel, :handle_info, 2, [file: ~c"lib/phoenix_live_view/channel.ex", line: 260]}, {:gen_server, :try_handle_info, 3, [file: ~c"gen_server.erl", line: 2434]}, {:gen_server, :handle_msg, 3, [file: ~c"gen_server.erl", line: 2420]}, {:proc_lib, :init_p_do_apply, 3, [file: ~c"proc_lib.erl", line: 333]}]}}
+
+
+  4) test Quiz LiveView keyboard shortcuts Escape key closes feedback (KumaSanKanjiWeb.QuizLiveTest)
+     test/kuma_san_kanji_web/live/quiz_live_test.exs:135
+     ** (EXIT from #PID<0.1301.0>) an exception was raised:
+         ** (BadMapError) expected a map, got:
+
+         nil
+
+             (kuma_san_kanji 0.1.0) lib/kuma_san_kanji_web/live/quiz_live.ex:440: KumaSanKanjiWeb.QuizLive.save_session_state/2
+             (kuma_san_kanji 0.1.0) lib/kuma_san_kanji_web/live/quiz_live.ex:669: KumaSanKanjiWeb.QuizLive.load_next_kanji/1
+             (phoenix_live_view 1.1.19) lib/phoenix_live_view/channel.ex:530: anonymous fn/3 in Phoenix.LiveView.Channel.view_handle_event/3
+             (telemetry 1.3.0) /mnt/usb-drive/Development/elixir/kuma_san_kanji/deps/telemetry/src/telemetry.erl:324: :telemetry.span/3
+             (phoenix_live_view 1.1.19) lib/phoenix_live_view/channel.ex:260: Phoenix.LiveView.Channel.handle_info/2
+             (stdlib 7.1) gen_server.erl:2434: :gen_server.try_handle_info/3
+             (stdlib 7.1) gen_server.erl:2420: :gen_server.handle_msg/3
+             (stdlib 7.1) proc_lib.erl:333: :proc_lib.init_p_do_apply/3
+
+..........00:07:37.605 [error] GenServer #PID<0.1483.0> terminating
+** (BadMapError) expected a map, got:
+
+    nil
+
+    (kuma_san_kanji 0.1.0) lib/kuma_san_kanji_web/live/quiz_live.ex:440: KumaSanKanjiWeb.QuizLive.save_session_state/2
+    (kuma_san_kanji 0.1.0) lib/kuma_san_kanji_web/live/quiz_live.ex:669: KumaSanKanjiWeb.QuizLive.load_next_kanji/1
+    (phoenix_live_view 1.1.19) lib/phoenix_live_view/channel.ex:530: anonymous fn/3 in Phoenix.LiveView.Channel.view_handle_event/3
+    (telemetry 1.3.0) /mnt/usb-drive/Development/elixir/kuma_san_kanji/deps/telemetry/src/telemetry.erl:324: :telemetry.span/3
+    (phoenix_live_view 1.1.19) lib/phoenix_live_view/channel.ex:260: Phoenix.LiveView.Channel.handle_info/2
+    (stdlib 7.1) gen_server.erl:2434: :gen_server.try_handle_info/3
+    (stdlib 7.1) gen_server.erl:2420: :gen_server.handle_msg/3
+    (stdlib 7.1) proc_lib.erl:333: :proc_lib.init_p_do_apply/3
+Process Label: {Phoenix.LiveView, KumaSanKanjiWeb.QuizLive, "lv:phx-GIhKN91TDBOF1xJh"}
+Last message: %Phoenix.Socket.Message{topic: "lv:phx-GIhKN91TDBOF1xJh", event: "event", payload: %{"event" => "next_kanji", "type" => "click", "value" => %{}}, ref: "3", join_ref: 0}
+00:07:37.609 [error] GenServer #PID<0.1481.0> terminating
+** (BadMapError) expected a map, got:
+
+    nil
+
+    (kuma_san_kanji 0.1.0) lib/kuma_san_kanji_web/live/quiz_live.ex:440: KumaSanKanjiWeb.QuizLive.save_session_state/2
+    (kuma_san_kanji 0.1.0) lib/kuma_san_kanji_web/live/quiz_live.ex:669: KumaSanKanjiWeb.QuizLive.load_next_kanji/1
+    (phoenix_live_view 1.1.19) lib/phoenix_live_view/channel.ex:530: anonymous fn/3 in Phoenix.LiveView.Channel.view_handle_event/3
+    (telemetry 1.3.0) /mnt/usb-drive/Development/elixir/kuma_san_kanji/deps/telemetry/src/telemetry.erl:324: :telemetry.span/3
+    (phoenix_live_view 1.1.19) lib/phoenix_live_view/channel.ex:260: Phoenix.LiveView.Channel.handle_info/2
+    (stdlib 7.1) gen_server.erl:2434: :gen_server.try_handle_info/3
+    (stdlib 7.1) gen_server.erl:2420: :gen_server.handle_msg/3
+    (stdlib 7.1) proc_lib.erl:333: :proc_lib.init_p_do_apply/3
+Last message: {:EXIT, #PID<0.1472.0>, {{:badmap, nil}, [{KumaSanKanjiWeb.QuizLive, :save_session_state, 2, [file: ~c"lib/kuma_san_kanji_web/live/quiz_live.ex", line: 440]}, {KumaSanKanjiWeb.QuizLive, :load_next_kanji, 1, [file: ~c"lib/kuma_san_kanji_web/live/quiz_live.ex", line: 669]}, {Phoenix.LiveView.Channel, :"-view_handle_event/3-fun-0-", 3, [file: ~c"lib/phoenix_live_view/channel.ex", line: 530]}, {:telemetry, :span, 3, [file: ~c"/mnt/usb-drive/Development/elixir/kuma_san_kanji/deps/telemetry/src/telemetry.erl", line: 324]}, {Phoenix.LiveView.Channel, :handle_info, 2, [file: ~c"lib/phoenix_live_view/channel.ex", line: 260]}, {:gen_server, :try_handle_info, 3, [file: ~c"gen_server.erl", line: 2434]}, {:gen_server, :handle_msg, 3, [file: ~c"gen_server.erl", line: 2420]}, {:proc_lib, :init_p_do_apply, 3, [file: ~c"proc_lib.erl", line: 333]}]}}
+
+
+  5) test Detailed Answer Feedback (Issue #23) details section resets to collapsed when moving to next kanji (KumaSanKanjiWeb.QuizLiveTest)
+     test/kuma_san_kanji_web/live/quiz_live_test.exs:391
+     ** (EXIT from #PID<0.1472.0>) an exception was raised:
+         ** (BadMapError) expected a map, got:
+
+         nil
+
+             (kuma_san_kanji 0.1.0) lib/kuma_san_kanji_web/live/quiz_live.ex:440: KumaSanKanjiWeb.QuizLive.save_session_state/2
+             (kuma_san_kanji 0.1.0) lib/kuma_san_kanji_web/live/quiz_live.ex:669: KumaSanKanjiWeb.QuizLive.load_next_kanji/1
+             (phoenix_live_view 1.1.19) lib/phoenix_live_view/channel.ex:530: anonymous fn/3 in Phoenix.LiveView.Channel.view_handle_event/3
+             (telemetry 1.3.0) /mnt/usb-drive/Development/elixir/kuma_san_kanji/deps/telemetry/src/telemetry.erl:324: :telemetry.span/3
+             (phoenix_live_view 1.1.19) lib/phoenix_live_view/channel.ex:260: Phoenix.LiveView.Channel.handle_info/2
+             (stdlib 7.1) gen_server.erl:2434: :gen_server.try_handle_info/3
+             (stdlib 7.1) gen_server.erl:2420: :gen_server.handle_msg/3
+             (stdlib 7.1) proc_lib.erl:333: :proc_lib.init_p_do_apply/3
+
+........
+Finished in 8.9 seconds (2.1s async, 6.8s sync)
+5 properties, 153 tests, 5 failures

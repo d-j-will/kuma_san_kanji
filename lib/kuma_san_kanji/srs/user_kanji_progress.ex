@@ -24,6 +24,8 @@ defmodule KumaSanKanji.SRS.UserKanjiProgress do
     attribute(:repetitions, :integer, default: 0, allow_nil?: false)
     # :correct, :incorrect, :skip
     attribute(:last_result, :atom, allow_nil?: true)
+    # User-specific notes for this kanji
+    attribute(:notes, :string, allow_nil?: true)
 
     # Tracking metadata
     attribute(:first_reviewed_at, :utc_datetime, allow_nil?: true)
@@ -106,6 +108,11 @@ defmodule KumaSanKanji.SRS.UserKanjiProgress do
       change(KumaSanKanji.SRS.Changes.ApplySm2)
     end
 
+    # Action to update user notes
+    update :update_notes do
+      accept([:notes])
+    end
+
     # Read action to get progress for a specific user-kanji pair
     read :get_user_kanji_progress do
       argument(:user_id, :uuid, allow_nil?: false)
@@ -166,6 +173,17 @@ defmodule KumaSanKanji.SRS.UserKanjiProgress do
         Ash.Query.do_filter(query, user_id: user_id)
       end)
     end
+
+    read :next_review do
+      argument(:user_id, :uuid, allow_nil?: false)
+      filter(expr(user_id == ^arg(:user_id) and next_review_date > now()))
+
+      prepare(fn query, _ ->
+        query
+        |> Ash.Query.sort(next_review_date: :asc)
+        |> Ash.Query.limit(1)
+      end)
+    end
   end
 
   policies do
@@ -187,11 +205,20 @@ defmodule KumaSanKanji.SRS.UserKanjiProgress do
 
   code_interface do
     define(:create, action: :create)
-    define(:initialize, action: :initialize)
+    define(:initialize, action: :initialize, args: [:user_id, :kanji_id])
     define(:record_review, action: :record_review)
-    define(:get_user_kanji_progress, action: :get_user_kanji_progress)
-    define(:due_for_review, action: :due_for_review)
-    define(:user_stats, action: :user_stats)
+    define(:update_notes, action: :update_notes)
+
+    define(:get_user_kanji_progress,
+      action: :get_user_kanji_progress,
+      args: [:user_id, :kanji_id]
+    )
+
+    define(:due_for_review, action: :due_for_review, args: [:user_id])
+    define(:user_stats, action: :user_stats, args: [:user_id])
+    define(:get_by_id, action: :read, get_by: [:id])
+    define(:get_next_review, action: :next_review, get?: true, args: [:user_id])
+    define(:destroy, action: :destroy)
   end
 
   identities do
