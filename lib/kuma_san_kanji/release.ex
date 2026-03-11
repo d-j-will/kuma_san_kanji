@@ -169,7 +169,7 @@ defmodule KumaSanKanji.Release do
 
     IO.puts("Migrations completed")
 
-    if System.get_env("ADMIN_EMAIL") do
+    if System.get_env("ADMIN_EMAIL") not in [nil, ""] do
       IO.puts("Setting up admin user...")
       setup_admin_user()
       IO.puts("Admin setup completed")
