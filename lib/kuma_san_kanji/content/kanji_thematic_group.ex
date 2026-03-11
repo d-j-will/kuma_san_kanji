@@ -36,7 +36,7 @@ defmodule KumaSanKanji.Content.KanjiThematicGroup do
     defaults([:read, :destroy])
 
     create :create do
-      accept([:kanji_id, :relevance_score, :position, :notes])
+      accept([:kanji_id, :thematic_group_id, :relevance_score, :position, :notes])
     end
 
     update :update do

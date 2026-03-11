@@ -54,13 +54,15 @@ defmodule KumaSanKanji.Content.ContentContext do
   Returns all kanji in a specific thematic group, sorted by position.
   """
   def get_kanji_by_thematic_group(thematic_group_id) do
+    require Ash.Query
+
     with {:ok, joins} <- Content.get_group_kanji_joins(%{thematic_group_id: thematic_group_id}),
          kanji_ids = Enum.map(joins, & &1.kanji_id),
-         {:ok, kanji} <-
-           KumaSanKanji.Domain.read_kanji(
-             filter: [id: [in: kanji_ids]],
-             load: [:meanings, :pronunciations, :example_sentences]
-           ) do
+         query =
+           KumaSanKanji.Kanji.Kanji
+           |> Ash.Query.filter(id in ^kanji_ids)
+           |> Ash.Query.load([:meanings, :pronunciations, :example_sentences]),
+         {:ok, kanji} <- Ash.read(query, authorize?: false) do
       sorted_kanji =
         Enum.sort_by(kanji, fn k ->
           position =
@@ -72,6 +74,53 @@ defmodule KumaSanKanji.Content.ContentContext do
         end)
 
       {:ok, sorted_kanji}
+    end
+  end
+
+  @doc """
+  Gets a thematic group by its slug.
+  """
+  def get_group_by_slug(slug) do
+    Content.get_group_by_slug(%{slug: slug})
+  end
+
+  @doc """
+  Gets learning progress for a user within a thematic group.
+
+  Returns `{:ok, %{learned: count, total: count}}`.
+  """
+  def get_group_progress(user_id, group_id) do
+    with {:ok, joins} <- Content.get_group_kanji_joins(%{thematic_group_id: group_id}),
+         kanji_ids = Enum.map(joins, & &1.kanji_id) do
+      if kanji_ids == [] do
+        {:ok, %{learned: 0, total: 0}}
+      else
+        learned_count =
+          Enum.count(kanji_ids, fn kanji_id ->
+            case KumaSanKanji.SRS.UserKanjiProgress.get_user_kanji_progress(user_id, kanji_id,
+                   authorize?: false
+                 ) do
+              {:ok, [_ | _]} -> true
+              _ -> false
+            end
+          end)
+
+        {:ok, %{learned: learned_count, total: length(kanji_ids)}}
+      end
+    end
+  end
+
+  @doc """
+  Gets the kanji at a specific position within a thematic group.
+  """
+  def get_kanji_at_position(group_id, position) do
+    with {:ok, joins} <- Content.get_group_kanji_joins(%{thematic_group_id: group_id}) do
+      join = Enum.find(joins, fn j -> j.position == position end)
+
+      case join do
+        nil -> {:error, :not_found}
+        j -> KumaSanKanji.Domain.get_kanji_by_id(j.kanji_id)
+      end
     end
   end
 end

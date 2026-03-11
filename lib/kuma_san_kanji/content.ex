@@ -22,6 +22,7 @@ defmodule KumaSanKanji.Content do
       define(:get_thematic_groups, action: :read)
       define(:get_ordered_groups, action: :ordered)
       define(:create_thematic_group, action: :create)
+      define(:get_group_by_slug, action: :by_slug, get?: true)
     end
 
     resource KanjiThematicGroup do
