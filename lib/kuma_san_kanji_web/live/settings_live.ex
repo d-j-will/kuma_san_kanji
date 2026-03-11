@@ -98,7 +98,10 @@ defmodule KumaSanKanjiWeb.SettingsLive do
          |> push_event("theme-changed", %{theme: theme})}
 
       {:error, form} ->
-        {:noreply, assign(socket, :form, to_form(form))}
+        {:noreply,
+         socket
+         |> assign(:form, to_form(form))
+         |> put_flash(:error, "Failed to update theme.")}
     end
   end
 end

@@ -25,15 +25,21 @@ defmodule KumaSanKanji.NLP.Furigana do
     File.write!(tmp_path, text)
 
     result =
-      case System.cmd("mecab", [tmp_path], stderr_to_stdout: true) do
-        {output, 0} ->
-          output
-          |> String.split("\n", trim: true)
-          |> Enum.map(&parse_mecab_line/1)
-          |> Enum.join()
+      try do
+        case System.cmd("mecab", [tmp_path], stderr_to_stdout: true) do
+          {output, 0} ->
+            output
+            |> String.split("\n", trim: true)
+            |> Enum.map(&parse_mecab_line/1)
+            |> Enum.join()
 
-        {output, status} ->
-          Logger.error("Failed to execute MeCab command (exit #{status}): #{output}")
+          {output, status} ->
+            Logger.error("Failed to execute MeCab command (exit #{status}): #{output}")
+            text
+        end
+      rescue
+        ErlangError ->
+          Logger.debug("MeCab not installed, skipping furigana generation")
           text
       end
 

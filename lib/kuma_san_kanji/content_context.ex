@@ -5,6 +5,8 @@ defmodule KumaSanKanji.ContentContext do
   This module provides the business interface for content-related operations,
   abstracting the underlying Ash resources and providing a clean API for the application.
   """
+  require Ash.Query
+
   @doc """
   Gets thematic group information for a kanji character.
   """
@@ -13,7 +15,11 @@ defmodule KumaSanKanji.ContentContext do
       {:ok, joins} when joins != [] ->
         thematic_group_ids = Enum.map(joins, & &1.thematic_group_id)
 
-        case KumaSanKanji.Content.get_thematic_groups(filter: [id: [in: thematic_group_ids]]) do
+        query =
+          KumaSanKanji.Content.ThematicGroup
+          |> Ash.Query.filter(id in ^thematic_group_ids)
+
+        case Ash.read(query, authorize?: false) do
           {:ok, groups} -> {:ok, groups, joins}
           err -> err
         end
@@ -61,11 +67,11 @@ defmodule KumaSanKanji.ContentContext do
     with {:ok, joins} <-
            KumaSanKanji.Content.get_group_kanji_joins(%{thematic_group_id: thematic_group_id}),
          kanji_ids = Enum.map(joins, & &1.kanji_id),
-         {:ok, kanji} <-
-           KumaSanKanji.Domain.read_kanji(
-             filter: [id: [in: kanji_ids]],
-             load: [:meanings, :pronunciations, :example_sentences]
-           ) do
+         query =
+           KumaSanKanji.Kanji.Kanji
+           |> Ash.Query.filter(id in ^kanji_ids)
+           |> Ash.Query.load([:meanings, :pronunciations, :example_sentences]),
+         {:ok, kanji} <- Ash.read(query, authorize?: false) do
       sorted_kanji =
         Enum.sort_by(kanji, fn k ->
           position =

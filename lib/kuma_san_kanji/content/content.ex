@@ -7,6 +7,7 @@ defmodule KumaSanKanji.Content.ContentContext do
   """
 
   alias KumaSanKanji.Content
+  require Ash.Query
 
   @doc """
   Gets thematic group information for a kanji character.
@@ -14,7 +15,10 @@ defmodule KumaSanKanji.Content.ContentContext do
   def get_thematic_group_for_kanji(kanji_id) do
     with {:ok, joins} <- Content.get_kanji_group_joins(%{kanji_id: kanji_id}),
          thematic_group_ids = Enum.map(joins, & &1.thematic_group_id),
-         {:ok, groups} <- Content.get_thematic_groups(filter: [id: [in: thematic_group_ids]]) do
+         query =
+           KumaSanKanji.Content.ThematicGroup
+           |> Ash.Query.filter(id in ^thematic_group_ids),
+         {:ok, groups} <- Ash.read(query, authorize?: false) do
       {:ok, groups, joins}
     else
       {:ok, []} -> {:ok, [], []}

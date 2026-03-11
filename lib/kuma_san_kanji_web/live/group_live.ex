@@ -72,7 +72,7 @@ defmodule KumaSanKanjiWeb.GroupLive do
         &larr; Back to Learn
       </.link>
 
-      <h1 class="section-header-wabi text-3xl mt-4">{@group.name}</h1>
+      <h1 class="text-3xl font-wabi-display tracking-tight text-base-content sm:text-4xl mt-4">{@group.name}</h1>
       <p class="mt-1 info-text-wabi">{@learned_count} of {@total_count} learned</p>
 
       <%= if @show_session_results do %>
@@ -95,7 +95,7 @@ defmodule KumaSanKanjiWeb.GroupLive do
               navigate={~p"/learn/#{@slug_or_id}/#{idx}"}
               class={"flex flex-col items-center p-3 rounded-lg border #{if MapSet.member?(@learned_kanji_ids, kanji.id), do: "border-success/40 bg-success/10", else: "border-base-300 bg-base-100"} hover:shadow-md transition-shadow"}
             >
-              <span class="text-2xl">{kanji.character}</span>
+              <span class="text-2xl kanji-text">{kanji.character}</span>
               <%= if MapSet.member?(@learned_kanji_ids, kanji.id) do %>
                 <span class="text-xs text-success mt-1">Learned</span>
               <% end %>

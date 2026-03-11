@@ -38,7 +38,7 @@ defmodule KumaSanKanjiWeb.LearnLive do
     ~H"""
     <div class="max-w-4xl mx-auto px-4 py-8">
       <div class="mb-8">
-        <h1 class="section-header-wabi text-3xl">Learn</h1>
+        <h1 class="text-3xl font-wabi-display tracking-tight text-base-content sm:text-4xl">Learn</h1>
         <p class="mt-2 info-text-wabi">
           {@total_learned} of {@total_kanji} kanji learned
         </p>
@@ -65,7 +65,7 @@ defmodule KumaSanKanjiWeb.LearnLive do
       navigate={~p"/learn/#{@group.slug || @group.id}"}
       class="card-wabi block p-6 hover:shadow-lg transition-shadow"
     >
-      <h2 class="text-xl font-semibold text-base-content">{@group.name}</h2>
+      <h2 class="text-xl font-wabi-display text-base-content">{@group.name}</h2>
       <p class="mt-1 text-sm text-base-content/60">{@progress.total} kanji</p>
       <div class="mt-3">
         <%= cond do %>
