@@ -183,17 +183,6 @@ defmodule KumaSanKanji.Release do
   end
 
   defp start_seed_dependencies do
-    # Start all required applications for Ash and telemetry
-    Application.ensure_all_started(:telemetry)
-    Application.ensure_all_started(:ash)
-
-    # Start the repository for database access (handle if already started)
-    for repo <- repos() do
-      case repo.start_link() do
-        {:ok, _} -> :ok
-        {:error, {:already_started, _}} -> :ok
-        {:error, reason} -> raise "Failed to start #{repo}: #{inspect(reason)}"
-      end
-    end
+    Application.ensure_all_started(@app)
   end
 end

@@ -164,14 +164,10 @@ jobs:
               sleep 1
             done
 
-            # Migrate (same pattern as slackex)
-            echo "Running migrations..."
-            docker compose -f docker-compose.prod.yml run --rm --no-TTY app bin/kuma_san_kanji eval "KumaSanKanji.Release.migrate()" < /dev/null 2>&1
-            echo "Migrations complete."
-
-            echo "Setting up admin user..."
-            docker compose -f docker-compose.prod.yml run --rm --no-TTY app bin/kuma_san_kanji eval "KumaSanKanji.Release.setup_admin_user()" < /dev/null 2>&1
-            echo "Admin setup complete."
+            # Migrate and setup admin in one call
+            echo "Running migrations and admin setup..."
+            docker compose -f docker-compose.prod.yml run --rm --no-TTY app bin/kuma_san_kanji eval "KumaSanKanji.Release.migrate_and_setup()" < /dev/null 2>&1
+            echo "Migrations and admin setup complete."
 
             # Recreate app with new image
             echo "Starting app..."
