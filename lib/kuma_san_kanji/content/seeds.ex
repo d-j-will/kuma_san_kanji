@@ -121,7 +121,7 @@ defmodule KumaSanKanji.Content.Seeds do
     ]
 
     Enum.map(contexts, fn context ->
-      case Content.get_educational_context_by_grade(context[:grade_level]) do
+      case Content.get_educational_context_by_grade(%{grade_level: context[:grade_level]}) do
         {:ok, existing} ->
           existing
 
