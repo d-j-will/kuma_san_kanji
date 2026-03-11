@@ -133,8 +133,13 @@ defmodule KumaSanKanji.Content.Seeds do
   end
 
   defp map_kanji_to_content(thematic_groups_list, educational_contexts) do
-    kanji_list =
-      KumaSanKanji.Domain.list_kanjis!(load: [:meanings, :pronunciations, :example_sentences])
+    kanji_page =
+      KumaSanKanji.Domain.list_kanjis!(
+        load: [:meanings, :pronunciations, :example_sentences],
+        page: [limit: 1000]
+      )
+
+    kanji_list = kanji_page.results
 
     thematic_groups_map =
       Enum.into(thematic_groups_list, %{}, fn group -> {group.name, group} end)
