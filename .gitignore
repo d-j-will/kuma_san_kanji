@@ -58,3 +58,8 @@ scripts/local_*.ps1
 
 .gemini/
 gha-creds-*.json
+
+# Tooling artifacts
+.omc/
+.nwave/
+GEMINI.md
