@@ -70,7 +70,7 @@ defmodule KumaSanKanji.Content.Seeds do
         |> String.replace(~r/[^a-z0-9]+/, "-")
         |> String.trim("-")
 
-      case Content.get_group_by_slug(slug) do
+      case Content.get_group_by_slug(%{slug: slug}) do
         {:ok, existing} ->
           existing
 
