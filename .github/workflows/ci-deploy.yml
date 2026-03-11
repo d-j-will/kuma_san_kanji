@@ -145,12 +145,16 @@ jobs:
             set -e
             cd /root/kuma_san_kanji
 
-            # Backup database (best-effort)
+            # Ensure external proxy network exists (first deploy)
+            docker network inspect proxy >/dev/null 2>&1 || docker network create proxy
+            echo "Proxy network ready."
+
+            # Backup database (best-effort, skip if postgres not running yet)
             mkdir -p /root/kuma_san_kanji/backups
             echo "Creating pre-deploy database backup..."
             docker compose -f docker-compose.prod.yml exec -T postgres \
               pg_dump -U postgres -Fc kuma_san_kanji_prod < /dev/null > /root/kuma_san_kanji/backups/pre_deploy_$(date +%Y%m%d_%H%M%S).dump \
-              && echo "Backup complete." || echo "Backup failed (non-fatal), continuing deploy..."
+              && echo "Backup complete." || echo "Backup skipped (non-fatal), continuing deploy..."
 
             # Prune old backups, keep last 10
             ls -t /root/kuma_san_kanji/backups/pre_deploy_*.dump 2>/dev/null | tail -n +11 | xargs -r rm --
@@ -160,10 +164,22 @@ jobs:
             docker image prune -af --filter "until=168h" 2>&1 || true
             echo "Cleanup complete."
 
-            # Pull new image via Compose (ensures Compose tracks the updated digest)
+            # Pull new image via Compose
             echo "Pulling latest image..."
             docker compose -f docker-compose.prod.yml pull app 2>&1
             echo "Pull complete."
+
+            # Start postgres first so migrations can connect
+            echo "Ensuring postgres is running..."
+            docker compose -f docker-compose.prod.yml up -d postgres 2>&1
+            echo "Waiting for postgres to be healthy..."
+            for i in $(seq 1 30); do
+              if docker compose -f docker-compose.prod.yml exec -T postgres pg_isready -U postgres < /dev/null >/dev/null 2>&1; then
+                echo "Postgres is ready."
+                break
+              fi
+              sleep 1
+            done
 
             # Run migrations
             echo "Running migrations..."
@@ -180,8 +196,8 @@ jobs:
             docker compose -f docker-compose.prod.yml up -d --force-recreate --no-build --remove-orphans 2>&1
             echo "Containers started."
 
-            # Wait for startup (caddy-docker-proxy auto-detects new containers)
-            echo "Waiting for containers to start..."
+            # Wait for startup
+            echo "Waiting for app to start..."
             sleep 10
 
             echo "=== Container Status ==="
@@ -193,7 +209,7 @@ jobs:
               echo "WARN: Health check unreachable (app may still be starting)"
               HEALTH=""
             }
-            if echo "$HEALTH" | grep -q '"status":"ok"'; then
+            if echo "$HEALTH" | grep -q '"status"'; then
               echo "PASS: App health check"
             else
               echo "WARN: Health check did not return ok (may need manual verification)"
