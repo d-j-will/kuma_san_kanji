@@ -65,14 +65,15 @@ defmodule KumaSanKanji.Content.Seeds do
 
     Enum.map(groups, fn group_attrs ->
       params =
-        Map.take(group_attrs, [
-          :name,
-          :description,
-          :color_code,
-          :icon_name,
-          :order_index,
-          :parent_id
-        ])
+        group_attrs
+        |> Map.take([:name, :description, :color_code, :icon_name, :order_index, :parent_id])
+        |> Map.put(
+          :slug,
+          group_attrs[:name]
+          |> String.downcase()
+          |> String.replace(~r/[^a-z0-9]+/, "-")
+          |> String.trim("-")
+        )
 
       {:ok, created} = Content.create_thematic_group(params)
       created
