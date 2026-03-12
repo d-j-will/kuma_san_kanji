@@ -12,4 +12,10 @@ defmodule KumaSanKanjiWeb.FeatureFlagHelper do
   def bear_seasons_srs_enabled? do
     FunWithFlags.enabled?(:bear_seasons_srs)
   end
+
+  def integrated_srs_enabled? do
+    FunWithFlags.enabled?(:integrated_srs_learning) and
+      FunWithFlags.enabled?(:bear_seasons_srs) and
+      FunWithFlags.enabled?(:grade1_learning_path)
+  end
 end
