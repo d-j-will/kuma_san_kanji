@@ -10,7 +10,8 @@ defmodule KumaSanKanjiWeb.UserLiveAuth do
   def on_mount(:mount_current_user, _params, _session, socket) do
     # The ash_authentication_live_session already sets current_user
     # This hook just ensures the socket continues with the user already set
-    {:cont, socket}
+    # Also attaches a handle_params hook to track the current path for layout components
+    {:cont, socket |> assign(:current_path, "/") |> maybe_attach_path_hook()}
   end
 
   def on_mount(:live_user_optional, _params, _session, socket) do
@@ -48,5 +49,15 @@ defmodule KumaSanKanjiWeb.UserLiveAuth do
     else
       {:cont, assign(socket, :current_user, nil)}
     end
+  end
+
+  defp maybe_attach_path_hook(socket) do
+    Phoenix.LiveView.attach_hook(socket, :track_current_path, :handle_params, fn
+      _params, uri, socket ->
+        path = URI.parse(uri).path || "/"
+        {:cont, assign(socket, :current_path, path)}
+    end)
+  rescue
+    RuntimeError -> socket
   end
 end

@@ -6,6 +6,10 @@
       {@inner_content}
     </div>
   </main>
+  <KumaSanKanjiWeb.Components.BottomNav.bottom_nav
+    current_path={assigns[:current_path] || "/"}
+    current_user={assigns[:current_user]}
+  />
 <% else %>
   <main class="px-4 py-8 sm:px-6 lg:px-8">
     <div class="mx-auto max-w-7xl main-content-wabi p-8">

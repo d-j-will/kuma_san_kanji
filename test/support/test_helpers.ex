@@ -100,11 +100,23 @@ defmodule KumaSanKanji.TestHelpers do
   """
   def setup_auth_mocks(user) do
     stub(KumaSanKanjiWeb.UserLiveAuth, :on_mount, fn
-      :live_user_required, _params, _session, socket ->
-        {:cont, Phoenix.Component.assign(socket, :current_user, user)}
-
       _hook, _params, _session, socket ->
-        {:cont, Phoenix.Component.assign(socket, :current_user, user)}
+        socket = Phoenix.Component.assign(socket, :current_user, user)
+
+        socket =
+          if socket.assigns[:current_path] do
+            socket
+          else
+            socket
+            |> Phoenix.Component.assign(:current_path, "/")
+            |> Phoenix.LiveView.attach_hook(:track_current_path, :handle_params, fn
+              _params, uri, socket ->
+                path = URI.parse(uri).path || "/"
+                {:cont, Phoenix.Component.assign(socket, :current_path, path)}
+            end)
+          end
+
+        {:cont, socket}
     end)
 
     stub(AshAuthentication.Plug.Helpers, :retrieve_from_session, fn conn, _otp_app, _opts ->
