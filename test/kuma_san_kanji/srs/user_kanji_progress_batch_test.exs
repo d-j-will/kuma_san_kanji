@@ -19,7 +19,9 @@ defmodule KumaSanKanji.SRS.UserKanjiProgressBatchTest do
 
       # When we batch-query for all 4 kanji ids
       all_ids = Enum.map(kanji_list, & &1.id)
-      {:ok, results} = UserKanjiProgress.list_for_user_and_kanji_ids(user.id, all_ids, actor: user)
+
+      {:ok, results} =
+        UserKanjiProgress.list_for_user_and_kanji_ids(user.id, all_ids, actor: user)
 
       # Then we get exactly 2 records back (only the learned ones)
       assert length(results) == 2
@@ -33,7 +35,9 @@ defmodule KumaSanKanji.SRS.UserKanjiProgressBatchTest do
       {_group, kanji_list} = create_numbers_group()
 
       all_ids = Enum.map(kanji_list, & &1.id)
-      {:ok, results} = UserKanjiProgress.list_for_user_and_kanji_ids(user.id, all_ids, actor: user)
+
+      {:ok, results} =
+        UserKanjiProgress.list_for_user_and_kanji_ids(user.id, all_ids, actor: user)
 
       assert results == []
     end
@@ -47,7 +51,9 @@ defmodule KumaSanKanji.SRS.UserKanjiProgressBatchTest do
       mark_kanji_learned(user_a, k1)
 
       all_ids = Enum.map(kanji_list, & &1.id)
-      {:ok, results} = UserKanjiProgress.list_for_user_and_kanji_ids(user_b.id, all_ids, actor: user_b)
+
+      {:ok, results} =
+        UserKanjiProgress.list_for_user_and_kanji_ids(user_b.id, all_ids, actor: user_b)
 
       assert results == []
     end
@@ -60,7 +66,9 @@ defmodule KumaSanKanji.SRS.UserKanjiProgressBatchTest do
       mark_kanji_learned(user, k1)
 
       all_ids = Enum.map(kanji_list, & &1.id)
-      {:ok, [progress]} = UserKanjiProgress.list_for_user_and_kanji_ids(user.id, all_ids, actor: user)
+
+      {:ok, [progress]} =
+        UserKanjiProgress.list_for_user_and_kanji_ids(user.id, all_ids, actor: user)
 
       assert progress.srs_stage == 1
       assert progress.kanji_id == k1.id

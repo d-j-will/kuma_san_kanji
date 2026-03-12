@@ -221,10 +221,10 @@ defmodule KumaSanKanji.SRS.UserKanjiProgress do
     # Batch read: get all progress records for a user filtered by a list of kanji IDs.
     # Eliminates N+1 queries on GroupLive.
     read :list_for_user_and_kanji_ids do
-      argument :user_id, :uuid, allow_nil?: false
-      argument :kanji_ids, {:array, :uuid}, allow_nil?: false
+      argument(:user_id, :uuid, allow_nil?: false)
+      argument(:kanji_ids, {:array, :uuid}, allow_nil?: false)
 
-      filter expr(user_id == ^arg(:user_id) and kanji_id in ^arg(:kanji_ids))
+      filter(expr(user_id == ^arg(:user_id) and kanji_id in ^arg(:kanji_ids)))
     end
 
     # Read action to get hibernated (burned) items for a user
@@ -277,6 +277,7 @@ defmodule KumaSanKanji.SRS.UserKanjiProgress do
       action: :list_for_user_and_kanji_ids,
       args: [:user_id, :kanji_ids]
     )
+
     define(:destroy, action: :destroy)
   end
 
