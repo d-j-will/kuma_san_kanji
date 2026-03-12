@@ -11,7 +11,9 @@ defmodule KumaSanKanjiWeb.Mobile.AppShellTest do
   use KumaSanKanjiWeb.ConnCase, async: false
   import Phoenix.LiveViewTest
   import KumaSanKanji.MobileUxHelpers
-  import KumaSanKanji.LearningPathHelpers, only: [create_authenticated_learner: 2, enable_learning_path_flag: 0]
+
+  import KumaSanKanji.LearningPathHelpers,
+    only: [create_authenticated_learner: 2, enable_learning_path_flag: 0]
 
   # ---------------------------------------------------------------
   # Walking Skeleton
@@ -112,5 +114,4 @@ defmodule KumaSanKanjiWeb.Mobile.AppShellTest do
       assert {:error, {:redirect, _}} = result
     end
   end
-
 end

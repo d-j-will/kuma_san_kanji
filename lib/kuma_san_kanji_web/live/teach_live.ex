@@ -6,7 +6,10 @@ defmodule KumaSanKanjiWeb.TeachLive do
   alias KumaSanKanji.NLP.Furigana
   alias KumaSanKanji.SRS.{Logic, UserKanjiProgress}
   alias KumaSanKanjiWeb.StrokeOrderEvents
-  import KumaSanKanjiWeb.FeatureFlagHelper, only: [learning_path_enabled?: 0, mobile_ux_enabled?: 0]
+
+  import KumaSanKanjiWeb.FeatureFlagHelper,
+    only: [learning_path_enabled?: 0, mobile_ux_enabled?: 0]
+
   import Phoenix.HTML, only: [raw: 1]
 
   @tabs [:character, :meaning, :readings, :examples]
