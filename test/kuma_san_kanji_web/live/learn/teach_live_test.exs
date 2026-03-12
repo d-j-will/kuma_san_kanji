@@ -44,7 +44,10 @@ defmodule KumaSanKanjiWeb.TeachLiveTest do
 
       # When Yuki advances to the Examples tab
       html = render_click(view, "next_tab")
-      assert html =~ "四月は春です。"
+      # Japanese text may be wrapped in <ruby> furigana tags when MeCab is available,
+      # so assert on key parts and the always-plain-text translation
+      assert html =~ "四月"
+      assert html =~ "春"
       assert html =~ "April is spring."
     end
   end
