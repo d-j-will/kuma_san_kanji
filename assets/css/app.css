@@ -143,9 +143,18 @@
   /* Mobile App Shell — 100dvh CSS Grid layout */
   .mobile-app-shell {
     height: 100dvh;
+    min-height: 0;
     display: grid;
     grid-template-rows: auto 1fr auto;
     overflow: hidden;
+  }
+
+  .mobile-app-shell main {
+    min-height: 0;
+  }
+
+  .mobile-app-shell .main-content-wabi {
+    min-height: 0;
   }
 
   /* Legacy */
