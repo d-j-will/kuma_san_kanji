@@ -119,7 +119,10 @@ defmodule KumaSanKanji.Content.ContentContext do
   """
   def get_kanji_at_position(group_id, position) do
     with {:ok, joins} <- Content.get_group_kanji_joins(%{thematic_group_id: group_id}) do
-      join = Enum.find(joins, fn j -> j.position == position end)
+      sorted_joins =
+        Enum.sort_by(joins, fn j -> {Map.get(j, :position, 0) || 0, j.kanji_id} end)
+
+      join = Enum.at(sorted_joins, position - 1)
 
       case join do
         nil -> {:error, :not_found}

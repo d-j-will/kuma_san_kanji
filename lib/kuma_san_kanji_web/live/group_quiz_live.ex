@@ -5,7 +5,10 @@ defmodule KumaSanKanjiWeb.GroupQuizLive do
   alias KumaSanKanji.Content.ContentContext
   alias KumaSanKanji.SRS.{Logic, UserKanjiProgress}
   alias KumaSanKanjiWeb.Live.AnswerChecker
-  import KumaSanKanjiWeb.FeatureFlagHelper, only: [learning_path_enabled?: 0]
+  alias KumaSanKanjiWeb.Components.SrsStageComponent
+
+  import KumaSanKanjiWeb.FeatureFlagHelper,
+    only: [learning_path_enabled?: 0, bear_seasons_srs_enabled?: 0]
 
   @impl true
   def mount(params, _session, socket) do
@@ -101,7 +104,17 @@ defmodule KumaSanKanjiWeb.GroupQuizLive do
       is_correct = AnswerChecker.check_answer_correctness(kanji, trimmed)
       result = if is_correct, do: :correct, else: :incorrect
 
+      # Capture stage before review for transition display
+      stage_before = progress.srs_stage
+
       Logic.record_review(progress.id, result, user.id, user)
+
+      # Reload progress to get updated stage
+      stage_after =
+        case UserKanjiProgress.get_by_id(progress.id, actor: user) do
+          {:ok, updated} -> updated.srs_stage
+          _ -> stage_before
+        end
 
       feedback = AnswerChecker.get_feedback_message(result, kanji)
       results = socket.assigns.results
@@ -111,7 +124,9 @@ defmodule KumaSanKanjiWeb.GroupQuizLive do
       kanji_result = %{
         kanji: kanji,
         result: result,
-        user_answer: trimmed
+        user_answer: trimmed,
+        stage_before: stage_before,
+        stage_after: stage_after
       }
 
       per_kanji_results = socket.assigns.per_kanji_results ++ [kanji_result]
@@ -123,7 +138,9 @@ defmodule KumaSanKanjiWeb.GroupQuizLive do
          feedback_type: if(is_correct, do: :success, else: :error),
          results: results,
          last_answer: trimmed,
-         per_kanji_results: per_kanji_results
+         per_kanji_results: per_kanji_results,
+         stage_before: stage_before,
+         stage_after: stage_after
        )}
     end
   end
@@ -228,6 +245,14 @@ defmodule KumaSanKanjiWeb.GroupQuizLive do
           <div class="kanji-text text-8xl font-light text-base-content font-wabi-display">
             {@current_kanji.character}
           </div>
+          <%= if bear_seasons_srs_enabled?() do %>
+            <div class="mt-2">
+              <SrsStageComponent.srs_stage_badge
+                stage={@current_progress.srs_stage}
+                size="sm"
+              />
+            </div>
+          <% end %>
         </div>
 
         <%= if @show_feedback do %>
@@ -236,6 +261,15 @@ defmodule KumaSanKanjiWeb.GroupQuizLive do
             kanji={@current_kanji}
             last_answer={@last_answer}
           />
+
+          <%= if bear_seasons_srs_enabled?() and assigns[:stage_before] do %>
+            <div class="mb-4 flex justify-center">
+              <SrsStageComponent.srs_stage_transition
+                from={@stage_before}
+                to={@stage_after}
+              />
+            </div>
+          <% end %>
 
           <button
             phx-click="next_kanji"
@@ -466,6 +500,9 @@ defmodule KumaSanKanjiWeb.GroupQuizLive do
                   <th>Your Answer</th>
                   <th>Correct Answer</th>
                   <th>Result</th>
+                  <%= if bear_seasons_srs_enabled?() do %>
+                    <th>Stage</th>
+                  <% end %>
                 </tr>
               </thead>
               <tbody>
@@ -512,6 +549,14 @@ defmodule KumaSanKanjiWeb.GroupQuizLive do
                         </svg>
                       <% end %>
                     </td>
+                    <%= if bear_seasons_srs_enabled?() do %>
+                      <td>
+                        <SrsStageComponent.srs_stage_transition
+                          from={item.stage_before}
+                          to={item.stage_after}
+                        />
+                      </td>
+                    <% end %>
                   </tr>
                 <% end %>
               </tbody>

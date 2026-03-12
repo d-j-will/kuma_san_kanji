@@ -98,6 +98,55 @@ defmodule KumaSanKanji.SRS.Logic do
   end
 
   @doc """
+  Wakes up a hibernated kanji, resetting it to Mezame 1 (srs_stage: 1).
+  Only works on Tomin (stage 9) items.
+
+  ## Parameters
+  - progress_id: UUID of the UserKanjiProgress record
+  - user_id: UUID of the user (for authorization)
+  - actor: The user performing the action
+
+  ## Returns
+  {:ok, %UserKanjiProgress{}} | {:error, reason}
+  """
+  def unhibernate(progress_id, user_id, actor \\ nil)
+      when is_binary(progress_id) and is_binary(user_id) do
+    case UserKanjiProgress.get_by_id(progress_id, actor: actor) do
+      {:ok, progress} ->
+        if progress.user_id != user_id do
+          {:error, :unauthorized}
+        else
+          hibernated_result = KumaSanKanji.SRS.Stage.hibernated?(progress.srs_stage)
+
+          if hibernated_result == {:ok, true} do
+            {:ok, interval_seconds} = KumaSanKanji.SRS.Stage.interval(1)
+            next_review = DateTime.add(DateTime.utc_now(), interval_seconds, :second)
+
+            progress
+            |> Ash.Changeset.for_update(:update, %{
+              srs_stage: 1,
+              next_review_date: next_review,
+              interval: 1,
+              repetitions: 0
+            })
+            |> Ash.update(actor: actor)
+          else
+            {:error, :not_hibernated}
+          end
+        end
+
+      {:error, %Ash.Error.Query.NotFound{}} ->
+        {:error, :not_found}
+
+      {:error, %Ash.Error.Invalid{errors: [%Ash.Error.Query.NotFound{} | _]}} ->
+        {:error, :not_found}
+
+      {:error, reason} ->
+        {:error, reason}
+    end
+  end
+
+  @doc """
   Updates the user's notes for a specific kanji.
   """
   def update_user_notes(progress_id, notes, user_id, actor \\ nil)

@@ -8,4 +8,8 @@ defmodule KumaSanKanjiWeb.FeatureFlagHelper do
   def mobile_ux_enabled? do
     FunWithFlags.enabled?(:mobile_ux_optimization)
   end
+
+  def bear_seasons_srs_enabled? do
+    FunWithFlags.enabled?(:bear_seasons_srs)
+  end
 end

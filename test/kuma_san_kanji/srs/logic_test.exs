@@ -192,6 +192,61 @@ defmodule KumaSanKanji.SRS.LogicTest do
     end
   end
 
+  describe "unhibernate/3" do
+    setup do
+      user = create_user()
+      kanji = create_kanji()
+      {:ok, progress} = Logic.initialize_progress(user.id, kanji.id, user)
+      {:ok, user: user, kanji: kanji, progress: progress}
+    end
+
+    test "resets hibernated kanji to Mezame 1", %{user: user, progress: progress} do
+      # Set srs_stage to 9 (Tomin / hibernated)
+      {:ok, hibernated_progress} =
+        progress
+        |> Ash.Changeset.for_update(:update, %{srs_stage: 9})
+        |> Ash.update(actor: user)
+
+      assert hibernated_progress.srs_stage == 9
+
+      # Unhibernate
+      before_unhibernate = DateTime.utc_now()
+      {:ok, awakened} = Logic.unhibernate(hibernated_progress.id, user.id, user)
+
+      assert awakened.srs_stage == 1
+      assert awakened.interval == 1
+      assert awakened.repetitions == 0
+
+      # next_review_date should be approximately now + 14400 seconds (4 hours)
+      expected_review = DateTime.add(before_unhibernate, 14_400, :second)
+      diff = DateTime.diff(awakened.next_review_date, expected_review, :second)
+      assert abs(diff) < 5, "next_review_date should be ~4 hours from now, diff was #{diff}s"
+    end
+
+    test "returns error when kanji is not hibernated", %{user: user, progress: progress} do
+      assert {:error, :not_hibernated} = Logic.unhibernate(progress.id, user.id, user)
+    end
+
+    test "returns error when kanji is at intermediate stage", %{user: user, progress: progress} do
+      {:ok, mid_progress} =
+        progress
+        |> Ash.Changeset.for_update(:update, %{srs_stage: 5})
+        |> Ash.update(actor: user)
+
+      assert {:error, :not_hibernated} = Logic.unhibernate(mid_progress.id, user.id, user)
+    end
+
+    test "returns not_found for non-existent progress", %{user: user} do
+      fake_id = Ash.UUID.generate()
+      assert {:error, :not_found} = Logic.unhibernate(fake_id, user.id, user)
+    end
+
+    test "returns not_found when progress belongs to another user", %{progress: progress} do
+      other_user = create_user()
+      assert {:error, :not_found} = Logic.unhibernate(progress.id, other_user.id, other_user)
+    end
+  end
+
   # Helper functions for test setup
   defp create_user do
     create_simple_test_user("test#{System.unique_integer()}@example.com")

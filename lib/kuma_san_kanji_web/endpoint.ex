@@ -15,6 +15,13 @@ defmodule KumaSanKanjiWeb.Endpoint do
     websocket: [connect_info: [session: @session_options]],
     longpoll: [connect_info: [session: @session_options]]
 
+  # Serve FunWithFlags UI static assets before the router so they
+  # bypass authentication and get correct MIME types
+  plug Plug.Static,
+    at: "/admin/feature-flags/assets",
+    from: {:fun_with_flags_ui, "priv/static"},
+    gzip: true
+
   # Serve at "/" the static files from "priv/static" directory.
   #
   # You should set gzip to true if you are running phx.digest
@@ -26,7 +33,7 @@ defmodule KumaSanKanjiWeb.Endpoint do
     only: KumaSanKanjiWeb.static_paths()
 
   if Code.ensure_loaded?(Tidewave) do
-    plug Tidewave, allowed_origins: ["http://localhost:4000"]
+    plug Tidewave
   end
 
   # Code reloading can be explicitly enabled under the

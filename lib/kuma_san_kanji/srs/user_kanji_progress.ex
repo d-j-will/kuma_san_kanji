@@ -33,6 +33,9 @@ defmodule KumaSanKanji.SRS.UserKanjiProgress do
     attribute(:total_reviews, :integer, default: 0, allow_nil?: false)
     attribute(:correct_reviews, :integer, default: 0, allow_nil?: false)
 
+    # Bear Seasons stage-based SRS (behind :bear_seasons_srs feature flag)
+    attribute(:srs_stage, :integer, default: 1, allow_nil?: false)
+
     timestamps()
   end
 
@@ -52,7 +55,15 @@ defmodule KumaSanKanji.SRS.UserKanjiProgress do
     defaults([:read, :destroy])
 
     create :create do
-      accept([:user_id, :kanji_id, :next_review_date, :interval, :ease_factor, :repetitions])
+      accept([
+        :user_id,
+        :kanji_id,
+        :next_review_date,
+        :interval,
+        :ease_factor,
+        :repetitions,
+        :srs_stage
+      ])
 
       change(fn changeset, _context ->
         # Set initial review date to now if not provided
@@ -74,7 +85,8 @@ defmodule KumaSanKanji.SRS.UserKanjiProgress do
         :first_reviewed_at,
         :last_reviewed_at,
         :total_reviews,
-        :correct_reviews
+        :correct_reviews,
+        :srs_stage
       ])
     end
 
@@ -96,6 +108,7 @@ defmodule KumaSanKanji.SRS.UserKanjiProgress do
         |> Ash.Changeset.change_attribute(:interval, 1)
         |> Ash.Changeset.change_attribute(:ease_factor, Decimal.new("2.5"))
         |> Ash.Changeset.change_attribute(:repetitions, 0)
+        |> Ash.Changeset.change_attribute(:srs_stage, 1)
       end)
     end
 
@@ -104,8 +117,8 @@ defmodule KumaSanKanji.SRS.UserKanjiProgress do
       accept([:last_result])
       require_atomic?(false)
 
-      # Use extracted change module for SM-2 logic
-      change(KumaSanKanji.SRS.Changes.ApplySm2)
+      # Dispatches to Bear Seasons or SM-2 based on :bear_seasons_srs feature flag
+      change(KumaSanKanji.SRS.Changes.ApplySrsReview)
     end
 
     # Action to update user notes
@@ -153,7 +166,8 @@ defmodule KumaSanKanji.SRS.UserKanjiProgress do
         query
         |> Ash.Query.do_filter(
           user_id: user_id,
-          next_review_date: [lte: horizon_time]
+          next_review_date: [lte: horizon_time],
+          srs_stage: [not_eq: 9]
         )
       end)
 
@@ -176,12 +190,41 @@ defmodule KumaSanKanji.SRS.UserKanjiProgress do
 
     read :next_review do
       argument(:user_id, :uuid, allow_nil?: false)
-      filter(expr(user_id == ^arg(:user_id) and next_review_date > now()))
+      filter(expr(user_id == ^arg(:user_id) and next_review_date > now() and srs_stage != 9))
 
       prepare(fn query, _ ->
         query
         |> Ash.Query.sort(next_review_date: :asc)
         |> Ash.Query.limit(1)
+      end)
+    end
+
+    # Read action to get progress items filtered by stage range (for dashboard counts per group)
+    read :by_stage do
+      argument(:user_id, :uuid, allow_nil?: false)
+      argument(:min_stage, :integer, allow_nil?: false)
+      argument(:max_stage, :integer, allow_nil?: false)
+
+      prepare(fn query, _context ->
+        user_id = Ash.Query.get_argument(query, :user_id)
+        min_stage = Ash.Query.get_argument(query, :min_stage)
+        max_stage = Ash.Query.get_argument(query, :max_stage)
+
+        query
+        |> Ash.Query.do_filter(
+          user_id: user_id,
+          srs_stage: [gte: min_stage, lte: max_stage]
+        )
+      end)
+    end
+
+    # Read action to get hibernated (burned) items for a user
+    read :hibernated do
+      argument(:user_id, :uuid, allow_nil?: false)
+
+      prepare(fn query, _context ->
+        user_id = Ash.Query.get_argument(query, :user_id)
+        Ash.Query.do_filter(query, user_id: user_id, srs_stage: 9)
       end)
     end
   end
@@ -218,6 +261,8 @@ defmodule KumaSanKanji.SRS.UserKanjiProgress do
     define(:user_stats, action: :user_stats, args: [:user_id])
     define(:get_by_id, action: :read, get_by: [:id])
     define(:get_next_review, action: :next_review, get?: true, args: [:user_id])
+    define(:by_stage, action: :by_stage, args: [:user_id])
+    define(:hibernated, action: :hibernated, args: [:user_id])
     define(:destroy, action: :destroy)
   end
 

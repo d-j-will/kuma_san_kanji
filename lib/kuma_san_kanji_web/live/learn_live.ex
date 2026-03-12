@@ -3,8 +3,11 @@ defmodule KumaSanKanjiWeb.LearnLive do
   use KumaSanKanjiWeb, :live_view
 
   alias KumaSanKanji.Content.ContentContext
-  alias KumaSanKanji.SRS.UserKanjiProgress
-  import KumaSanKanjiWeb.FeatureFlagHelper, only: [learning_path_enabled?: 0]
+  alias KumaSanKanji.SRS.{Stage, UserKanjiProgress}
+  alias KumaSanKanjiWeb.Components.SrsStageComponent
+
+  import KumaSanKanjiWeb.FeatureFlagHelper,
+    only: [learning_path_enabled?: 0, bear_seasons_srs_enabled?: 0]
 
   @impl true
   def mount(_params, _session, socket) do
@@ -27,6 +30,13 @@ defmodule KumaSanKanjiWeb.LearnLive do
       reviews_due = reviews_due_count(user.id, user)
       streak = study_streak(user.id, user)
 
+      stage_counts =
+        if bear_seasons_srs_enabled?() do
+          compute_stage_counts(user.id, user)
+        else
+          nil
+        end
+
       {:ok,
        assign(socket,
          page_title: "Learn",
@@ -35,7 +45,8 @@ defmodule KumaSanKanjiWeb.LearnLive do
          total_learned: total_learned,
          total_kanji: total_kanji,
          reviews_due: reviews_due,
-         study_streak: streak
+         study_streak: streak,
+         stage_counts: stage_counts
        )}
     end
   end
@@ -85,6 +96,13 @@ defmodule KumaSanKanjiWeb.LearnLive do
             </span>
           </div>
         </div>
+
+        <%= if bear_seasons_srs_enabled?() and @stage_counts do %>
+          <div class="mt-6">
+            <h2 class="text-lg font-wabi-display text-base-content mb-3">SRS Progress</h2>
+            <SrsStageComponent.srs_stage_pipeline stages={@stage_counts} />
+          </div>
+        <% end %>
       </div>
 
       <%= if @groups == [] do %>
@@ -163,6 +181,20 @@ defmodule KumaSanKanjiWeb.LearnLive do
   defp mini_bar_color(_), do: "bg-primary"
 
   # ---------- SRS queries ----------
+
+  defp compute_stage_counts(user_id, actor) do
+    case UserKanjiProgress.user_stats(user_id, actor: actor) do
+      {:ok, records} ->
+        Enum.reduce(Stage.groups(), %{}, fn group, acc ->
+          {:ok, stage_numbers} = Stage.stages_for_group(group)
+          count = Enum.count(records, fn r -> r.srs_stage in stage_numbers end)
+          Map.put(acc, group, count)
+        end)
+
+      _ ->
+        %{mezame: 0, sakari: 0, minori: 0, chikara: 0, tomin: 0}
+    end
+  end
 
   defp reviews_due_count(user_id, actor) do
     case UserKanjiProgress.due_for_review(user_id, %{horizon_seconds: 0, limit: 500},
