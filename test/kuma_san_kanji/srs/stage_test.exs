@@ -374,4 +374,40 @@ defmodule KumaSanKanji.SRS.StageTest do
       assert {:error, :invalid_stage} = Stage.hibernated?("9")
     end
   end
+
+  describe "human_interval/1" do
+    test "returns human-readable interval for each stage" do
+      assert Stage.human_interval(1) == {:ok, "4 hours"}
+      assert Stage.human_interval(2) == {:ok, "8 hours"}
+      assert Stage.human_interval(3) == {:ok, "1 day"}
+      assert Stage.human_interval(4) == {:ok, "2 days"}
+      assert Stage.human_interval(5) == {:ok, "1 week"}
+      assert Stage.human_interval(6) == {:ok, "2 weeks"}
+      assert Stage.human_interval(7) == {:ok, "1 month"}
+      assert Stage.human_interval(8) == {:ok, "4 months"}
+    end
+
+    test "returns Retired for hibernation stage" do
+      assert Stage.human_interval(9) == {:ok, "Retired"}
+    end
+
+    test "returns error for invalid stage" do
+      assert Stage.human_interval(0) == {:error, :invalid_stage}
+      assert Stage.human_interval(10) == {:error, :invalid_stage}
+    end
+  end
+
+  describe "group_english/1" do
+    test "returns English name for each group" do
+      assert Stage.group_english(:mezame) == "Awakening"
+      assert Stage.group_english(:sakari) == "Peak"
+      assert Stage.group_english(:minori) == "Harvest"
+      assert Stage.group_english(:chikara) == "Strength"
+      assert Stage.group_english(:tomin) == "Hibernation"
+    end
+
+    test "returns nil for invalid group" do
+      assert Stage.group_english(:invalid) == nil
+    end
+  end
 end
