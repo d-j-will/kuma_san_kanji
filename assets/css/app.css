@@ -105,6 +105,14 @@
     @apply bg-base-200/50 backdrop-blur-sm rounded-box min-h-[calc(100vh-200px)];
   }
 
+  /* Mobile App Shell — 100dvh CSS Grid layout */
+  .mobile-app-shell {
+    height: 100dvh;
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+    overflow: hidden;
+  }
+
   /* Legacy */
   .form-input-focused {
     @apply focus:input-primary;

@@ -1,0 +1,25 @@
+created_at: '2026-03-12T00:30:00Z'
+events:
+- d: PASS
+  p: PREPARE
+  s: EXECUTED
+  sid: 01-01
+  t: '2026-03-12T00:43:03Z'
+- d: PASS
+  p: RED_ACCEPTANCE
+  s: EXECUTED
+  sid: 01-01
+  t: '2026-03-12T00:43:08Z'
+- d: 'NOT_APPLICABLE: CSS/layout step, acceptance test covers the driving port'
+  p: RED_UNIT
+  s: SKIPPED
+  sid: 01-01
+  t: '2026-03-12T00:43:09Z'
+- d: PASS
+  p: GREEN
+  s: EXECUTED
+  sid: 01-01
+  t: '2026-03-12T00:43:10Z'
+feature_id: mobile-ux-optimization
+schema_version: '3.0'
+steps: []

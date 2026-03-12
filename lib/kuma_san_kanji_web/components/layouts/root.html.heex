@@ -6,7 +6,11 @@
 >
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <%= if KumaSanKanjiWeb.FeatureFlagHelper.mobile_ux_enabled?() do %>
+      <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <% else %>
+      <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <% end %>
     <meta name="csrf-token" content={get_csrf_token()} />
     <.live_title default="KumaSanKanji" suffix=" · Kuma-san Kanji">
       {assigns[:page_title]}
@@ -16,10 +20,17 @@
     </script>
   </head>
 
-  <body class="wabi-container min-h-screen flex flex-col pb-32">
-    <div class="flex-1 flex flex-col">
+  <%= if KumaSanKanjiWeb.FeatureFlagHelper.mobile_ux_enabled?() do %>
+    <body class="wabi-container mobile-app-shell" style="height: 100dvh; display: grid; grid-template-rows: auto 1fr auto;">
       {@inner_content}
-    </div>
-    <KumaSanKanjiWeb.Components.Footer.footer />
-  </body>
+      <KumaSanKanjiWeb.Components.Footer.footer />
+    </body>
+  <% else %>
+    <body class="wabi-container min-h-screen flex flex-col pb-32">
+      <div class="flex-1 flex flex-col">
+        {@inner_content}
+      </div>
+      <KumaSanKanjiWeb.Components.Footer.footer />
+    </body>
+  <% end %>
 </html>

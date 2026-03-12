@@ -1,0 +1,134 @@
+roadmap:
+  project_id: mobile-ux-optimization
+  created_at: '2026-03-12T00:32:13Z'
+  total_steps: 8
+  phases: 4
+phases:
+- id: '01'
+  name: 'R1: Core Mobile Shell'
+  steps:
+  - id: 01-01
+    name: 'Feature Flag + App Shell Layout'
+    criteria: 'Given mobile flag enabled, when user opens any page, then body uses 100dvh CSS Grid layout with scrollable content area; when flag disabled, existing desktop layout unchanged'
+    test_file: 'test/kuma_san_kanji_web/live/mobile/app_shell_test.exs'
+    scenario_name: 'app shell renders CSS Grid layout when mobile flag is enabled'
+    files_to_modify:
+    - lib/kuma_san_kanji_web/feature_flag_helper.ex
+    - lib/kuma_san_kanji_web/components/layouts/root.html.heex
+    - lib/kuma_san_kanji_web/components/layouts/app.html.heex
+    - assets/css/app.css
+    dependencies: []
+    estimated_hours: 2
+  - id: 01-02
+    name: 'Bottom Tab Navigation'
+    criteria: 'Given mobile flag enabled, when any page renders, then a 4-tab bottom nav (Learn, Explore, Quiz, Profile) appears with active tab matching current route; hidden on desktop viewports; each tab has icon, label, and aria-label'
+    test_file: 'test/kuma_san_kanji_web/live/mobile/bottom_nav_test.exs'
+    scenario_name: 'bottom nav renders with four tabs'
+    files_to_modify:
+    - lib/kuma_san_kanji_web/components/bottom_nav.ex
+    - lib/kuma_san_kanji_web/components/layouts/app.html.heex
+    dependencies:
+    - 01-01
+    estimated_hours: 3
+  - id: 01-03
+    name: 'Safe Area Insets + Compact Header'
+    criteria: 'Given mobile flag enabled, when page renders, then viewport meta includes viewport-fit=cover; bottom nav has safe-area-inset-bottom padding; desktop navbar hidden on mobile; footer hidden on mobile'
+    test_file: 'test/kuma_san_kanji_web/live/mobile/safe_area_test.exs'
+    scenario_name: 'viewport meta includes viewport-fit=cover'
+    files_to_modify:
+    - lib/kuma_san_kanji_web/components/layouts/root.html.heex
+    - lib/kuma_san_kanji_web/components/navigation.ex
+    - lib/kuma_san_kanji_web/components/footer.ex
+    - assets/css/app.css
+    dependencies:
+    - 01-02
+    estimated_hours: 2
+- id: '02'
+  name: 'R2: Touch-Optimized Content'
+  steps:
+  - id: 02-01
+    name: 'Mobile Layout - Dashboard, Grid, Teach, Typography'
+    criteria: 'Given mobile flag enabled, when Learn dashboard renders, then group cards display in single-column touch-friendly layout; when group page renders, then kanji grid uses 48px+ character cells; when teach page renders, then kanji displays at 72-128px with touch-friendly tabs and full-width buttons; body text uses 16px+ readable sizing'
+    test_file: 'test/kuma_san_kanji_web/live/mobile/mobile_layout_test.exs'
+    scenario_name: 'dashboard renders with touch-friendly layout'
+    files_to_modify:
+    - lib/kuma_san_kanji_web/live/learn_live.ex
+    - lib/kuma_san_kanji_web/live/group_live.ex
+    - lib/kuma_san_kanji_web/live/teach_live.ex
+    - assets/css/app.css
+    dependencies:
+    - 01-03
+    estimated_hours: 4
+  - id: 02-02
+    name: 'Mobile Quiz Experience'
+    criteria: 'Given mobile flag enabled, when quiz renders, then input uses 16px+ font to prevent iOS auto-zoom; submit and action buttons are full-width with 48px height; quiz results display with stacked action buttons and scrollable content; SRS quiz page follows same mobile patterns'
+    test_file: 'test/kuma_san_kanji_web/live/mobile/mobile_quiz_test.exs'
+    scenario_name: 'group quiz renders with input and submit'
+    files_to_modify:
+    - lib/kuma_san_kanji_web/live/group_quiz_live.ex
+    - lib/kuma_san_kanji_web/live/quiz_live.ex
+    - lib/kuma_san_kanji_web/live/quiz_live.html.heex
+    - assets/css/app.css
+    dependencies:
+    - 01-03
+    estimated_hours: 3
+- id: '03'
+  name: 'R3: Gesture & Progressive Disclosure'
+  steps:
+  - id: 03-01
+    name: 'Explore Page Accordion Sections'
+    criteria: 'Given mobile flag enabled, when explore page renders, then secondary sections wrapped in collapsible details/summary elements; primary kanji info visible without expanding; on desktop, accordion sections forced open via CSS'
+    test_file: 'test/kuma_san_kanji_web/live/mobile/accordion_test.exs'
+    scenario_name: 'explore page renders with content sections'
+    files_to_modify:
+    - lib/kuma_san_kanji_web/components/core_components.ex
+    - lib/kuma_san_kanji_web/live/explore_live.html.heex
+    - assets/css/app.css
+    dependencies:
+    - 02-01
+    estimated_hours: 2
+  - id: 03-02
+    name: 'Swipe Tab Navigation'
+    criteria: 'Given mobile flag enabled, when teach page renders, then content area has SwipeTabNavigation hook binding with data attributes; swipe left pushes next_tab event; swipe right pushes prev_tab event; boundary tabs do not crash on out-of-range swipes'
+    test_file: 'test/kuma_san_kanji_web/live/mobile/swipe_hook_test.exs'
+    scenario_name: 'teach page has phx-hook for swipe nav'
+    files_to_modify:
+    - assets/js/app.js
+    - assets/js/hooks/swipe_tab_navigation.js
+    - lib/kuma_san_kanji_web/live/teach_live.ex
+    dependencies:
+    - 02-01
+    estimated_hours: 3
+- id: '04'
+  name: 'R4: Performance & Polish'
+  steps:
+  - id: 04-01
+    name: 'Performance CSS and Skeleton Loading'
+    criteria: 'content-visibility auto applied to off-screen sections; overscroll-behavior contain on scroll areas; prefers-reduced-motion media query disables transitions; skeleton loading states use animate-pulse on placeholder elements'
+    files_to_modify:
+    - assets/css/app.css
+    - lib/kuma_san_kanji_web/live/learn_live.ex
+    - lib/kuma_san_kanji_web/live/explore_live.html.heex
+    - lib/kuma_san_kanji_web/live/group_live.ex
+    dependencies:
+    - 03-01
+    - 03-02
+    estimated_hours: 2
+implementation_scope:
+  source_directories:
+  - lib/kuma_san_kanji_web/components/
+  - lib/kuma_san_kanji_web/live/
+  - lib/kuma_san_kanji_web/
+  - assets/js/
+  - assets/css/
+  test_directories:
+  - test/kuma_san_kanji_web/live/mobile/
+  - test/support/
+  excluded_patterns:
+  - _build/**
+  - deps/**
+  - priv/static/**
+validation:
+  status: approved
+  reviewer: orchestrator-quality-gate
+  approved_at: '2026-03-12T00:35:00Z'
