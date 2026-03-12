@@ -161,6 +161,19 @@
 
   .mobile-shell-grid .main-content-wabi {
     min-height: 0;
+    background: transparent;
+    box-shadow: none;
+    border-radius: 0;
+    backdrop-filter: none;
+  }
+
+  @media (min-width: 640px) {
+    .mobile-shell-grid .main-content-wabi {
+      background: var(--fallback-b2, oklch(var(--b2) / 0.5));
+      box-shadow: var(--tw-shadow);
+      border-radius: var(--rounded-box);
+      backdrop-filter: blur(12px);
+    }
   }
 
   /* Legacy */
