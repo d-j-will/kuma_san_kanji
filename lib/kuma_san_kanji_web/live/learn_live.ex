@@ -20,8 +20,9 @@ defmodule KumaSanKanjiWeb.LearnLive do
           {group.id, progress}
         end)
 
-      total_learned = progress_map |> Map.values() |> Enum.sum_by(& &1.learned)
-      total_kanji = progress_map |> Map.values() |> Enum.sum_by(& &1.total)
+      values = Map.values(progress_map)
+      total_learned = values |> Enum.map(& &1.learned) |> Enum.sum()
+      total_kanji = values |> Enum.map(& &1.total) |> Enum.sum()
 
       reviews_due = reviews_due_count(user.id, user)
       streak = study_streak(user.id, user)

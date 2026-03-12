@@ -46,30 +46,39 @@ defmodule KumaSanKanjiWeb.Components.BottomNav do
   defp tab_classes(false), do: ""
 
   defp build_tabs(current_path, current_user) do
-    [
-      %{
-        path: ~p"/learn",
-        label: "Learn",
-        icon_class: "hero-academic-cap w-5 h-5",
-        aria_label: "Learn",
-        active: path_matches?(current_path, "/learn")
-      },
-      %{
-        path: ~p"/explore",
-        label: "Explore",
-        icon_class: "hero-magnifying-glass w-5 h-5",
-        aria_label: "Explore",
-        active: path_matches?(current_path, "/explore")
-      },
-      %{
-        path: ~p"/quiz",
-        label: "Quiz",
-        icon_class: "hero-pencil-square w-5 h-5",
-        aria_label: "Quiz",
-        active: path_matches?(current_path, "/quiz")
-      },
-      profile_tab(current_path, current_user)
-    ]
+    learn_tab =
+      if KumaSanKanjiWeb.FeatureFlagHelper.learning_path_enabled?() do
+        [
+          %{
+            path: ~p"/learn",
+            label: "Learn",
+            icon_class: "hero-academic-cap w-5 h-5",
+            aria_label: "Learn",
+            active: path_matches?(current_path, "/learn")
+          }
+        ]
+      else
+        []
+      end
+
+    learn_tab ++
+      [
+        %{
+          path: ~p"/explore",
+          label: "Explore",
+          icon_class: "hero-magnifying-glass w-5 h-5",
+          aria_label: "Explore",
+          active: path_matches?(current_path, "/explore")
+        },
+        %{
+          path: ~p"/quiz",
+          label: "Quiz",
+          icon_class: "hero-pencil-square w-5 h-5",
+          aria_label: "Quiz",
+          active: path_matches?(current_path, "/quiz")
+        },
+        profile_tab(current_path, current_user)
+      ]
   end
 
   defp profile_tab(current_path, nil) do
