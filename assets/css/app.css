@@ -24,6 +24,26 @@
   }
 }
 
+/* Mobile performance optimizations */
+.mobile-app-shell main {
+  overscroll-behavior: contain;
+}
+
+.mobile-app-shell .mobile-accordion,
+.mobile-app-shell .wabi-paper {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 200px;
+}
+
+/* Respect reduced motion preference */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
 @layer components {
   /* Wabi-Sabi foundation styles mapped to DaisyUI */
   .wabi-container {
