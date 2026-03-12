@@ -167,6 +167,131 @@ defmodule KumaSanKanjiWeb.Components.SrsStageComponent do
   defp arrow_label(:down), do: "demoted to"
   defp arrow_label(:same), do: "stayed at"
 
+  # ── srs_stage_guide ──────────────────────────────────────────────────
+
+  @doc """
+  Renders the Bear Seasons SRS guide as a collapsible accordion.
+
+  Uses `<details>/<summary>` for progressive disclosure (matches mobile UX
+  architecture ADR-003). All content is data-driven from the Stage module.
+  DaisyUI 4.x `collapse` component uses native `<details>` internally.
+
+  ## Examples
+
+      <.srs_stage_guide />
+  """
+
+  @shu_ha_ri %{
+    mezame: %{phase: "守 Shu", meaning: "Follow the pattern"},
+    sakari: %{phase: "破 Ha", meaning: "Break from rote memory"},
+    minori: %{phase: "破→離", meaning: "Transition to mastery"},
+    chikara: %{phase: "離 Ri", meaning: "Transcend — the kanji is part of you"},
+    tomin: %{phase: "Beyond 離", meaning: "Knowledge rests deep and safe"}
+  }
+
+  @season_narratives %{
+    mezame:
+      "The bear stirs — spring has come. You've just encountered this kanji. Reviews come frequently to build the initial neural pathway.",
+    sakari:
+      "Summer — the bear roams freely. You know this kanji well enough to recall it without hints. Reviews space out to weekly.",
+    minori:
+      "Autumn — the fruit is ripe. You can recall this kanji without effort. One review at the 1-month mark confirms it's truly rooted.",
+    chikara:
+      "The bear is fully nourished, ready for winter. One final review after 4 months. If you still remember, the knowledge is permanent.",
+    tomin:
+      "The bear sleeps. The knowledge rests deep and safe. No more reviews — but it can always be awakened again."
+  }
+
+  def srs_stage_guide(assigns) do
+    groups =
+      Enum.map(Stage.groups(), fn group ->
+        {:ok, stage_numbers} = Stage.stages_for_group(group)
+        color = Stage.group_color(group)
+        japanese = Stage.group_japanese(group)
+        english = Stage.group_english(group)
+
+        stages =
+          Enum.map(stage_numbers, fn num ->
+            {:ok, info} = Stage.info(num)
+            {:ok, human} = Stage.human_interval(num)
+            Map.put(info, :human_interval, human)
+          end)
+
+        %{
+          group: group,
+          color: color,
+          japanese: japanese,
+          english: english,
+          stages: stages,
+          shu_ha_ri: Map.fetch!(@shu_ha_ri, group),
+          narrative: Map.fetch!(@season_narratives, group)
+        }
+      end)
+
+    assigns = assign(assigns, :groups, groups)
+
+    ~H"""
+    <details class="collapse collapse-arrow bg-base-200 rounded-lg">
+      <summary class="collapse-title text-lg font-wabi-display cursor-pointer">
+        <span class="flex items-center gap-2">
+          <span>How SRS Works — Bear Seasons</span>
+        </span>
+      </summary>
+      <div class="collapse-content">
+        <p class="text-sm text-base-content/70 mb-4">
+          Kuma San Kanji uses a spaced repetition system inspired by a bear's journey
+          through the seasons. Each kanji progresses through 9 stages across 5 seasons,
+          with increasing review intervals.
+        </p>
+
+        <div class="flex flex-col gap-3">
+          <.guide_season_card :for={g <- @groups} group={g} />
+        </div>
+
+        <div class="mt-4 p-3 bg-base-300 rounded-lg">
+          <h4 class="font-medium text-sm text-base-content mb-1">Incorrect answers</h4>
+          <p class="text-xs text-base-content/70">
+            Getting an answer wrong drops your stage back. Early stages (Mezame) drop by 1.
+            Later stages (Sakari and above) drop by 2 — the further you've climbed, the more
+            you fall. But you can never drop below stage 1.
+          </p>
+        </div>
+      </div>
+    </details>
+    """
+  end
+
+  attr :group, :map, required: true
+
+  defp guide_season_card(assigns) do
+    ~H"""
+    <div class="rounded-lg p-3 border" style={"border-color: #{@group.color}40;"}>
+      <div class="flex items-center gap-2 mb-1">
+        <span
+          class="inline-block w-3 h-3 rounded-full"
+          style={"background-color: #{@group.color};"}
+        />
+        <span class="font-medium text-base-content">
+          {@group.japanese} <span class="text-base-content/60">{@group.english}</span>
+        </span>
+        <span class="ml-auto text-xs text-base-content/50">{@group.shu_ha_ri.phase}</span>
+      </div>
+
+      <p class="text-xs text-base-content/70 mb-2">{@group.narrative}</p>
+
+      <div class="flex flex-wrap gap-1">
+        <span
+          :for={stage <- @group.stages}
+          class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs"
+          style={"background-color: #{stage.color}20; color: #{stage.color}; border: 1px solid #{stage.color}40;"}
+        >
+          {stage.label} · {stage.human_interval}
+        </span>
+      </div>
+    </div>
+    """
+  end
+
   # ── helpers ──────────────────────────────────────────────────────────
 
   defp stage_info(stage) do
