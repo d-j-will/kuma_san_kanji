@@ -344,6 +344,8 @@ defmodule KumaSanKanjiWeb.Components.SrsStageComponent do
     end
   end
 
+  defp format_relative_duration(seconds) when seconds < 60, do: "<1m"
+
   defp format_relative_duration(seconds) when seconds < 3600 do
     "#{div(seconds, 60)}m"
   end
