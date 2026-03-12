@@ -20,6 +20,36 @@ events:
   s: EXECUTED
   sid: 01-01
   t: '2026-03-12T00:43:10Z'
+- d: PASS
+  p: COMMIT
+  s: EXECUTED
+  sid: 01-01
+  t: '2026-03-12T00:43:48Z'
+- d: PASS
+  p: PREPARE
+  s: EXECUTED
+  sid: 01-02
+  t: '2026-03-12T00:51:28Z'
+- d: PASS
+  p: RED_ACCEPTANCE
+  s: EXECUTED
+  sid: 01-02
+  t: '2026-03-12T00:51:29Z'
+- d: 'NOT_APPLICABLE: UI component step, acceptance test covers the driving port'
+  p: RED_UNIT
+  s: SKIPPED
+  sid: 01-02
+  t: '2026-03-12T00:51:31Z'
+- d: PASS
+  p: GREEN
+  s: EXECUTED
+  sid: 01-02
+  t: '2026-03-12T00:51:32Z'
+- d: PASS
+  p: COMMIT
+  s: EXECUTED
+  sid: 01-02
+  t: '2026-03-12T00:52:10Z'
 feature_id: mobile-ux-optimization
 schema_version: '3.0'
 steps: []

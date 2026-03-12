@@ -1,0 +1,454 @@
+journey:
+  name: "Mobile Learning Experience"
+  goal: "Yuki completes satisfying kanji study sessions on her phone during commute"
+  persona: "Yuki Tanaka - 28yo developer, iPhone user, one-handed commute learner"
+  feature_id: "mobile-ux-optimization"
+
+  emotional_arc:
+    start: "Distracted (on train, phone in one hand) -> Oriented (app shell grounds her)"
+    middle: "Curious (dashboard progress) -> Focused (teach tabs) -> Challenged (quiz)"
+    end: "Accomplished (results, visible progress) -> Motivated (clear next steps)"
+
+steps:
+  - id: 1
+    name: "App Shell & Mobile Viewport"
+    action: "Open app on mobile browser"
+
+    ui_mockup: |
+      +------------------------------------------+
+      | <- Kuma-san Kanji        [user avatar]   |  <- Compact header
+      +------------------------------------------+
+      |                                          |
+      |          Scrollable Content Area         |  <- flex-1, overflow-y-auto
+      |          (CSS Grid 1fr middle row)       |
+      |                                          |
+      +------------------------------------------+
+      |  [Learn]  [Explore]  [Quiz]  [Profile]   |  <- Bottom tab bar
+      +------------------------------------------+
+          env(safe-area-inset-bottom) padding
+
+    shared_artifacts:
+      - name: "current_route"
+        source: "Phoenix.LiveView socket assigns / router"
+        displayed_as: "${current_route}"
+        consumers:
+          - "Bottom nav active tab indicator"
+          - "Header back button destination"
+      - name: "current_user"
+        source: "AshAuthentication session"
+        displayed_as: "${current_user}"
+        consumers:
+          - "Header avatar"
+          - "Bottom nav Profile tab"
+          - "Auth-gated features (quiz, notes)"
+      - name: "viewport_height"
+        source: "CSS 100dvh"
+        displayed_as: "${viewport_height}"
+        consumers:
+          - "Root layout body height"
+          - "App shell grid container"
+
+    emotional_state:
+      entry: "Distracted, arriving from phone home screen"
+      exit: "Oriented, grounded by persistent navigation"
+
+    integration_checkpoint: |
+      Bottom nav renders on all pages.
+      Active tab matches current route.
+      Safe area insets applied on notched devices.
+      Content area scrolls independently of header/nav.
+      100dvh used instead of 100vh for mobile browser chrome.
+
+  - id: 2
+    name: "Learn Dashboard"
+    action: "Tap Learn tab in bottom nav"
+
+    ui_mockup: |
+      +------------------------------------------+
+      | Learn                              [av]  |
+      +------------------------------------------+
+      |  32 of 80 kanji learned                  |
+      |  [=========>........................]     |
+      |  12 reviews due  [Start Review]          |
+      |  5 day streak                            |
+      |                                          |
+      |  +------------------------------------+  |
+      |  | Nature & Weather           7/12   |  |
+      |  | [=====>....................] 58%   |  |
+      |  +------------------------------------+  |
+      |  +------------------------------------+  |
+      |  | Numbers & Counting        12/12   |  |
+      |  | [=========================] Done  |  |
+      |  +------------------------------------+  |
+      |  +------------------------------------+  |
+      |  | Body & People              0/10   |  |
+      |  | [..........................] New   |  |
+      |  +------------------------------------+  |
+      +------------------------------------------+
+      |  [Learn*] [Explore] [Quiz]  [Profile]    |
+      +------------------------------------------+
+
+    shared_artifacts:
+      - name: "groups"
+        source: "ContentContext.get_all_thematic_groups/0"
+        displayed_as: "${groups}"
+        consumers:
+          - "Group card list on dashboard"
+          - "Group detail page breadcrumb"
+      - name: "progress_map"
+        source: "ContentContext.get_group_progress/2 per group"
+        displayed_as: "${progress_map}"
+        consumers:
+          - "Overall progress bar"
+          - "Per-group progress bars"
+          - "Per-group learned/total counts"
+      - name: "reviews_due"
+        source: "UserKanjiProgress.due_for_review/2"
+        displayed_as: "${reviews_due}"
+        consumers:
+          - "Dashboard stats row"
+          - "Review CTA visibility"
+      - name: "study_streak"
+        source: "UserKanjiProgress.user_stats/2 + calculate_streak/1"
+        displayed_as: "${study_streak}"
+        consumers:
+          - "Dashboard stats row"
+
+    emotional_state:
+      entry: "Oriented from app shell"
+      exit: "Curious about progress, motivated to continue"
+
+    integration_checkpoint: |
+      Group cards are single-column on mobile.
+      All touch targets >= 48px.
+      Progress bar percentages match progress_map data.
+      Reviews due count matches SRS query.
+
+  - id: 3
+    name: "Group Detail"
+    action: "Tap a thematic group card"
+
+    ui_mockup: |
+      +------------------------------------------+
+      | <- Learn    Nature & Weather             |
+      +------------------------------------------+
+      |  7 of 12 learned                         |
+      |                                          |
+      |  +------+------+------+------+           |
+      |  | rain  | fire  | water | tree  |           |
+      |  |  (*)  |  (*) |  (*) |  (*) |           |
+      |  +------+------+------+------+           |
+      |  | sun   | moon  | earth | gold  |           |
+      |  |  (*)  |  (*) |  (*) |      |           |
+      |  +------+------+------+------+           |
+      |  | wind  | sky   | stone | flower|           |
+      |  |       |      |      |      |           |
+      |  +------+------+------+------+           |
+      |                                          |
+      |  [     Continue Learning  -->     ]      |
+      +------------------------------------------+
+      |  [Learn*] [Explore] [Quiz]  [Profile]    |
+      +------------------------------------------+
+
+    shared_artifacts:
+      - name: "group"
+        source: "ContentContext find_group/1"
+        displayed_as: "${group}"
+        consumers:
+          - "Page header"
+          - "Breadcrumb back link"
+          - "Quiz page header"
+      - name: "kanji_list"
+        source: "ContentContext.get_kanji_by_thematic_group/1"
+        displayed_as: "${kanji_list}"
+        consumers:
+          - "Kanji grid cells"
+          - "Teach page total_kanji count"
+          - "Quiz pool source"
+      - name: "learned_kanji_ids"
+        source: "UserKanjiProgress.get_user_kanji_progress/3 per kanji"
+        displayed_as: "${learned_kanji_ids}"
+        consumers:
+          - "Learned indicator on grid cells"
+          - "Learned count display"
+          - "Next unlearned position calculation"
+
+    emotional_state:
+      entry: "Curious about group contents"
+      exit: "Motivated, sees progress within group"
+
+    integration_checkpoint: |
+      Kanji characters displayed at min 48px (3rem).
+      Each grid cell is a touch target >= 48x48px.
+      Learned count matches dashboard progress_map for this group.
+      Continue Learning links to correct next unlearned position.
+
+  - id: 4
+    name: "Teach Page"
+    action: "Tap kanji character or Continue Learning"
+
+    ui_mockup: |
+      +------------------------------------------+
+      | <- Nature     8 of 12                    |
+      +------------------------------------------+
+      |    [1]  [2]  [3]  [4]                    |
+      |    Char Mng  Read Exmp                   |
+      |                                          |
+      |              +--------+                  |
+      |              |  rain    |                  |
+      |              +--------+                  |
+      |         [Show Stroke Order]              |
+      |         Strokes: 8    Grade: 1           |
+      |                                          |
+      |  [<- Back]              [Next ->]        |
+      +------------------------------------------+
+      |  [Learn*] [Explore] [Quiz]  [Profile]    |
+      +------------------------------------------+
+
+    shared_artifacts:
+      - name: "kanji"
+        source: "ContentContext.get_kanji_at_position/2 + load associations"
+        displayed_as: "${kanji}"
+        consumers:
+          - "Kanji character display"
+          - "Character tab (stroke order, grade, strokes)"
+          - "Meaning tab (meanings, tips, mnemonics)"
+          - "Readings tab (kun/on readings)"
+          - "Examples tab (sentences, furigana)"
+      - name: "active_tab"
+        source: "LiveView socket assign, default :character"
+        displayed_as: "${active_tab}"
+        consumers:
+          - "Tab indicator highlighting"
+          - "Tab content rendering"
+          - "Swipe gesture handler"
+      - name: "position"
+        source: "URL param parsed by parse_position/1"
+        displayed_as: "${position}"
+        consumers:
+          - "Header position counter (N of M)"
+          - "Prev/next kanji navigation URLs"
+
+    emotional_state:
+      entry: "Focused, ready to learn this kanji"
+      exit: "Confident, understood kanji, ready for quiz"
+
+    integration_checkpoint: |
+      Kanji display 72-128px in teaching context.
+      Swipe gestures registered via LiveView JS hook.
+      Tab indicators are touch targets >= 48px.
+      Arrow key navigation still works on desktop.
+      Prev/next buttons min 48px height on mobile.
+      "Quiz me" button full-width on mobile.
+
+  - id: 5
+    name: "Quiz"
+    action: "Tap 'I've learned this -- Quiz me!' or navigate to quiz"
+
+    ui_mockup: |
+      +------------------------------------------+
+      | <- Nature Quiz                           |
+      +------------------------------------------+
+      |  Question 3 of 7                         |
+      |  [======>........................]        |
+      |  2 correct | 0 incorrect                 |
+      |                                          |
+      |              +--------+                  |
+      |              |  rain    |                  |
+      |              +--------+                  |
+      |                                          |
+      |  +------------------------------------+  |
+      |  |  Type meaning or reading...        |  |
+      |  +------------------------------------+  |
+      |                                          |
+      |  [          Submit Answer          ]     |
+      +------------------------------------------+
+      |  [Learn]  [Explore] [Quiz*] [Profile]    |
+      +------------------------------------------+
+
+    shared_artifacts:
+      - name: "quiz_pool"
+        source: "mount_quiz/2 - learned kanji shuffled"
+        displayed_as: "${quiz_pool}"
+        consumers:
+          - "Current question kanji"
+          - "Total quiz items count"
+          - "Quiz progress bar"
+      - name: "results"
+        source: "Socket assign, accumulated per answer"
+        displayed_as: "${results}"
+        consumers:
+          - "Running score display"
+          - "Final summary accuracy"
+          - "Review mistakes filter"
+
+    emotional_state:
+      entry: "Challenged, slight anxiety (will I remember?)"
+      exit: "Either encouraged (correct!) or motivated to review (shown answer)"
+
+    integration_checkpoint: |
+      Input font-size >= 16px (prevents iOS auto-zoom).
+      Submit button full-width, height >= 48px.
+      Kanji display 72px+ in quiz context.
+      Feedback card readable without scrolling.
+      Next button full-width after feedback.
+      Keyboard does not obscure input field.
+
+  - id: 6
+    name: "Quiz Results"
+    action: "Answer final quiz question"
+
+    ui_mockup: |
+      +------------------------------------------+
+      | Nature & Weather Quiz                    |
+      +------------------------------------------+
+      |           Quiz Complete!                 |
+      |              86%                         |
+      |           Good job!                      |
+      |                                          |
+      |     6 Correct  1 Incorrect  7 Total      |
+      |                                          |
+      |  [Results breakdown table]               |
+      |                                          |
+      |  [     Review Mistakes     ]             |
+      |  [     Back to Nature      ]             |
+      |  [     Continue Learning   ]             |
+      +------------------------------------------+
+      |  [Learn*] [Explore] [Quiz]  [Profile]    |
+      +------------------------------------------+
+
+    shared_artifacts:
+      - name: "per_kanji_results"
+        source: "Socket assign, accumulated per answer"
+        displayed_as: "${per_kanji_results}"
+        consumers:
+          - "Results breakdown table"
+          - "Review Mistakes filter"
+      - name: "accuracy"
+        source: "Calculated from results.correct / total"
+        displayed_as: "${accuracy}"
+        consumers:
+          - "Large percentage display"
+          - "Encouragement message selection"
+
+    emotional_state:
+      entry: "Anticipating (how did I do?)"
+      exit: "Accomplished, clear sense of progress"
+
+    integration_checkpoint: |
+      Action buttons stacked vertically, full-width on mobile.
+      Results table horizontally scrollable on small screens.
+      Review Mistakes only shown if mistakes exist.
+      Back link uses correct group slug.
+
+  - id: 7
+    name: "Explore Page"
+    action: "Tap Explore tab in bottom nav"
+
+    ui_mockup: |
+      +------------------------------------------+
+      | Explore Kanji                            |
+      +------------------------------------------+
+      |  [  Show New Kanji  ]                    |
+      |                                          |
+      |              +--------+                  |
+      |              |  rain    |                  |
+      |              +--------+                  |
+      |         [Show Stroke Order]              |
+      |  Grade: 1    Strokes: 8    JLPT: N4     |
+      |                                          |
+      |  Meanings: rain, precipitation           |
+      |                                          |
+      |  [v] Pronunciations                      |
+      |  [v] Radical                             |
+      |  [v] Common Words                        |
+      |  [v] Example Sentences                   |
+      |  [v] Thematic Groups                     |
+      |  [v] My Notes                            |
+      +------------------------------------------+
+      |  [Learn]  [Explore*] [Quiz]  [Profile]   |
+      +------------------------------------------+
+
+    shared_artifacts:
+      - name: "kanji"
+        source: "Domain.get_kanji_by_offset/1 + load associations"
+        displayed_as: "${kanji}"
+        consumers:
+          - "Kanji character display"
+          - "Metadata (grade, strokes, JLPT)"
+          - "Meanings list"
+          - "All accordion sections"
+
+    emotional_state:
+      entry: "Curious, browsing mode"
+      exit: "Delighted, discovered something interesting"
+
+    integration_checkpoint: |
+      Accordion sections collapse/expand on tap.
+      Primary info (kanji, grade, meanings) always visible.
+      Secondary info collapsed by default on mobile.
+      Touch targets for accordion headers >= 48px.
+      Swipe for next kanji (optional enhancement).
+
+error_paths:
+  - id: "E1"
+    name: "Network Loss During Quiz"
+    trigger: "WebSocket disconnects (tunnel, dead zone)"
+    expected_behavior: "Reconnection banner, quiz state preserved on reconnect"
+    emotional_impact: "Brief anxiety -> relief on reconnect"
+    recovery: "LiveView automatic reconnection restores assigns"
+
+  - id: "E2"
+    name: "Slow Load on Poor Connection"
+    trigger: "Weak mobile signal, slow page load"
+    expected_behavior: "Skeleton/loading states for content areas"
+    emotional_impact: "Patient (knows content is coming)"
+    recovery: "Content renders progressively as data arrives"
+
+  - id: "E3"
+    name: "Accidental Navigation During Quiz"
+    trigger: "User taps bottom nav tab accidentally"
+    expected_behavior: "Quiz state lost (LiveView limitation), user must restart"
+    emotional_impact: "Annoyed"
+    recovery: "Quick re-entry via bottom nav -> quiz group"
+    note: "Consider confirmation dialog before leaving active quiz"
+
+  - id: "E4"
+    name: "iOS Keyboard Covering Input"
+    trigger: "Tap quiz input field, virtual keyboard appears"
+    expected_behavior: "Input scrolls into view above keyboard"
+    emotional_impact: "No frustration (just works)"
+    recovery: "CSS scroll-padding-bottom or visualViewport API"
+
+  - id: "E5"
+    name: "Safe Area Clipping"
+    trigger: "Notched device (iPhone X+) clips bottom nav"
+    expected_behavior: "env(safe-area-inset-bottom) padding prevents overlap"
+    emotional_impact: "No awareness (seamless)"
+    recovery: "Applied at layout level, automatic"
+
+integration_validation:
+  shared_artifact_consistency:
+    - artifact: "current_route"
+      must_match_across: [1, 2, 3, 4, 5, 6, 7]
+      failure_message: "Bottom nav active tab must match route on every page"
+
+    - artifact: "group progress"
+      must_match_across: [2, 3]
+      failure_message: "Dashboard group progress must equal group detail learned count"
+
+    - artifact: "kanji_list ordering"
+      must_match_across: [3, 4]
+      failure_message: "Group detail grid order must match teach page position numbering"
+
+    - artifact: "quiz_pool source"
+      must_match_across: [3, 5]
+      failure_message: "Quiz pool must contain exactly the learned kanji from group detail"
+
+    - artifact: "safe_area_insets"
+      must_match_across: [1, 2, 3, 4, 5, 6, 7]
+      failure_message: "Safe area padding must be applied consistently on all pages"
+
+    - artifact: "touch_target_minimums"
+      must_match_across: [1, 2, 3, 4, 5, 6, 7]
+      failure_message: "All interactive elements must meet 48x48px minimum on all pages"
