@@ -181,4 +181,37 @@ defmodule KumaSanKanjiWeb.LearnLiveTest do
       assert html =~ "Learn" or html =~ "learn"
     end
   end
+
+  # ---------------------------------------------------------------
+  # Bear Seasons SRS Guide
+  # ---------------------------------------------------------------
+
+  describe "Bear Seasons SRS guide accordion" do
+    test "renders guide when bear_seasons_srs flag is enabled", %{conn: conn} do
+      # Given Yuki is signed in and learning path is enabled
+      {conn, _user} = create_authenticated_learner(conn, "yuki-guide")
+      enable_learning_path_flag()
+      FunWithFlags.enable(:bear_seasons_srs)
+
+      # When Yuki navigates to /learn
+      {:ok, _view, html} = live(conn, ~p"/learn")
+
+      # Then the guide accordion is visible
+      assert html =~ "How SRS Works"
+      assert html =~ "Bear Seasons"
+    end
+
+    test "does not render guide when bear_seasons_srs flag is disabled", %{conn: conn} do
+      # Given Yuki is signed in and learning path is enabled
+      {conn, _user} = create_authenticated_learner(conn, "yuki-no-guide")
+      enable_learning_path_flag()
+      FunWithFlags.disable(:bear_seasons_srs)
+
+      # When Yuki navigates to /learn
+      {:ok, _view, html} = live(conn, ~p"/learn")
+
+      # Then the guide accordion is not present
+      refute html =~ "How SRS Works"
+    end
+  end
 end
