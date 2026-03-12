@@ -102,6 +102,7 @@ defmodule KumaSanKanjiWeb.Components.SrsStageComponentTest do
         rendered_to_string(~H"<SrsStageComponent.srs_kanji_card_badge progress={@progress} />")
 
       assert html =~ "Hibernation"
+      assert html =~ "Mastered"
     end
 
     test "renders nothing when progress is nil" do

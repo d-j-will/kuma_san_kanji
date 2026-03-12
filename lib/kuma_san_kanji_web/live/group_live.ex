@@ -2,6 +2,8 @@ defmodule KumaSanKanjiWeb.GroupLive do
   @moduledoc "Thematic group detail view - shows kanji in a group."
   use KumaSanKanjiWeb, :live_view
 
+  require Logger
+
   alias KumaSanKanji.Content.ContentContext
   alias KumaSanKanji.SRS.{Stage, UserKanjiProgress}
   alias KumaSanKanjiWeb.Components.SrsStageComponent
@@ -156,6 +158,7 @@ defmodule KumaSanKanjiWeb.GroupLive do
         "border-color: #{info.color}60; background-color: #{info.color}10;"
 
       _ ->
+        Logger.warning("Invalid SRS stage #{inspect(progress.srs_stage)} for kanji progress")
         "border-color: oklch(var(--bc) / 0.2);"
     end
   end
