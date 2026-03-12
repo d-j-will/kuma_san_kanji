@@ -6,7 +6,7 @@ defmodule KumaSanKanjiWeb.TeachLive do
   alias KumaSanKanji.NLP.Furigana
   alias KumaSanKanji.SRS.{Logic, UserKanjiProgress}
   alias KumaSanKanjiWeb.StrokeOrderEvents
-  import KumaSanKanjiWeb.FeatureFlagHelper, only: [learning_path_enabled?: 0]
+  import KumaSanKanjiWeb.FeatureFlagHelper, only: [learning_path_enabled?: 0, mobile_ux_enabled?: 0]
   import Phoenix.HTML, only: [raw: 1]
 
   @tabs [:character, :meaning, :readings, :examples]
@@ -66,7 +66,8 @@ defmodule KumaSanKanjiWeb.TeachLive do
            show_stroke_order: false,
            show_tracing: false,
            show_furigana: true,
-           mecab_available: System.find_executable("mecab") != nil
+           mecab_available: System.find_executable("mecab") != nil,
+           mobile_ux: mobile_ux_enabled?()
          )}
 
       {:error, :not_found} ->
@@ -263,7 +264,12 @@ defmodule KumaSanKanjiWeb.TeachLive do
       </div>
 
       <%!-- Tab content --%>
-      <div class="min-h-[300px]">
+      <div
+        class="min-h-[300px]"
+        id={if @mobile_ux, do: "swipe-tab-content"}
+        phx-hook={if @mobile_ux, do: "SwipeTabNavigation"}
+        data-swipe-threshold="50"
+      >
         <%= case @active_tab do %>
           <% :character -> %>
             <.character_tab

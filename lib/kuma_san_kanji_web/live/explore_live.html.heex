@@ -211,40 +211,41 @@
           <% end %>
         </ul>
 
-        <h3 class="text-lg font-semibold text-base-content font-wabi-display mb-2">
-          Pronunciations
-        </h3>
+        <details class="mobile-accordion mb-6" open>
+          <summary class="text-lg font-semibold text-base-content font-wabi-display mb-2 cursor-pointer md:list-item list-none">
+            Pronunciations
+          </summary>
+          <div>
+            <div class="overflow-hidden bg-wabi-paper-aged rounded-md border border-wabi-border">
+              <ul role="list" class="divide-y divide-wabi-border_light">
+                <%= for pronunciation <- @kanji.pronunciations do %>
+                  <li class="p-4">
+                    <div class="flex justify-between">
+                      <span class="font-medium font-wabi">
+                        {pronunciation.value}
+                      </span>
 
-        <div class="mb-6">
-          <div class="overflow-hidden bg-wabi-paper-aged rounded-md border border-wabi-border">
-            <ul role="list" class="divide-y divide-wabi-border_light">
-              <%= for pronunciation <- @kanji.pronunciations do %>
-                <li class="p-4">
-                  <div class="flex justify-between">
-                    <span class="font-medium font-wabi">
-                      {pronunciation.value}
-                    </span>
+                      <span class={
+                        case pronunciation.type do
+                          "on" ->
+                            "rounded-full bg-wabi-hok_blue/10 border border-wabi-hok_blue px-2.5 py-0.5 text-xs font-medium text-base-content"
 
-                    <span class={
-                      case pronunciation.type do
-                        "on" ->
-                          "rounded-full bg-wabi-hok_blue/10 border border-wabi-hok_blue px-2.5 py-0.5 text-xs font-medium text-base-content"
+                          "kun" ->
+                            "rounded-full bg-wabi-rust/10 border border-wabi-rust px-2.5 py-0.5 text-xs font-medium text-base-content"
 
-                        "kun" ->
-                          "rounded-full bg-wabi-rust/10 border border-wabi-rust px-2.5 py-0.5 text-xs font-medium text-base-content"
-
-                        _ ->
-                          "rounded-full bg-wabi-clay/10 border border-wabi-clay px-2.5 py-0.5 text-xs font-medium text-base-content"
-                      end
-                    }>
-                      {pronunciation.type}
-                    </span>
-                  </div>
-                </li>
-              <% end %>
-            </ul>
+                          _ ->
+                            "rounded-full bg-wabi-clay/10 border border-wabi-clay px-2.5 py-0.5 text-xs font-medium text-base-content"
+                        end
+                      }>
+                        {pronunciation.type}
+                      </span>
+                    </div>
+                  </li>
+                <% end %>
+              </ul>
+            </div>
           </div>
-        </div>
+        </details>
         
 <!-- Usage Examples Section -->
         <div :if={@usage_examples != []}>
@@ -288,10 +289,12 @@
           </div>
         </div>
 
-        <div class="flex items-center justify-between mb-2">
-          <h3 class="text-lg font-semibold text-base-content font-wabi-display">
+        <details class="mobile-accordion mb-6" open>
+          <summary class="text-lg font-semibold text-base-content font-wabi-display mb-2 cursor-pointer md:list-item list-none">
             Example Sentences
-          </h3>
+          </summary>
+        <div class="flex items-center justify-between mb-2">
+          <span></span>
           <%= if @mecab_available do %>
             <button
               type="button"
@@ -320,7 +323,8 @@
             <% end %>
           </ul>
         </div>
-        
+        </details>
+
 <!-- User Notes Section -->
         <div :if={@is_authenticated} class="mt-8">
           <h3 class="text-lg font-semibold text-base-content font-wabi-display mb-2">

@@ -7,6 +7,23 @@
 
 /* This file is for your main application CSS */
 
+/* Mobile accordion: collapsible on mobile, forced open on desktop */
+@media (min-width: 768px) {
+  details.mobile-accordion {
+    pointer-events: none;
+  }
+  details.mobile-accordion > summary {
+    list-style: none;
+    cursor: default;
+  }
+  details.mobile-accordion > summary::-webkit-details-marker {
+    display: none;
+  }
+  details.mobile-accordion:not([open]) > *:not(summary) {
+    display: block;
+  }
+}
+
 @layer components {
   /* Wabi-Sabi foundation styles mapped to DaisyUI */
   .wabi-container {

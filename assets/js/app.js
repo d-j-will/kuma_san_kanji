@@ -69,6 +69,36 @@ const Hooks = {
       this.el.focus();
     }
   },
+  SwipeTabNavigation: {
+    mounted() {
+      let startX = 0;
+      let startY = 0;
+      const threshold = parseInt(this.el.dataset.swipeThreshold) || 50;
+
+      this.el.addEventListener('touchstart', (e) => {
+        startX = e.touches[0].clientX;
+        startY = e.touches[0].clientY;
+      });
+
+      this.el.addEventListener('touchend', (e) => {
+        if (!startX || !startY) return;
+
+        const diffX = startX - e.changedTouches[0].clientX;
+        const diffY = startY - e.changedTouches[0].clientY;
+
+        if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > threshold) {
+          if (diffX > 0) {
+            this.pushEvent("next_tab", {});
+          } else {
+            this.pushEvent("prev_tab", {});
+          }
+        }
+
+        startX = 0;
+        startY = 0;
+      });
+    }
+  },
   MobileSwipeGestures: {
     mounted() {
       let startX = 0;
