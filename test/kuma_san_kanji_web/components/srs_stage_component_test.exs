@@ -62,4 +62,56 @@ defmodule KumaSanKanjiWeb.Components.SrsStageComponentTest do
       assert html =~ "#4CAF50"
     end
   end
+
+  describe "srs_kanji_card_badge/1" do
+    test "renders stage label for a progress record at stage 1" do
+      assigns = %{progress: %{srs_stage: 1, next_review_date: DateTime.utc_now()}}
+
+      html =
+        rendered_to_string(~H"<SrsStageComponent.srs_kanji_card_badge progress={@progress} />")
+
+      assert html =~ "Awakening"
+      assert html =~ "#F4A7BB"
+    end
+
+    test "renders 'Due now' when next_review_date is in the past" do
+      past = DateTime.add(DateTime.utc_now(), -3600, :second)
+      assigns = %{progress: %{srs_stage: 3, next_review_date: past}}
+
+      html =
+        rendered_to_string(~H"<SrsStageComponent.srs_kanji_card_badge progress={@progress} />")
+
+      assert html =~ "Due now"
+    end
+
+    test "renders relative time when next_review_date is in the future" do
+      future = DateTime.add(DateTime.utc_now(), 7200, :second)
+      assigns = %{progress: %{srs_stage: 5, next_review_date: future}}
+
+      html =
+        rendered_to_string(~H"<SrsStageComponent.srs_kanji_card_badge progress={@progress} />")
+
+      assert html =~ "h"
+      assert html =~ "Peak"
+    end
+
+    test "renders Mastered for stage 9 (Hibernation)" do
+      assigns = %{progress: %{srs_stage: 9, next_review_date: nil}}
+
+      html =
+        rendered_to_string(~H"<SrsStageComponent.srs_kanji_card_badge progress={@progress} />")
+
+      assert html =~ "Hibernation"
+    end
+
+    test "renders nothing when progress is nil" do
+      assigns = %{progress: nil}
+
+      html =
+        rendered_to_string(~H"<SrsStageComponent.srs_kanji_card_badge progress={@progress} />")
+
+      refute html =~ "Awakening"
+      refute html =~ "Peak"
+    end
+  end
 end

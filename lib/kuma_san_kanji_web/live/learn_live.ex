@@ -7,7 +7,7 @@ defmodule KumaSanKanjiWeb.LearnLive do
   alias KumaSanKanjiWeb.Components.SrsStageComponent
 
   import KumaSanKanjiWeb.FeatureFlagHelper,
-    only: [learning_path_enabled?: 0, bear_seasons_srs_enabled?: 0]
+    only: [learning_path_enabled?: 0, bear_seasons_srs_enabled?: 0, integrated_srs_enabled?: 0]
 
   @impl true
   def mount(_params, _session, socket) do
@@ -37,6 +37,13 @@ defmodule KumaSanKanjiWeb.LearnLive do
           nil
         end
 
+      per_group_srs =
+        if integrated_srs_enabled?() do
+          compute_per_group_srs(user.id, groups, user)
+        else
+          nil
+        end
+
       {:ok,
        assign(socket,
          page_title: "Learn",
@@ -46,7 +53,9 @@ defmodule KumaSanKanjiWeb.LearnLive do
          total_kanji: total_kanji,
          reviews_due: reviews_due,
          study_streak: streak,
-         stage_counts: stage_counts
+         stage_counts: stage_counts,
+         per_group_srs: per_group_srs,
+         integrated_srs: integrated_srs_enabled?()
        )}
     end
   end
@@ -116,6 +125,7 @@ defmodule KumaSanKanjiWeb.LearnLive do
             :for={group <- @groups}
             group={group}
             progress={Map.get(@progress_map, group.id, %{learned: 0, total: 0})}
+            srs_data={if @integrated_srs, do: Map.get(@per_group_srs || %{}, group.id), else: nil}
           />
         </div>
       <% end %>
@@ -159,6 +169,26 @@ defmodule KumaSanKanjiWeb.LearnLive do
             </span>
         <% end %>
       </div>
+
+      <%= if @srs_data do %>
+        <div class="mt-2 flex flex-wrap gap-1">
+          <%= for {group_atom, count} <- @srs_data.stage_counts, count > 0 do %>
+            <% color = Stage.group_color(group_atom) %>
+            <% japanese = Stage.group_japanese(group_atom) %>
+            <span
+              class="inline-flex items-center gap-0.5 text-xs px-1 py-0.5 rounded"
+              style={"background-color: #{color}20; color: #{color};"}
+            >
+              {japanese} {count}
+            </span>
+          <% end %>
+        </div>
+        <%= if @srs_data.reviews_due > 0 do %>
+          <p class="mt-1 text-xs text-primary font-medium">
+            {@srs_data.reviews_due} {if @srs_data.reviews_due == 1, do: "review", else: "reviews"} due
+          </p>
+        <% end %>
+      <% end %>
     </.link>
     """
   end
@@ -227,6 +257,36 @@ defmodule KumaSanKanjiWeb.LearnLive do
       |> Enum.sort(:desc)
 
     count_consecutive_days(review_dates, today, 0)
+  end
+
+  defp compute_per_group_srs(user_id, groups, actor) do
+    Map.new(groups, fn group ->
+      {:ok, kanji_list} = ContentContext.get_kanji_by_thematic_group(group.id)
+      kanji_ids = Enum.map(kanji_list, & &1.id)
+
+      progress_records =
+        case UserKanjiProgress.list_for_user_and_kanji_ids(user_id, kanji_ids, actor: actor) do
+          {:ok, records} -> records
+          _ -> []
+        end
+
+      stage_counts =
+        Enum.reduce(Stage.groups(), %{}, fn srs_group, acc ->
+          {:ok, stage_numbers} = Stage.stages_for_group(srs_group)
+          count = Enum.count(progress_records, fn r -> r.srs_stage in stage_numbers end)
+          Map.put(acc, srs_group, count)
+        end)
+
+      now = DateTime.utc_now()
+
+      reviews_due =
+        Enum.count(progress_records, fn r ->
+          r.srs_stage != 9 and r.next_review_date != nil and
+            DateTime.compare(r.next_review_date, now) in [:lt, :eq]
+        end)
+
+      {group.id, %{stage_counts: stage_counts, reviews_due: reviews_due}}
+    end)
   end
 
   defp count_consecutive_days([], _expected, count), do: count

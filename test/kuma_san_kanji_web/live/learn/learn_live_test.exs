@@ -214,4 +214,57 @@ defmodule KumaSanKanjiWeb.LearnLiveTest do
       refute html =~ "How SRS Works"
     end
   end
+
+  # ---------------------------------------------------------------
+  # Integrated SRS: Per-group stage breakdown
+  # ---------------------------------------------------------------
+
+  describe "Integrated SRS: group cards show SRS stage breakdown" do
+    test "group card shows per-group stage counts when integrated SRS enabled", %{conn: conn} do
+      {conn, user} = create_authenticated_learner(conn, "yuki-breakdown")
+      enable_learning_path_flag()
+      FunWithFlags.enable(:bear_seasons_srs)
+      FunWithFlags.enable(:integrated_srs_learning)
+
+      # Given Numbers group with 2 learned kanji (both at stage 1 = Mezame)
+      {_group, kanji_list} = create_numbers_group()
+      Enum.take(kanji_list, 2) |> Enum.each(&mark_kanji_learned(user, &1))
+
+      {:ok, _view, html} = live(conn, ~p"/learn")
+
+      # Then the group card shows the Mezame Japanese name (目覚め)
+      assert html =~ "目覚め"
+    end
+
+    test "group card shows reviews due count when integrated SRS enabled", %{conn: conn} do
+      {conn, user} = create_authenticated_learner(conn, "yuki-due")
+      enable_learning_path_flag()
+      FunWithFlags.enable(:bear_seasons_srs)
+      FunWithFlags.enable(:integrated_srs_learning)
+
+      # Given a learned kanji with next_review_date in the past (due now)
+      {_group, kanji_list} = create_numbers_group()
+      mark_kanji_learned(user, hd(kanji_list))
+      # mark_kanji_learned sets next_review_date to now, so it's immediately due
+
+      {:ok, _view, html} = live(conn, ~p"/learn")
+
+      # Then the group card shows review due count
+      assert html =~ "review"
+    end
+
+    test "group cards show original display when integrated SRS flag is off", %{conn: conn} do
+      {conn, user} = create_authenticated_learner(conn, "yuki-no-breakdown")
+      enable_learning_path_flag()
+      FunWithFlags.disable(:integrated_srs_learning)
+
+      {_group, kanji_list} = create_numbers_group()
+      mark_kanji_learned(user, hd(kanji_list))
+
+      {:ok, _view, html} = live(conn, ~p"/learn")
+
+      # Original behavior preserved — 1 of 4 learned shows as fraction
+      assert html =~ "1/4"
+    end
+  end
 end

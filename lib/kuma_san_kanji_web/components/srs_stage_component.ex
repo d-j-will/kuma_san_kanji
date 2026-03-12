@@ -292,6 +292,74 @@ defmodule KumaSanKanjiWeb.Components.SrsStageComponent do
     """
   end
 
+  # ── srs_kanji_card_badge ───────────────────────────────────────────
+
+  @doc """
+  Renders a compact SRS stage label with review timing for kanji grid cards.
+
+  Shows the stage label (e.g., "Awakening I"), the stage color, and a
+  relative review time ("Due now", "2h", "5d") or "Mastered" for stage 9.
+
+  Renders nothing when `progress` is nil (unstarted kanji).
+  """
+  attr :progress, :map, default: nil
+
+  def srs_kanji_card_badge(%{progress: nil} = assigns) do
+    ~H""
+  end
+
+  def srs_kanji_card_badge(assigns) do
+    info = stage_info(assigns.progress.srs_stage)
+    review_label = format_review_time(assigns.progress)
+
+    assigns =
+      assigns
+      |> assign(:info, info)
+      |> assign(:review_label, review_label)
+
+    ~H"""
+    <div :if={@info} class="flex flex-col items-center gap-0.5">
+      <span
+        class="text-xs font-medium px-1.5 py-0.5 rounded"
+        style={"background-color: #{@info.color}20; color: #{@info.color};"}
+      >
+        {@info.label}
+      </span>
+      <span class="text-xs text-base-content/50">{@review_label}</span>
+    </div>
+    """
+  end
+
+  defp format_review_time(%{srs_stage: 9}), do: "Mastered"
+
+  defp format_review_time(%{next_review_date: nil}), do: ""
+
+  defp format_review_time(%{next_review_date: dt}) do
+    now = DateTime.utc_now()
+
+    case DateTime.compare(dt, now) do
+      :lt -> "Due now"
+      :eq -> "Due now"
+      :gt -> format_relative_duration(DateTime.diff(dt, now, :second))
+    end
+  end
+
+  defp format_relative_duration(seconds) when seconds < 3600 do
+    "#{div(seconds, 60)}m"
+  end
+
+  defp format_relative_duration(seconds) when seconds < 86_400 do
+    "#{div(seconds, 3600)}h"
+  end
+
+  defp format_relative_duration(seconds) when seconds < 604_800 do
+    "#{div(seconds, 86_400)}d"
+  end
+
+  defp format_relative_duration(seconds) do
+    "#{div(seconds, 604_800)}w"
+  end
+
   # ── helpers ──────────────────────────────────────────────────────────
 
   defp stage_info(stage) do
