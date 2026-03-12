@@ -140,20 +140,26 @@
     @apply bg-base-200/50 backdrop-blur-sm rounded-box min-h-[calc(100vh-200px)];
   }
 
-  /* Mobile App Shell — 100dvh CSS Grid layout */
+  /* Mobile App Shell — grid lives inside app layout, not on body,
+     because Phoenix wraps @inner_content in a <div data-phx-main>
+     so body's direct children aren't navbar/main/bottom-nav. */
   .mobile-app-shell {
     height: 100dvh;
-    min-height: 0;
-    display: grid;
-    grid-template-rows: auto 1fr auto;
     overflow: hidden;
   }
 
-  .mobile-app-shell main {
+  .mobile-shell-grid {
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+    height: 100dvh;
+    overflow: hidden;
+  }
+
+  .mobile-shell-grid > main {
     min-height: 0;
   }
 
-  .mobile-app-shell .main-content-wabi {
+  .mobile-shell-grid .main-content-wabi {
     min-height: 0;
   }
 

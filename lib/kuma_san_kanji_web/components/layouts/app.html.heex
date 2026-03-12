@@ -1,17 +1,19 @@
 <%= if KumaSanKanjiWeb.FeatureFlagHelper.mobile_ux_enabled?() do %>
-  <div class="hidden md:block">
-    <KumaSanKanjiWeb.Components.Navigation.navbar current_user={assigns[:current_user]} />
-  </div>
-  <main class="px-4 py-8 sm:px-6 lg:px-8 overflow-y-auto">
-    <div class="mx-auto max-w-7xl main-content-wabi p-8">
-      <.flash_group flash={@flash} />
-      {@inner_content}
+  <div class="mobile-shell-grid">
+    <div class="hidden md:block">
+      <KumaSanKanjiWeb.Components.Navigation.navbar current_user={assigns[:current_user]} />
     </div>
-  </main>
-  <KumaSanKanjiWeb.Components.BottomNav.bottom_nav
-    current_path={assigns[:current_path] || "/"}
-    current_user={assigns[:current_user]}
-  />
+    <main class="px-4 py-8 sm:px-6 lg:px-8 overflow-y-auto">
+      <div class="mx-auto max-w-7xl main-content-wabi p-8">
+        <.flash_group flash={@flash} />
+        {@inner_content}
+      </div>
+    </main>
+    <KumaSanKanjiWeb.Components.BottomNav.bottom_nav
+      current_path={assigns[:current_path] || "/"}
+      current_user={assigns[:current_user]}
+    />
+  </div>
 <% else %>
   <KumaSanKanjiWeb.Components.Navigation.navbar current_user={assigns[:current_user]} />
   <main class="px-4 py-8 sm:px-6 lg:px-8">

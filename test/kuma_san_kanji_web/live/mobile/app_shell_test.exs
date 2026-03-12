@@ -29,8 +29,7 @@ defmodule KumaSanKanjiWeb.Mobile.AppShellTest do
       {:ok, _view, html} = live(conn, ~p"/learn")
 
       # Then the page uses the mobile app shell layout with CSS Grid classes
-      assert html =~ "100dvh" or html =~ "dvh"
-      assert html =~ "grid"
+      assert html =~ "mobile-shell-grid"
     end
   end
 
@@ -62,7 +61,7 @@ defmodule KumaSanKanjiWeb.Mobile.AppShellTest do
       {:ok, _view, html} = live(conn, ~p"/explore")
 
       # Then the mobile app shell is rendered
-      assert html =~ "100dvh" or html =~ "dvh"
+      assert html =~ "mobile-shell-grid"
     end
   end
 
