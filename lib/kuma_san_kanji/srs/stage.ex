@@ -200,6 +200,49 @@ defmodule KumaSanKanji.SRS.Stage do
   def interval(_stage), do: {:error, :invalid_stage}
 
   @doc """
+  Returns a human-readable interval string for the given stage.
+
+  Computed from the interval in `@stages_data` — no parallel data structure.
+
+  ## Examples
+
+      iex> KumaSanKanji.SRS.Stage.human_interval(1)
+      {:ok, "4 hours"}
+
+      iex> KumaSanKanji.SRS.Stage.human_interval(9)
+      {:ok, "Retired"}
+  """
+  @spec human_interval(stage()) :: {:ok, String.t()} | {:error, :invalid_stage}
+  def human_interval(stage) when is_integer(stage) and stage >= 1 and stage <= 9 do
+    case @stages_data[stage].interval do
+      nil -> {:ok, "Retired"}
+      seconds -> {:ok, humanize_seconds(seconds)}
+    end
+  end
+
+  def human_interval(_stage), do: {:error, :invalid_stage}
+
+  defp humanize_seconds(s) when s < 86_400 do
+    hours = div(s, 3600)
+    "#{hours} #{if hours == 1, do: "hour", else: "hours"}"
+  end
+
+  defp humanize_seconds(s) when s < 604_800 do
+    days = div(s, 86_400)
+    "#{days} #{if days == 1, do: "day", else: "days"}"
+  end
+
+  defp humanize_seconds(s) when s < 2_592_000 do
+    weeks = div(s, 604_800)
+    "#{weeks} #{if weeks == 1, do: "week", else: "weeks"}"
+  end
+
+  defp humanize_seconds(s) do
+    months = div(s, 2_592_000)
+    "#{months} #{if months == 1, do: "month", else: "months"}"
+  end
+
+  @doc """
   Returns a map of metadata for the given stage.
 
   Keys: `:name`, `:group`, `:label`, `:japanese`, `:color`.
@@ -285,4 +328,27 @@ defmodule KumaSanKanji.SRS.Stage do
   end
 
   def group_japanese(_group), do: nil
+
+  @group_english %{
+    mezame: "Awakening",
+    sakari: "Peak",
+    minori: "Harvest",
+    chikara: "Strength",
+    tomin: "Hibernation"
+  }
+
+  @doc """
+  Returns the English name for a group atom.
+
+  ## Examples
+
+      iex> KumaSanKanji.SRS.Stage.group_english(:mezame)
+      "Awakening"
+  """
+  @spec group_english(group()) :: String.t() | nil
+  def group_english(group) when group in @groups do
+    @group_english[group]
+  end
+
+  def group_english(_group), do: nil
 end

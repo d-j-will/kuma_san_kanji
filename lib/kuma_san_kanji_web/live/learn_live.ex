@@ -102,6 +102,9 @@ defmodule KumaSanKanjiWeb.LearnLive do
             <h2 class="text-lg font-wabi-display text-base-content mb-3">SRS Progress</h2>
             <SrsStageComponent.srs_stage_pipeline stages={@stage_counts} />
           </div>
+          <div class="mt-4">
+            <SrsStageComponent.srs_stage_guide />
+          </div>
         <% end %>
       </div>
 
