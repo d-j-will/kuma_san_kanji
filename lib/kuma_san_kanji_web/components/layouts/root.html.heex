@@ -23,7 +23,9 @@
   <%= if KumaSanKanjiWeb.FeatureFlagHelper.mobile_ux_enabled?() do %>
     <body class="wabi-container mobile-app-shell" style="height: 100dvh; display: grid; grid-template-rows: auto 1fr auto;">
       {@inner_content}
-      <KumaSanKanjiWeb.Components.Footer.footer />
+      <div class="hidden md:block">
+        <KumaSanKanjiWeb.Components.Footer.footer />
+      </div>
     </body>
   <% else %>
     <body class="wabi-container min-h-screen flex flex-col pb-32">
