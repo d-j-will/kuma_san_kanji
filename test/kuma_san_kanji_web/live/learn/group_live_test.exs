@@ -244,4 +244,60 @@ defmodule KumaSanKanjiWeb.GroupLiveTest do
       assert html =~ "5"
     end
   end
+
+  # ---------------------------------------------------------------
+  # Integrated SRS: Color-coded kanji cards
+  # ---------------------------------------------------------------
+
+  describe "Integrated SRS: kanji cards show SRS stage colors" do
+    test "learned kanji shows Bear Seasons stage color and label", %{conn: conn} do
+      # Given integrated SRS is enabled
+      {conn, user} = create_authenticated_learner(conn, "yuki-srs-cards")
+      enable_learning_path_flag()
+      FunWithFlags.enable(:bear_seasons_srs)
+      FunWithFlags.enable(:integrated_srs_learning)
+
+      # And Yuki has learned 一 (stage 1 = Mezame / Awakening I)
+      {group, kanji_list} = create_numbers_group()
+      mark_kanji_learned(user, hd(kanji_list))
+
+      # When Yuki views the group page
+      {:ok, _view, html} = live(conn, ~p"/learn/#{group.id}")
+
+      # Then the card for 一 shows Awakening label
+      assert html =~ "Awakening"
+      # And the Mezame pink color is present
+      assert html =~ "#F4A7BB"
+    end
+
+    test "unlearned kanji has no SRS badge when integrated SRS is enabled", %{conn: conn} do
+      {conn, _user} = create_authenticated_learner(conn, "yuki-srs-unlearned")
+      enable_learning_path_flag()
+      FunWithFlags.enable(:bear_seasons_srs)
+      FunWithFlags.enable(:integrated_srs_learning)
+
+      {group, _kanji_list} = create_numbers_group()
+
+      {:ok, _view, html} = live(conn, ~p"/learn/#{group.id}")
+
+      # Unlearned kanji should not show any stage label
+      refute html =~ "Awakening"
+    end
+
+    test "cards show original Learned badge when integrated SRS flag is off", %{conn: conn} do
+      {conn, user} = create_authenticated_learner(conn, "yuki-srs-off")
+      enable_learning_path_flag()
+      FunWithFlags.disable(:integrated_srs_learning)
+
+      {group, kanji_list} = create_numbers_group()
+      mark_kanji_learned(user, hd(kanji_list))
+
+      {:ok, _view, html} = live(conn, ~p"/learn/#{group.id}")
+
+      # Original behavior: shows "Learned" text
+      assert html =~ "Learned"
+      # Does NOT show SRS stage colors
+      refute html =~ "Awakening"
+    end
+  end
 end

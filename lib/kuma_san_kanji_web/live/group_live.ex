@@ -3,8 +3,11 @@ defmodule KumaSanKanjiWeb.GroupLive do
   use KumaSanKanjiWeb, :live_view
 
   alias KumaSanKanji.Content.ContentContext
-  alias KumaSanKanji.SRS.UserKanjiProgress
-  import KumaSanKanjiWeb.FeatureFlagHelper, only: [learning_path_enabled?: 0]
+  alias KumaSanKanji.SRS.{Stage, UserKanjiProgress}
+  alias KumaSanKanjiWeb.Components.SrsStageComponent
+
+  import KumaSanKanjiWeb.FeatureFlagHelper,
+    only: [learning_path_enabled?: 0, integrated_srs_enabled?: 0]
 
   @impl true
   def mount(params, _session, socket) do
@@ -16,15 +19,18 @@ defmodule KumaSanKanjiWeb.GroupLive do
           user = socket.assigns.current_user
           {:ok, kanji_list} = ContentContext.get_kanji_by_thematic_group(group.id)
 
+          # Batch load all SRS progress for this user + group's kanji (single query)
+          kanji_ids = Enum.map(kanji_list, & &1.id)
+
+          kanji_progress_map =
+            case UserKanjiProgress.list_for_user_and_kanji_ids(user.id, kanji_ids, actor: user) do
+              {:ok, records} -> Map.new(records, fn p -> {p.kanji_id, p} end)
+              _ -> %{}
+            end
+
           learned_kanji_ids =
-            kanji_list
-            |> Enum.filter(fn k ->
-              case UserKanjiProgress.get_user_kanji_progress(user.id, k.id, actor: user) do
-                {:ok, [_ | _]} -> true
-                _ -> false
-              end
-            end)
-            |> Enum.map(& &1.id)
+            kanji_progress_map
+            |> Map.keys()
             |> MapSet.new()
 
           next_unlearned_position =
@@ -44,6 +50,7 @@ defmodule KumaSanKanjiWeb.GroupLive do
              group: group,
              kanji_list: kanji_list,
              learned_kanji_ids: learned_kanji_ids,
+             kanji_progress_map: kanji_progress_map,
              learned_count: MapSet.size(learned_kanji_ids),
              total_count: length(kanji_list),
              next_unlearned_position: next_unlearned_position,
@@ -52,7 +59,8 @@ defmodule KumaSanKanjiWeb.GroupLive do
              slug_or_id: slug_or_id,
              session_correct: correct,
              session_incorrect: incorrect,
-             show_session_results: correct != nil or incorrect != nil
+             show_session_results: correct != nil or incorrect != nil,
+             integrated_srs: integrated_srs_enabled?()
            )}
 
         {:error, :not_found} ->
@@ -93,13 +101,19 @@ defmodule KumaSanKanjiWeb.GroupLive do
       <% else %>
         <div class="mt-6 grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-3">
           <%= for {kanji, idx} <- Enum.with_index(@kanji_list, 1) do %>
+            <% progress = Map.get(@kanji_progress_map, kanji.id) %>
             <.link
               navigate={~p"/learn/#{@slug_or_id}/#{idx}"}
-              class={"flex flex-col items-center p-3 rounded-lg border #{if MapSet.member?(@learned_kanji_ids, kanji.id), do: "border-success/40 bg-success/10", else: "border-base-300 bg-base-100"} hover:shadow-md transition-shadow"}
+              class="flex flex-col items-center p-3 rounded-lg border hover:shadow-md transition-shadow"
+              style={kanji_card_border_style(progress, @integrated_srs)}
             >
               <span class="text-3xl sm:text-2xl kanji-text">{kanji.character}</span>
-              <%= if MapSet.member?(@learned_kanji_ids, kanji.id) do %>
-                <span class="text-xs text-success mt-1">Learned</span>
+              <%= if @integrated_srs and progress do %>
+                <SrsStageComponent.srs_kanji_card_badge progress={progress} />
+              <% else %>
+                <%= if MapSet.member?(@learned_kanji_ids, kanji.id) do %>
+                  <span class="text-xs text-success mt-1">Learned</span>
+                <% end %>
               <% end %>
             </.link>
           <% end %>
@@ -126,6 +140,24 @@ defmodule KumaSanKanjiWeb.GroupLive do
       <% end %>
     </div>
     """
+  end
+
+  defp kanji_card_border_style(nil, _integrated_srs) do
+    "border-color: oklch(var(--bc) / 0.2);"
+  end
+
+  defp kanji_card_border_style(_progress, false) do
+    "border-color: oklch(var(--su) / 0.4); background-color: oklch(var(--su) / 0.1);"
+  end
+
+  defp kanji_card_border_style(progress, true) do
+    case Stage.info(progress.srs_stage) do
+      {:ok, info} ->
+        "border-color: #{info.color}60; background-color: #{info.color}10;"
+
+      _ ->
+        "border-color: oklch(var(--bc) / 0.2);"
+    end
   end
 
   defp find_group(slug_or_id) do
