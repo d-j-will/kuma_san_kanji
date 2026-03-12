@@ -75,10 +75,10 @@ defmodule KumaSanKanjiWeb.Components.BottomNav do
   defp profile_tab(current_path, nil) do
     %{
       path: ~p"/sign-in",
-      label: "Profile",
+      label: "Sign In",
       icon_class: "hero-user w-5 h-5",
       aria_label: "Sign in",
-      active: path_matches?(current_path, "/settings")
+      active: path_matches?(current_path, "/sign-in")
     }
   end
 

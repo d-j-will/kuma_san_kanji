@@ -25,6 +25,21 @@ import { KanjiStrokeOrderAnimate } from "./hooks/kanji_stroke_order"
 import { KanjiStrokeTracing } from "./hooks/kanji_tracing"
 import AudioFeedback from "./hooks/audio_feedback"
 
+// Shared swipe detection utility
+function detectHorizontalSwipe(el, threshold, onSwipeLeft, onSwipeRight) {
+  let startX = 0, startY = 0;
+  el.addEventListener('touchstart', (e) => { startX = e.touches[0].clientX; startY = e.touches[0].clientY; });
+  el.addEventListener('touchend', (e) => {
+    if (!startX || !startY) return;
+    const diffX = startX - e.changedTouches[0].clientX;
+    const diffY = startY - e.changedTouches[0].clientY;
+    if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > threshold) {
+      diffX > 0 ? onSwipeLeft() : onSwipeRight();
+    }
+    startX = 0; startY = 0;
+  });
+}
+
 // Define JS hooks for UI components
 const Hooks = {
   AudioFeedback: AudioFeedback,
@@ -71,77 +86,30 @@ const Hooks = {
   },
   SwipeTabNavigation: {
     mounted() {
-      let startX = 0;
-      let startY = 0;
       const threshold = parseInt(this.el.dataset.swipeThreshold) || 50;
-
-      this.el.addEventListener('touchstart', (e) => {
-        startX = e.touches[0].clientX;
-        startY = e.touches[0].clientY;
-      });
-
-      this.el.addEventListener('touchend', (e) => {
-        if (!startX || !startY) return;
-
-        const diffX = startX - e.changedTouches[0].clientX;
-        const diffY = startY - e.changedTouches[0].clientY;
-
-        if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > threshold) {
-          if (diffX > 0) {
-            this.pushEvent("next_tab", {});
-          } else {
-            this.pushEvent("prev_tab", {});
-          }
-        }
-
-        startX = 0;
-        startY = 0;
-      });
+      detectHorizontalSwipe(this.el, threshold,
+        () => this.pushEvent("next_tab", {}),
+        () => this.pushEvent("prev_tab", {})
+      );
     }
   },
+  // Quiz swipe: left swipe = next kanji (feedback mode), right swipe = skip (answer mode)
   MobileSwipeGestures: {
     mounted() {
-      let startX = 0;
-      let startY = 0;
-      let threshold = 50; // minimum swipe distance
-      
-      this.el.addEventListener('touchstart', (e) => {
-        startX = e.touches[0].clientX;
-        startY = e.touches[0].clientY;
-      });
-      
-      this.el.addEventListener('touchend', (e) => {
-        if (!startX || !startY) return;
-        
-        let endX = e.changedTouches[0].clientX;
-        let endY = e.changedTouches[0].clientY;
-        
-        let diffX = startX - endX;
-        let diffY = startY - endY;
-        
-        // Check if horizontal swipe is longer than vertical (to avoid interference with scrolling)
-        if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > threshold) {
-          // Check if we're in feedback mode or answer mode
-          const showFeedback = this.el.dataset.showFeedback === 'true';
-          
-          if (showFeedback) {
-            // In feedback mode, any horizontal swipe goes to next kanji
-            if (Math.abs(diffX) > threshold) {
-              this.pushEvent("next_kanji", {});
-            }
+      detectHorizontalSwipe(this.el, 50,
+        () => {
+          if (this.el.dataset.showFeedback === 'true') {
+            this.pushEvent("next_kanji", {});
+          }
+        },
+        () => {
+          if (this.el.dataset.showFeedback === 'true') {
+            this.pushEvent("next_kanji", {});
           } else {
-            // In answer mode, right swipe skips kanji
-            // diffX = startX - endX, so a right swipe makes diffX negative
-            if (diffX < -threshold) {
-              this.pushEvent("skip_kanji", {});
-            }
+            this.pushEvent("skip_kanji", {});
           }
         }
-        
-        // Reset values
-        startX = 0;
-        startY = 0;
-      });
+      );
     }
   }
 }

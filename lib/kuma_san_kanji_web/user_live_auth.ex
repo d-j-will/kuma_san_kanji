@@ -58,6 +58,9 @@ defmodule KumaSanKanjiWeb.UserLiveAuth do
         {:cont, assign(socket, :current_path, path)}
     end)
   rescue
-    RuntimeError -> socket
+    e in RuntimeError ->
+      require Logger
+      Logger.warning("Failed to attach path tracking hook: #{Exception.message(e)}")
+      socket
   end
 end

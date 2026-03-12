@@ -9,10 +9,8 @@
 
 /* Mobile accordion: collapsible on mobile, forced open on desktop */
 @media (min-width: 768px) {
-  details.mobile-accordion {
-    pointer-events: none;
-  }
   details.mobile-accordion > summary {
+    pointer-events: none;
     list-style: none;
     cursor: default;
   }
