@@ -253,7 +253,7 @@ defmodule KumaSanKanjiWeb.GroupQuizLive do
               placeholder="Type the meaning or reading..."
               autocomplete="off"
               autofocus
-              class="form-input-wabi px-4 py-3"
+              class="form-input-wabi px-4 py-3 text-base"
             />
             <button
               type="submit"

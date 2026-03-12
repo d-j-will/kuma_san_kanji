@@ -91,13 +91,13 @@ defmodule KumaSanKanjiWeb.GroupLive do
           This group is being prepared. No kanji have been added yet.
         </p>
       <% else %>
-        <div class="mt-6 grid grid-cols-4 sm:grid-cols-6 gap-3">
+        <div class="mt-6 grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-3">
           <%= for {kanji, idx} <- Enum.with_index(@kanji_list, 1) do %>
             <.link
               navigate={~p"/learn/#{@slug_or_id}/#{idx}"}
               class={"flex flex-col items-center p-3 rounded-lg border #{if MapSet.member?(@learned_kanji_ids, kanji.id), do: "border-success/40 bg-success/10", else: "border-base-300 bg-base-100"} hover:shadow-md transition-shadow"}
             >
-              <span class="text-2xl kanji-text">{kanji.character}</span>
+              <span class="text-3xl sm:text-2xl kanji-text">{kanji.character}</span>
               <%= if MapSet.member?(@learned_kanji_ids, kanji.id) do %>
                 <span class="text-xs text-success mt-1">Learned</span>
               <% end %>
