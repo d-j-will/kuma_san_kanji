@@ -1,6 +1,6 @@
 services:
   app:
-    image: ghcr.io/davewil/kuma-san-kanji:latest
+    image: ghcr.io/d-j-will/kuma-san-kanji:latest
     restart: unless-stopped
     depends_on:
       postgres:

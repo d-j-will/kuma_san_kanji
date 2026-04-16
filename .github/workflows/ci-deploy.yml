@@ -108,8 +108,8 @@ jobs:
           context: .
           push: true
           tags: |
-            ghcr.io/davewil/kuma-san-kanji:latest
-            ghcr.io/davewil/kuma-san-kanji:${{ steps.meta.outputs.version }}
+            ghcr.io/d-j-will/kuma-san-kanji:latest
+            ghcr.io/d-j-will/kuma-san-kanji:${{ steps.meta.outputs.version }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
@@ -151,7 +151,7 @@ jobs:
           "
 
           # Authenticate GHCR if needed
-          ssh root@${{ secrets.DEPLOY_HOST }} "docker pull ghcr.io/davewil/kuma-san-kanji:latest --quiet 2>/dev/null" || \
+          ssh root@${{ secrets.DEPLOY_HOST }} "docker pull ghcr.io/d-j-will/kuma-san-kanji:latest --quiet 2>/dev/null" || \
             echo "${{ secrets.GITHUB_TOKEN }}" | ssh root@${{ secrets.DEPLOY_HOST }} docker login ghcr.io -u ${{ github.actor }} --password-stdin
 
           # Ensure proxy network exists (caddy-docker-proxy uses it)

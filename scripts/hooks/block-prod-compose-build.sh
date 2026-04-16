@@ -26,7 +26,7 @@ if echo "$CONTENT" | grep -qE '^\s*build\s*:'; then
   echo ""
   echo "Production always uses pre-built images from GHCR."
   echo "Remove the build: key and reference the GHCR image directly:"
-  echo "  image: ghcr.io/davewil/kuma-san-kanji:latest"
+  echo "  image: ghcr.io/d-j-will/kuma-san-kanji:latest"
   exit 2
 fi
 
