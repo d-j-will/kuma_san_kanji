@@ -1,0 +1,10 @@
+# Git pre-commit boundary. (scripts/hooks/*.sh are Claude Code hooks, not git hooks — unrelated.)
+pre-commit:
+  parallel: true
+  commands:
+    gda:
+      glob: "*.ex"
+      run: mix credo --config-name gda {staged_files}
+    format:
+      glob: "*.ex"
+      run: mix format --check-formatted {staged_files}

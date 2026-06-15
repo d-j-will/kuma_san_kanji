@@ -9,6 +9,15 @@
           {GdaCredo.Check.PureDecideZone, []}
         ]
       }
+    },
+    %{
+      name: "gda",
+      files: %{included: ["lib/", "test/"]},
+      requires: ["test/support/credo_checks/gda_pure_decide_zone.ex"],
+      checks: %{
+        enabled: [{GdaCredo.Check.PureDecideZone, []}],
+        disabled: []
+      }
     }
   ]
 }
