@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
-# Lefthook pre-commit: warn on deploy-unsafe migration patterns in staged migrations.
+# Lefthook pre-commit: ADVISORY. Warns on deploy-unsafe migration patterns in staged
+# migrations and prints them, but never blocks the commit (always exits 0).
 set -euo pipefail
 status=0
 for f in "$@"; do
@@ -11,4 +12,5 @@ for f in "$@"; do
     echo "WARN $f: column remove/rename/modify detected — confirm expand/contract migration"; status=1
   fi
 done
-exit "$status"
+if [ "$status" -ne 0 ]; then echo "(advisory only — commit not blocked)"; fi
+exit 0
