@@ -20,5 +20,6 @@ config :kuma_san_kanji,
     # This is your Auth0 Tenant Domain (e.g., https://dev-xxxx.us.auth0.com)
     base_url: System.get_env("AUTH0_DOMAIN", "https://your-domain.auth0.com"),
     # This should match your Auth0 Application's Allowed Callback URLs
-    redirect_uri: System.get_env("AUTH0_REDIRECT_URI", "http://localhost:4000/auth/user/auth0/callback")
+    redirect_uri:
+      System.get_env("AUTH0_REDIRECT_URI", "http://localhost:4000/auth/user/auth0/callback")
   ]

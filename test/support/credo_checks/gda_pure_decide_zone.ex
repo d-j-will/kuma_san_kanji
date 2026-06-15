@@ -29,7 +29,8 @@ defmodule GdaCredo.Check.PureDecideZone do
       decide_suffixes: @default_suffixes
     ],
     explanations: [
-      check: "Decide zones must be pure. Move IO to a Gather step, or annotate with `# gda:override reason: \"...\" ref: ...`."
+      check:
+        "Decide zones must be pure. Move IO to a Gather step, or annotate with `# gda:override reason: \"...\" ref: ...`."
     ]
 
   def run(%Credo.SourceFile{} = source_file, params) do
@@ -56,7 +57,17 @@ defmodule GdaCredo.Check.PureDecideZone do
          modules,
          calls
        ) do
-    flag(ast, issues, source_file, issue_meta, modules, calls, List.last(alias_parts), fun, call_meta)
+    flag(
+      ast,
+      issues,
+      source_file,
+      issue_meta,
+      modules,
+      calls,
+      List.last(alias_parts),
+      fun,
+      call_meta
+    )
   end
 
   # Erlang remote call: :mod.fun(...)
