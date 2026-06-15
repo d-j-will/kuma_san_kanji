@@ -107,6 +107,17 @@ defmodule GdaCredo.Check.PureDecideZoneTest do
     |> assert_issue(fn issue -> assert issue.trigger == "rand.uniform" end)
   end
 
+  test "treats a *.decide.ex filename as a Decide zone (suffix branch)" do
+    """
+    defmodule MyApp.Scheduling do
+      def next(p), do: Repo.update(p)
+    end
+    """
+    |> to_source_file("lib/my_app/scheduling.decide.ex")
+    |> run_check(PureDecideZone)
+    |> assert_issue(fn issue -> assert issue.trigger == "Repo.update" end)
+  end
+
   test "respects a custom forbidden_modules param" do
     src =
       """

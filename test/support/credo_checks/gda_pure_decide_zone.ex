@@ -2,6 +2,8 @@ defmodule GdaCredo.Check.PureDecideZone do
   @moduledoc """
   Gather → Decide → Act: a Decide zone must be pure. Flags IO/effect calls.
   Escape hatch: `# gda:override reason: "..." ref: ...` on or above the line.
+
+  Best-effort commit-boundary guard: it matches the last module segment of a remote call and does not resolve `alias`/`import` renaming, so it can be evaded deliberately.
   """
 
   @default_forbidden_modules [:Repo, :Ecto, :Finch, :Req, :File, :GenServer]
