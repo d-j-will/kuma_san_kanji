@@ -33,4 +33,44 @@ defmodule GdaCredo.Check.PureDecideZoneTest do
     |> run_check(PureDecideZone, decide_path_markers: ["/zone_that_never_matches/"])
     |> refute_issues()
   end
+
+  test "a valid override (reason + ref) suppresses the issue" do
+    """
+    defmodule MyApp.Scheduling.Core do
+      def next(progress) do
+        Repo.update(progress) # gda:override reason: "legacy batch path" ref: docs/adr/0007.md
+      end
+    end
+    """
+    |> to_source_file()
+    |> run_check(PureDecideZone, decide_path_markers: [""])
+    |> refute_issues()
+  end
+
+  test "an override on the previous line also suppresses the issue" do
+    """
+    defmodule MyApp.Scheduling.Core do
+      def next(progress) do
+        # gda:override reason: "legacy batch path" ref: docs/adr/0007.md
+        Repo.update(progress)
+      end
+    end
+    """
+    |> to_source_file()
+    |> run_check(PureDecideZone, decide_path_markers: [""])
+    |> refute_issues()
+  end
+
+  test "a bare override with no reason/ref still fires" do
+    """
+    defmodule MyApp.Scheduling.Core do
+      def next(progress) do
+        Repo.update(progress) # gda:override
+      end
+    end
+    """
+    |> to_source_file()
+    |> run_check(PureDecideZone, decide_path_markers: [""])
+    |> assert_issue()
+  end
 end

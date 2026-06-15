@@ -8,6 +8,7 @@ defmodule GdaCredo.Check.PureDecideZone do
   @default_forbidden_calls []
   @default_markers ["/core/"]
   @default_suffixes [".decide.ex"]
+  @override_regex ~r/gda:override\s+reason:\s*"[^"]+"\s+ref:\s*\S+/
 
   use Credo.Check,
     base_priority: :high,
@@ -69,7 +70,11 @@ defmodule GdaCredo.Check.PureDecideZone do
 
   defp overridden?(source_file, line_no) do
     current = Credo.SourceFile.line_at(source_file, line_no) || ""
-    Regex.match?(~r/gda:override\s+reason:\s*"[^"]+"\s+ref:\s*\S+/, current)
+
+    previous =
+      if line_no > 1, do: Credo.SourceFile.line_at(source_file, line_no - 1) || "", else: ""
+
+    Regex.match?(@override_regex, current) or Regex.match?(@override_regex, previous)
   end
 
   defp issue_for(issue_meta, line_no, mod, fun) do
