@@ -84,7 +84,8 @@ defmodule KumaSanKanji.MixProject do
       {:fun_with_flags_ui, "~> 1.1.0"},
       # MCP Integration
       {:tidewave, "~> 0.5", only: [:dev]},
-      {:lazy_html, ">= 0.1.0", only: :test}
+      {:lazy_html, ">= 0.1.0", only: :test},
+      {:credo, "~> 1.7", only: [:dev, :test], runtime: false}
     ]
   end
 
