@@ -9,6 +9,10 @@ Now you can visit [`localhost:4000`](http://localhost:4000) from your browser.
 
 Ready to run in production? Please [check our deployment guides](https://hexdocs.pm/phoenix/deployment.html).
 
+## Dev Setup
+
+Run `lefthook install` once after cloning to activate the pre-commit hooks (GDA gate, formatter, migration safety).
+
 ## Learn more
 
 * Official website: <https://www.phoenixframework.org/>
