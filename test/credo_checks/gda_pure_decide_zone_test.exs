@@ -73,4 +73,37 @@ defmodule GdaCredo.Check.PureDecideZoneTest do
     |> run_check(PureDecideZone, decide_path_markers: [""])
     |> assert_issue()
   end
+
+  test "fires on DateTime.utc_now (clock) but not on pure DateTime.compare" do
+    impure =
+      """
+      defmodule MyApp.Scheduling.Core do
+        def due?(p), do: DateTime.utc_now()
+      end
+      """
+      |> to_source_file()
+      |> run_check(PureDecideZone, decide_path_markers: [""])
+
+    assert_issue(impure, fn issue -> assert issue.trigger == "DateTime.utc_now" end)
+
+    """
+    defmodule MyApp.Scheduling.Core do
+      def due?(a, b), do: DateTime.compare(a, b)
+    end
+    """
+    |> to_source_file()
+    |> run_check(PureDecideZone, decide_path_markers: [""])
+    |> refute_issues()
+  end
+
+  test "fires on an Erlang-module call :rand.uniform" do
+    """
+    defmodule MyApp.Scheduling.Core do
+      def pick(xs), do: :rand.uniform(length(xs))
+    end
+    """
+    |> to_source_file()
+    |> run_check(PureDecideZone, decide_path_markers: [""])
+    |> assert_issue(fn issue -> assert issue.trigger == "rand.uniform" end)
+  end
 end

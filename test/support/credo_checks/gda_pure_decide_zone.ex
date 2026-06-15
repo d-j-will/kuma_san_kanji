@@ -5,7 +5,14 @@ defmodule GdaCredo.Check.PureDecideZone do
   """
 
   @default_forbidden_modules [:Repo, :Ecto, :Finch, :Req, :File, :GenServer]
-  @default_forbidden_calls []
+  @default_forbidden_calls [
+    {:DateTime, :utc_now},
+    {:DateTime, :now!},
+    {:System, :system_time},
+    {:System, :monotonic_time},
+    {:rand, :uniform},
+    {:rand, :uniform_real}
+  ]
   @default_markers ["/core/"]
   @default_suffixes [".decide.ex"]
   @override_regex ~r/gda:override\s+reason:\s*"[^"]+"\s+ref:\s*\S+/
@@ -27,10 +34,11 @@ defmodule GdaCredo.Check.PureDecideZone do
     if decide_zone?(source_file.filename, params) do
       issue_meta = IssueMeta.for(source_file, params)
       modules = Keyword.get(params, :forbidden_modules, @default_forbidden_modules)
+      calls = Keyword.get(params, :forbidden_calls, @default_forbidden_calls)
 
       Credo.Code.prewalk(
         source_file,
-        &traverse(&1, &2, source_file, issue_meta, modules)
+        &traverse(&1, &2, source_file, issue_meta, modules, calls)
       )
     else
       []
@@ -43,18 +51,36 @@ defmodule GdaCredo.Check.PureDecideZone do
          issues,
          source_file,
          issue_meta,
-         modules
+         modules,
+         calls
        ) do
-    mod = List.last(alias_parts)
+    flag(ast, issues, source_file, issue_meta, modules, calls, List.last(alias_parts), fun, call_meta)
+  end
 
-    if mod in modules and not overridden?(source_file, call_meta[:line]) do
+  # Erlang remote call: :mod.fun(...)
+  defp traverse(
+         {{:., _, [mod, fun]}, call_meta, _args} = ast,
+         issues,
+         source_file,
+         issue_meta,
+         modules,
+         calls
+       )
+       when is_atom(mod) do
+    flag(ast, issues, source_file, issue_meta, modules, calls, mod, fun, call_meta)
+  end
+
+  defp traverse(ast, issues, _sf, _im, _mods, _calls), do: {ast, issues}
+
+  defp flag(ast, issues, source_file, issue_meta, modules, calls, mod, fun, call_meta) do
+    forbidden? = mod in modules or {mod, fun} in calls
+
+    if forbidden? and not overridden?(source_file, call_meta[:line]) do
       {ast, issues ++ [issue_for(issue_meta, call_meta[:line], mod, fun)]}
     else
       {ast, issues}
     end
   end
-
-  defp traverse(ast, issues, _sf, _im, _mods), do: {ast, issues}
 
   defp decide_zone?(nil, _params), do: false
 
