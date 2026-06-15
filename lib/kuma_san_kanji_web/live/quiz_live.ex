@@ -13,6 +13,7 @@ defmodule KumaSanKanjiWeb.QuizLive do
 
   alias KumaSanKanji.SRS.Logic
   alias KumaSanKanji.Quiz.Session
+  alias KumaSanKanji.Quiz.Core.SessionState
   alias KumaSanKanjiWeb.StrokeOrderEvents
   import KumaSanKanjiWeb.LiveHelpers
 
@@ -469,58 +470,9 @@ defmodule KumaSanKanjiWeb.QuizLive do
 
   # Private helper functions
   defp initialize_quiz_session(user_id, actor) do
-    require Logger
-
-    try do
-      # For new users, stats may not exist yet - that's expected
-      stats_result = Logic.get_user_stats(user_id, actor)
-
-      stats =
-        case stats_result do
-          {:ok, stats} -> stats
-          # New user without stats
-          {:error, _} -> %{}
-        end
-
-      # Check for due kanji
-      case Logic.get_due_kanji(user_id, 1, actor) do
-        {:ok, [progress | _]} ->
-          # Keep both the progress record and extract kanji for easy access
-          kanji = progress.kanji
-
-          {:ok,
-           %{
-             current_kanji: kanji,
-             current_progress: progress,
-             user_stats: stats,
-             quiz_error: false
-           }}
-
-        {:ok, []} ->
-          # No kanji are due - this is an expected state, not an error
-          {:ok,
-           %{
-             current_kanji: nil,
-             user_stats: stats,
-             quiz_error: false
-           }}
-
-        {:error, reason} ->
-          # Only propagate errors from get_due_kanji if they're not related to empty stats
-          case reason do
-            :not_found -> {:ok, %{current_kanji: nil, user_stats: stats, quiz_error: false}}
-            _ -> {:error, reason}
-          end
-      end
-    rescue
-      e ->
-        Logger.error(
-          "[QuizLive] Exception in initialize_quiz_session for user #{user_id}: #{Exception.message(e)}\n" <>
-            Exception.format(:error, e, __STACKTRACE__)
-        )
-
-        {:error, {:exception, Exception.message(e)}}
-    end
+    stats_result = Logic.get_user_stats(user_id, actor)
+    due_result = Logic.get_due_kanji(user_id, 1, actor)
+    SessionState.init_state(stats_result, due_result)
   end
 
   defp validate_and_sanitize_answer(answer) when is_binary(answer) do
