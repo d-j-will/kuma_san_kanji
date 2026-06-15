@@ -234,58 +234,51 @@ defmodule KumaSanKanjiWeb.QuizLive do
     user = socket.assigns.current_user
 
     if dev_mode_enabled?(user) do
-      # Add detailed error handling with try/rescue
-      try do
-        # Use enhanced reset options - 15 kanji that are all due immediately
-        case Logic.reset_user_progress(user.id, limit: 15, immediate: true, actor: user) do
-          {:ok, result} ->
-            Logger.debug(
-              "[QuizLive] Reset progress: cleared #{result.cleared} records, initialized #{result.initialized} kanji"
-            )
-
-            # Re-initialize the quiz session after reset
-            case initialize_quiz_session(user.id, user) do
-              {:ok, quiz_state} ->
-                socket =
-                  socket
-                  |> assign(quiz_state)
-                  |> assign(:user_answer, "")
-                  |> assign(:show_feedback, false)
-                  |> assign(
-                    :feedback_message,
-                    "Progress reset! #{result.initialized} kanji ready for review."
-                  )
-                  |> assign(:feedback_type, :info)
-                  |> assign(:quiz_complete, false)
-                  |> assign(:answers_count, 0)
-                  |> assign(:last_answer_times, [])
-                  |> put_flash(
-                    :info,
-                    "Quiz progress reset. #{result.initialized} kanji ready for immediate review."
-                  )
-
-                {:noreply, socket}
-
-              {:error, reason} ->
-                {:noreply,
-                 put_flash(
-                   socket,
-                   :error,
-                   "Failed to re-initialize quiz: #{get_error_message(reason, user)}"
-                 )}
-            end
-
-          {:error, reason} ->
-            Logger.error("[QuizLive] Failed to reset progress: #{inspect(reason)}")
-            {:noreply, put_flash(socket, :error, "Failed to reset progress: #{inspect(reason)}")}
-        end
-      rescue
-        e ->
-          Logger.error(
-            "[QuizLive] Exception in reset_progress: #{inspect(e)}\n#{Exception.format_stacktrace(__STACKTRACE__)}"
+      case Logic.reset_user_progress(user.id, limit: 15, immediate: true, actor: user) do
+        {:ok, result} ->
+          Logger.debug(
+            "[QuizLive] Reset progress: cleared #{result.cleared} records, initialized #{result.initialized} kanji"
           )
 
-          {:noreply, put_flash(socket, :error, "Error: #{Exception.message(e)}")}
+          # Re-initialize the quiz session after reset
+          case initialize_quiz_session(user.id, user) do
+            {:ok, quiz_state} ->
+              socket =
+                socket
+                |> assign(quiz_state)
+                |> assign(:user_answer, "")
+                |> assign(:show_feedback, false)
+                |> assign(
+                  :feedback_message,
+                  "Progress reset! #{result.initialized} kanji ready for review."
+                )
+                |> assign(:feedback_type, :info)
+                |> assign(:quiz_complete, false)
+                |> assign(:answers_count, 0)
+                |> assign(:last_answer_times, [])
+                |> put_flash(
+                  :info,
+                  "Quiz progress reset. #{result.initialized} kanji ready for immediate review."
+                )
+
+              {:noreply, socket}
+
+            {:error, reason} ->
+              {:noreply,
+               put_flash(
+                 socket,
+                 :error,
+                 "Failed to re-initialize quiz: #{get_error_message(reason, user)}"
+               )}
+          end
+
+        {:error, :exception, e} ->
+          Logger.error("[QuizLive] Exception resetting progress: #{inspect(e)}")
+          {:noreply, put_flash(socket, :error, "Failed to reset progress: #{inspect(e)}")}
+
+        {:error, reason} ->
+          Logger.error("[QuizLive] Failed to reset progress: #{inspect(reason)}")
+          {:noreply, put_flash(socket, :error, "Failed to reset progress: #{inspect(reason)}")}
       end
     else
       {:noreply, socket}
