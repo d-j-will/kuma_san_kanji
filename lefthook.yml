@@ -8,3 +8,6 @@ pre-commit:
     format:
       glob: "*.ex"
       run: mix format --check-formatted {staged_files}
+    migration-safety:
+      glob: "priv/repo/migrations/*.exs"
+      run: bash scripts/lefthook/check-migration-safety.sh {staged_files}
