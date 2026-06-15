@@ -106,4 +106,22 @@ defmodule GdaCredo.Check.PureDecideZoneTest do
     |> run_check(PureDecideZone, decide_path_markers: [""])
     |> assert_issue(fn issue -> assert issue.trigger == "rand.uniform" end)
   end
+
+  test "respects a custom forbidden_modules param" do
+    src =
+      """
+      defmodule MyApp.Scheduling.Core do
+        def go, do: Cache.put(:k, :v)
+      end
+      """
+      |> to_source_file()
+
+    # Default list does NOT include Cache -> no issue.
+    src |> run_check(PureDecideZone, decide_path_markers: [""]) |> refute_issues()
+
+    # Custom list includes Cache -> issue.
+    src
+    |> run_check(PureDecideZone, decide_path_markers: [""], forbidden_modules: [:Cache])
+    |> assert_issue(fn issue -> assert issue.trigger == "Cache.put" end)
+  end
 end
