@@ -609,7 +609,6 @@ defmodule KumaSanKanjiWeb.QuizLive do
   defp get_error_message(reason, user) do
     case reason do
       :no_session_id -> "No quiz session found."
-      {:exception, msg} -> "Quiz error: #{msg}"
       _ -> if dev_mode_enabled?(user), do: "Quiz Error (#{inspect(reason)})", else: "Quiz Error"
     end
   end
