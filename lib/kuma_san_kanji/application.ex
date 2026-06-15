@@ -16,6 +16,7 @@ defmodule KumaSanKanji.Application do
       {DNSCluster, query: Application.get_env(:kuma_san_kanji, :dns_cluster_query) || :ignore},
       # Start the Finch HTTP client for sending emails
       {Phoenix.PubSub, name: KumaSanKanji.PubSub},
+      {Task.Supervisor, name: KumaSanKanji.TaskSupervisor},
       {Finch, name: KumaSanKanji.Finch},
       # Start the Ash SQLite repository
       KumaSanKanji.Repo,

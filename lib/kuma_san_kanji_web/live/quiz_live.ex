@@ -408,7 +408,7 @@ defmodule KumaSanKanjiWeb.QuizLive do
     }
 
     # Save session asynchronously to avoid blocking the LiveView
-    Task.start(fn ->
+    Task.Supervisor.start_child(KumaSanKanji.TaskSupervisor, fn ->
       case Session.save(session_data) do
         {:ok, _session_id} ->
           :ok
