@@ -387,54 +387,14 @@ defmodule KumaSanKanjiWeb.QuizLive do
   defp restore_session_if_exists(_user_id, nil, _actor), do: {:error, :no_session_id}
 
   defp restore_session_if_exists(user_id, session_id, actor) do
-    require Logger
+    case Session.restore_for_user(user_id, session_id) do
+      {:error, _} = restore_result ->
+        SessionState.restored_state(restore_result, nil, nil)
 
-    try do
-      case Session.restore_for_user(user_id, session_id) do
-        {:ok, session_data} ->
-          # Get user stats to include with restored session
-          case Logic.get_user_stats(user_id, actor) do
-            # Get progress for the current kanji if available
-            {:ok, stats} ->
-              current_progress =
-                case session_data.current_kanji do
-                  nil ->
-                    nil
-
-                  kanji ->
-                    # Try to get the progress for this kanji
-                    case Logic.get_due_kanji(user_id, 1, actor) do
-                      {:ok, [progress | _]} when progress.kanji.id == kanji.id -> progress
-                      {:ok, _} -> nil
-                      {:error, _} -> nil
-                    end
-                end
-
-              {:ok,
-               %{
-                 current_kanji: session_data.current_kanji,
-                 current_progress: current_progress,
-                 user_stats: stats,
-                 quiz_error: false,
-                 answers_count: session_data.answers_count || 0,
-                 last_answer_times: session_data.last_answer_times || []
-               }}
-
-            {:error, reason} ->
-              {:error, reason}
-          end
-
-        {:error, _reason} ->
-          {:error, :session_not_found}
-      end
-    rescue
-      e ->
-        Logger.error(
-          "[QuizLive] Exception in restore_session_if_exists for user #{user_id}, session_id #{inspect(session_id)}: #{Exception.message(e)}\n" <>
-            Exception.format(:error, e, __STACKTRACE__)
-        )
-
-        {:error, {:exception, Exception.message(e)}}
+      {:ok, _} = restore_result ->
+        stats_result = Logic.get_user_stats(user_id, actor)
+        due_result = Logic.get_due_kanji(user_id, 1, actor)
+        SessionState.restored_state(restore_result, stats_result, due_result)
     end
   end
 

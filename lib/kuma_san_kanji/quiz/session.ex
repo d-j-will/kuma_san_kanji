@@ -59,7 +59,11 @@ defmodule KumaSanKanji.Quiz.Session do
   - {:ok, session} | {:error, :not_found} | {:error, :expired}
   """
   def get_for_user(user_id) when is_binary(user_id) do
-    GenServer.call(__MODULE__, {:get_user_session, user_id})
+    try do
+      GenServer.call(__MODULE__, {:get_user_session, user_id})
+    catch
+      :exit, _ -> {:error, :session_unavailable}
+    end
   end
 
   @doc """
