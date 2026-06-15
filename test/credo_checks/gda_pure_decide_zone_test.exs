@@ -20,4 +20,17 @@ defmodule GdaCredo.Check.PureDecideZoneTest do
       assert issue.trigger == "Repo.update"
     end)
   end
+
+  test "does not fire when the file is outside any Decide zone" do
+    """
+    defmodule MyApp.Scheduling.Worker do
+      def next(progress) do
+        Repo.update(progress)
+      end
+    end
+    """
+    |> to_source_file()
+    |> run_check(PureDecideZone, decide_path_markers: ["/zone_that_never_matches/"])
+    |> refute_issues()
+  end
 end
