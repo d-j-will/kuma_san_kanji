@@ -88,8 +88,3 @@ config :phoenix_live_view,
 
 # Disable swoosh api client as it is only required for production adapters.
 config :swoosh, :api_client, false
-
-# Import secret configuration if it exists (for local overrides)
-if File.exists?(Path.join(__DIR__, "dev.secrets.exs")) do
-  import_config "dev.secrets.exs"
-end
